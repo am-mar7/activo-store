@@ -1,0 +1,11 @@
+1-Set up project
+2-Implement database models
+3-Connect with MongoDB
+4-Implement user, account APIs and test them using Thunder/postman
+5-Implement auth
+6-Implement sign in/up pages and test auth
+7-Implement protected routes & auth guards
+8-Implement navigation
+9-Build shared components/layouts
+10-Implement dashboard (UI && backend)
+11-Implement other page (UI && backend)
