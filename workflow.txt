@@ -1,7 +1,7 @@
-1-Set up project
-2-Implement database models
-3-Connect with MongoDB
-4-Implement user, account APIs and test them using Thunder/postman
+1-Set up project // done
+2-Implement database models // done
+3-Connect with MongoDB // done
+4-Implement user, account APIs and test them using Thunder/postman // in proccess
 5-Implement auth
 6-Implement sign in/up pages and test auth
 7-Implement protected routes & auth guards
