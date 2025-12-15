@@ -16,14 +16,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }),
     Credentials({
-      credentials: {
-        email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" },
-      },
       async authorize(credentials) {
         const validatedData = SignInSchema.safeParse(credentials);
 
-        if (!validatedData.success) return null; // ✅ Explicit null
+        if (!validatedData.success) return null;
 
         const { email, password } = validatedData.data;
 
