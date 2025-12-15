@@ -1,18 +1,84 @@
+import { AddressSchema, IAddress } from "./user.model";
 import mongoose, { models, Schema, Types, Document } from "mongoose";
 
-interface PromoCode {
+export interface IOrderItem {
+  product: Types.ObjectId;
+  variantSku: string;
+  variantColor?: string;
+  variantSize?: string;
+  productTitle: string;
+  productImage: string;
+  priceAtPurchase: number;
+  quantity: number;
+  subTotal?: number;
+}
+
+const OrderItemSchema = new mongoose.Schema<IOrderItem>(
+  {
+    product: { type: Schema.Types.ObjectId, ref: "product", required: true },
+    variantSku: { type: String, required: true },
+    variantColor: { type: String },
+    variantSize: { type: String },
+    productTitle: { type: String, required: true },
+    productImage: { type: String, required: true },
+    priceAtPurchase: { type: Number, required: true, min: 0 },
+    quantity: { type: Number, required: true, default: 1, min: 1 },
+    subTotal: { type: Number, min: 0 },
+  },
+  { _id: false }
+);
+
+export interface IPayment {
+  method: "visa" | "COD";
+  status: "pending" | "completed" | "failed" | "refunded";
+  transactionId?: string;
+  gatewayResponse?: object;
+}
+
+const PaymentSchema = new mongoose.Schema<IPayment>(
+  {
+    method: {
+      type: String,
+      enum: ["visa", "COD"],
+      default: "COD",
+      required: true,
+    },
+    status: {
+      type: String,
+      enum: ["pending", "completed", "failed", "refunded"],
+      default: "pending",
+      index: true,
+    },
+    transactionId: { type: String, required: false, index: true },
+    gatewayResponse: { type: Object, required: false },
+  },
+  { _id: false }
+);
+
+interface IPromoCode {
   code: string;
   discount: number;
+  discountAmount: number;
 }
+
+const PromoCodeSchema = new Schema<IPromoCode>(
+  {
+    code: { type: String, required: true },
+    discount: { type: Number, required: true, min: 0, max: 100 },
+    discountAmount: { type: Number, required: true, min: 0 },
+  },
+  { _id: false }
+);
+
 export interface IOrder {
   userId: Types.ObjectId;
-  orderItems: Types.ObjectId[];
+  orderItems: IOrderItem[];
   totalPrice: number;
   status: "pending" | "delivering" | "cancelled" | "delivered";
-  shippingAddress: Types.ObjectId;
-  payment: Types.ObjectId;
+  shippingAddress: IAddress;
+  payment: IPayment;
   shippingCost: number;
-  promoCode?: PromoCode;
+  promoCode?: IPromoCode;
 }
 export interface IOrderDoc extends IOrder, Document {}
 
@@ -24,12 +90,7 @@ const OrderSchema = new mongoose.Schema<IOrder>(
       ref: "User",
       index: true,
     },
-    orderItems: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "OrderItem",
-      },
-    ],
+    orderItems: { type: [OrderItemSchema], required: true, default: [] },
     totalPrice: { type: Number, required: true, min: 0 },
     status: {
       type: String,
@@ -39,13 +100,11 @@ const OrderSchema = new mongoose.Schema<IOrder>(
       default: "pending",
     },
     shippingAddress: {
-      type: Schema.Types.ObjectId,
-      ref: "Address",
+      type: AddressSchema,
       required: true,
     },
     payment: {
-      type: Schema.Types.ObjectId,
-      ref: "Payment",
+      type: PaymentSchema,
       required: true,
     },
     shippingCost: {
@@ -54,7 +113,7 @@ const OrderSchema = new mongoose.Schema<IOrder>(
       default: 0,
       min: 0,
     },
-    promoCode: { type: Object, required: false },
+    promoCode: { type: PromoCodeSchema, required: false },
   },
   { timestamps: true }
 );
@@ -65,6 +124,8 @@ OrderSchema.pre("save", async function () {
     throw new Error("Order must have at least one item");
   }
 });
+OrderSchema.index({ userId: 1, createdAt: -1 });
+OrderSchema.index({ status: 1, createdAt: -1 });
 
 const Order = models?.Order || mongoose.model<IOrder>("Order", OrderSchema);
 
