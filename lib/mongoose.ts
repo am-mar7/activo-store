@@ -102,7 +102,7 @@ export const dbConnect = async () => {
 
   try {
     const opts = {
-      dbName: "Activo Store",
+      dbName: "Activo",
       bufferCommands: false,
       maxPoolSize: 10,
       minPoolSize: 2,

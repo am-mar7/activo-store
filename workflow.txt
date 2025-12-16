@@ -4,8 +4,25 @@
 4-Implement user, account APIs and test them using Thunder/postman // done
 5-Implement auth // done
 6-Implement sign in/up pages and test auth // done
+7-Implement protected routes & auth guards // done
 8-Implement navigation // in proccess 
-7-Implement protected routes & auth guards 
 9-Build shared components/layouts
 10-Implement dashboard (UI && backend)
+    - pages
+        📊 Overview   
+        📦 Products   
+        🛒 Orders     
+        📂 Categories 
+        👥 Customers  
+        ⭐ Reviews    
+        🎟️ Promo Codes
+        ⚙️ Settings
 11-Implement other page (UI && backend)
+    - pages
+        cart
+        wishlist
+        orders
+        profile
+        home
+        product/:id
+        category/:slug

@@ -8,7 +8,6 @@ import { IUserDoc } from "./models/user.model";
 import { IAccountDoc } from "./models/account.model";
 import bcrypt from "bcryptjs";
 
-
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
     Google({
@@ -44,6 +43,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           name: user.name,
           email: user.email,
           image: user.image,
+          role: user.role,
         };
       },
     }),
@@ -52,6 +52,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     session: async ({ session, token }) => {
       if (!session.user) return session;
       session.user.id = token.sub! as string;
+      session.user.role = token.role! as "admin" | "user";
       return session;
     },
     jwt: async ({ token, account }) => {
@@ -65,6 +66,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
         const userId = data.userId;
         if (userId) token.sub = userId.toString();
+
+        const { data: userData } = (await api.users.getByEmail(
+          token.email!
+        )) as ActionResponse<IUserDoc>;
+
+        if (userData) token.role = userData.role;
       }
       return token;
     },
@@ -79,7 +86,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       };
       const { success } = (await api.auth.oAuthSignIn({
         user: userInfo,
-        provider: account!.provider as "google" | "github",
+        provider: account!.provider as "google",
         providerAccountId: account!.providerAccountId,
       })) as ActionResponse;
 
