@@ -33,7 +33,10 @@ export async function middleware(request: NextRequest) {
     if (matchesRoute(pathname, publicApiRoutes)) {
       return NextResponse.next();
     }
-
+    const session = await auth();
+    if (session?.user.role === "admin") {
+      return NextResponse.next();
+    }
     // Protect all other API routes
     return NextResponse.json(
       { success: false, error: "Unauthorized" },
