@@ -1,15 +1,16 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import localFont from "next/font/local";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+
+const Inter = localFont({
+  src: "../public/fonts/interVF.ttf",
+  variable: "--font-inter",
+  weight: "100 to 900",
 });
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+const SpaceGrotesk = localFont({
+  src: "../public/fonts/SpaceGroteskVF.ttf",
+  variable: "--font-space-grotesk",
 });
 
 export const metadata: Metadata = {
@@ -25,7 +26,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${Inter.className} ${SpaceGrotesk.variable} antialiased`}
       >
         <main className="px-4 py-6 sm:px-16 sm:py-32">{children}</main>
       </body>

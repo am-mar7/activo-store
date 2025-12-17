@@ -63,6 +63,8 @@
   /* Fonts */
   --font-sans: ui-sans-serif, system-ui, sans-serif;
   --font-mono: ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, monospace;
+  --font-inter: var(--font-inter);
+  --font-space-grotesk: var(--font-space-grotesk);
 
   /* Breakpoints */
   --breakpoint-xs: 475px;
