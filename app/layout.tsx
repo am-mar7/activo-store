@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import "./globals.css";
 import localFont from "next/font/local";
 
-
 const Inter = localFont({
   src: "../public/fonts/interVF.ttf",
   variable: "--font-inter",
@@ -28,7 +27,7 @@ export default function RootLayout({
       <body
         className={`${Inter.className} ${SpaceGrotesk.variable} antialiased`}
       >
-        <main className="px-4 py-6 sm:px-16 sm:py-32">{children}</main>
+        <main>{children}</main>
       </body>
     </html>
   );
