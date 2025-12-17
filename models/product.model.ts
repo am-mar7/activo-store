@@ -26,13 +26,14 @@ export interface IProduct {
   oldPrice?: number;
   newPrice: number;
   variants: IVariant[];
+  collection: "winter" | "summer";
   averageRating: number;
   totalReviews: number;
   images: string[];
   isActive: boolean;
 }
 
-export interface IProductDoc extends IProduct, Document {}
+export interface IProductDoc extends IProduct, Omit<Document, "collection"> {}
 
 export const ProductSchema = new Schema<IProduct>(
   {
@@ -52,6 +53,7 @@ export const ProductSchema = new Schema<IProduct>(
         message: "Product must have at least one variant",
       },
     },
+    collection: { type: String, enum: ["winter", "summer"], required: true },
     averageRating: { type: Number, default: 0 },
     totalReviews: { type: Number, default: 0 },
 

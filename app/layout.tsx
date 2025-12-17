@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import localFont from "next/font/local";
+import { Toaster } from "sonner";
 
 const Inter = localFont({
   src: "../public/fonts/interVF.ttf",
@@ -27,6 +28,7 @@ export default function RootLayout({
       <body
         className={`${Inter.className} ${SpaceGrotesk.variable} antialiased`}
       >
+        <Toaster position="top-right" richColors />
         <main>{children}</main>
       </body>
     </html>

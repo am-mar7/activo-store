@@ -23,6 +23,7 @@ import {
 import { ActionResponse } from "@/types/global";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 type AuthFromType<T extends FieldValues> = {
   defaultValues: T;
@@ -34,7 +35,7 @@ export default function AuthForm<T extends FieldValues>({
 }: AuthFromType<T>) {
   const formSchema: typeof SignInSchema | typeof SignUpSchema =
     formType === "SIGN_IN" ? SignInSchema : SignUpSchema;
-
+  const [error, setError] = useState<string | null>(null);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: defaultValues as DefaultValues<T>,
@@ -52,15 +53,13 @@ export default function AuthForm<T extends FieldValues>({
         ? "You have signed in successfully"
         : "You have created Account successfully";
 
-    if (result && result.success) {
+    if (result.success) {
       toast.success(successMSG, {
         duration: 3000,
       });
       router.push(ROUTES.HOME);
     } else {
-      toast.error(result?.error?.message || "Something went wrong", {
-        duration: 3000,
-      });
+      setError(result.error?.message || "SomeThing went Wrong, please try again");
     }
   };
 
@@ -110,6 +109,11 @@ export default function AuthForm<T extends FieldValues>({
             </Link>
           )}
         </p>
+        {error && (
+          <p className="px-4 py-2 rounded-lg text-red-500 bg-red-100">
+            {error}
+          </p>
+        )}
         <Button
           type="submit"
           className={`w-full bg-primary-gradient py-5 text-slate-50 ${
