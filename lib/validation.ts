@@ -81,3 +81,47 @@ export const SignInWithOAuthSchema = z.object({
     image: z.string().url("Invalid image URL").optional(),
   }),
 });
+
+export const ProductSchema = z
+  .object({
+    title: z.string().min(1, "Title is required"),
+    description: z.string().min(1, "Description is required"),
+    category: z
+      .array(z.string().min(1, "Category ID is required"))
+      .min(1, "At least one category is required"),
+    oldPrice: z.number().min(0, "price can't be negitave").optional(),
+    newPrice: z.number().min(0, "price can't be negitave"),
+    variants: z
+      .array(
+        z.object({
+          sku: z.string().min(1, "SKU is required"),
+          color: z.string().optional(),
+          size: z.string().optional(),
+          stock: z.number().min(0, "Stock can't be negative"),
+          image: z.string().url("Invalid image URL").optional(),
+        })
+      )
+      .min(1, "At least one variant is required"),
+    collection: z.enum(["winter", "summer"]),
+    images: z
+      .array(
+        z.instanceof(File).refine((file) => file.type.startsWith("image/"), {
+          message: "File must be an image",
+        })
+      )
+      .min(1, "At least one image is required"),
+    isActive: z.boolean().default(true),
+  })
+  .refine(
+    (data) => {
+      // If oldPrice exists, it must be greater than newPrice
+      if (data.oldPrice !== undefined) {
+        return data.oldPrice > data.newPrice;
+      }
+      return true;
+    },
+    {
+      message: "Compare at price must be greater than the selling price", // old price must be higher
+      path: ["oldPrice"],
+    }
+  );

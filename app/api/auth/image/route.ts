@@ -1,4 +1,3 @@
-import { auth } from "@/auth";
 import config from "@/lib/config";
 import imagekit from "imagekit";
 import { NextResponse } from "next/server";
@@ -14,14 +13,6 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  console.log("alooooooooooooooooooooooo");
-  const session = await auth();
-  if (session?.user.role !== "admin")
-    return Response.json(
-      { error: "Upload failed", details: "Unauthorized" },
-      { status: 401 }
-    );
-
   try {
     const formData = await request.formData();
     const file = formData.get("file");
@@ -57,7 +48,7 @@ export async function POST(request: Request) {
   } catch (error: any) {
     console.error("Upload error:", error);
     return Response.json(
-      { error: "Upload failed", details: error.message },
+      { error: "Upload failed", details: error.message || "Internal Server Error" },
       { status: 500 }
     );
   }

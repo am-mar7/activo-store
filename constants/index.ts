@@ -46,3 +46,21 @@ export const DashboardLinks = [
     label: "reviews",
   },
 ];
+
+export const sizes = [
+  { value: "m", label: "M" },
+  { value: "l", label: "L" },
+  { value: "xl", label: "XL" },
+  { value: "xxl", label: "XXL" },
+  { value: "3xl", label: "3XL" },
+  { value: "4xl", label: "4XL" },
+];
+
+export const colors = [
+  { value: "black", label: "Black", hex: "#000000" },
+  { value: "white", label: "White", hex: "#FFFFFF" },
+  { value: "navy", label: "Navy", hex: "#001F3F" },
+  { value: "blue", label: "Blue", hex: "#3B82F6" },
+  { value: "silver", label: "Silver", hex: "#C0C0C0" },
+  { value: "babyblue", label: "Baby Blue", hex: "#89CFF0" },
+];

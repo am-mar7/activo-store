@@ -15,6 +15,25 @@ type ErrorResponse = ActionResponse<undefined> & { success: false };
 type APIResponse<T = null> = NextResponse<SuccessResponse<T> | ErrorResponse>;
 type APIErrorResponse = NextResponse<ErrorResponse>;
 
+// types
+
+type CategoryType = {
+  _id: string;
+  name: string;
+  image: string;
+  slug: string;
+  isActive: boolean;
+  parentId?: string;
+}
+
+type UploadedImageData = {
+  success: boolean;
+  fileId: string;
+  url: string;
+  thumbnailUrl: string;
+  name: string;
+}
+
 // params
 
 interface SignInWithOauthParams {
@@ -32,7 +51,20 @@ interface AuthCredentials {
   email: string;
   password: string;
 }
+
 interface RouteParams {
   params: Promise<Record<string, string>>;
   searchParams: Promise<Record<string, string>>;
+}
+
+interface ProductParams {
+  title: string;
+  description: string;
+  category: string[]; 
+  oldPrice?: number;
+  newPrice: number;
+  images: File[];
+  variants: IVariant[];
+  collection: "winter" | "summer";
+  isActive?: boolean;
 }
