@@ -75,7 +75,11 @@ export default function CategoryForm({
       return;
     }
     const params = {
-      ...form.getValues(),
+      name: form.getValues().name,
+      parentId:
+        form.getValues().parentId === "none"
+          ? undefined
+          : form.getValues().parentId,
       image: files[0],
       slug,
       isActive: true,
@@ -144,6 +148,9 @@ export default function CategoryForm({
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent className="z-2 bg-slate-50">
+                      <SelectItem value="none">
+                        <span className="text-muted-foreground">None</span>
+                      </SelectItem>
                       {categories.map((category) => (
                         <SelectItem
                           key={category._id}
