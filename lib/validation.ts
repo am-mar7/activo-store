@@ -1,5 +1,13 @@
 import { z } from "zod";
 
+export const PaginatedSearchParamsSchema = z.object({
+  page: z.number().int().default(1),
+  pageSize: z.number().int().default(10),
+  query: z.string().optional(),
+  filter: z.string().optional(),
+  sort: z.string().optional(),
+});
+
 export const UserSchema = z.object({
   name: z.string().min(1, "Name is required"),
   role: z.enum(["user", "admin"]).default("user"),

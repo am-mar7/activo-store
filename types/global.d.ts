@@ -36,6 +36,14 @@ type UploadedImageData = {
 
 // params
 
+interface PaginatedSearchParams {
+  page?: number;
+  pageSize?: number;
+  query?: string;
+  filter?: string;
+  sort?: string;
+}
+
 interface SignInWithOauthParams {
   provider: "google" | "github";
   providerAccountId: string;

@@ -1,29 +1,23 @@
-import CategoryForm from '@/components/dashboard/forms/CategoryForm'
-import React from 'react'
+import CategoryForm from "@/components/dashboard/forms/CategoryForm";
+import { getCategories } from "@/lib/server actions/category.action";
 
-export default function AddCategory() {
+export default async function AddCategory() {
+  const { data } = await getCategories({});
+  const { categories } = data || {};
+  const categoriesList = categories || [];
+  const categoriesSelectList = categoriesList.map((cat) => ({
+    name: cat.name,
+    _id: cat._id,
+  }));
   return (
     <>
-    <CategoryForm
-      formType="ADD"
-      defaultValues={{
-        name: "",
-      }}
-      categories={[
-        { _id: "69444958d641c54e31ed9b09", name: "Men's Clothing" },
-        { _id: "cat-2", name: "Women's Clothing" },
-        { _id: "cat-3", name: "Kids" },
-        { _id: "cat-4", name: "Shoes" },
-        { _id: "cat-5", name: "Bags & Backpacks" },
-        { _id: "cat-6", name: "Watches" },
-        { _id: "cat-7", name: "Jewelry" },
-        { _id: "cat-8", name: "Sportswear" },
-        { _id: "cat-9", name: "Formal Wear" },
-        { _id: "cat-10", name: "Casual Wear" },
-        { _id: "cat-11", name: "Winter Collection" },
-        { _id: "cat-12", name: "Summer Collection" },
-      ]}
-    />
-  </>
-  )
+      <CategoryForm
+        formType="ADD"
+        defaultValues={{
+          name: "",
+        }}
+        categories={categoriesSelectList}
+      />
+    </>
+  );
 }
