@@ -125,3 +125,13 @@ export const ProductSchema = z
       path: ["oldPrice"],
     }
   );
+
+export const CategorySchema = z.object({
+  parentId: z.string().optional(),
+  name: z.string().min(1, "Name is required"),
+  image: z.instanceof(File).refine((file) => file.type.startsWith("image/"), {
+    message: "File must be an image",
+  }),
+  slug: z.string().min(1, "Slug is required"),
+  isActive: z.boolean().default(true),
+});

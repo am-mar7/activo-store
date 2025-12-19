@@ -13,7 +13,7 @@ interface Props {
 export default function Uploader({
   onImagesChange,
   maxFiles = 5,
-  maxSizePerFile = 5,
+  maxSizePerFile = 1,
   initialImages = [],
 }: Props) {
   const [images, setImages] = useState<File[]>(initialImages);
@@ -121,9 +121,6 @@ export default function Uploader({
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Product Images
-          </label>
           <p className="text-xs text-gray-500 mt-1">
             Upload up to {maxFiles} images (max {maxSizePerFile}MB each)
           </p>
@@ -258,6 +255,3 @@ export default function Uploader({
     </div>
   );
 }
-
-
-

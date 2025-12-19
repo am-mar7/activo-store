@@ -68,3 +68,11 @@ interface ProductParams {
   collection: "winter" | "summer";
   isActive?: boolean;
 }
+
+interface CategoryParams {
+  parentId?: string;
+  name: string;
+  image: File;
+  slug: string;
+  isActive?: boolean;
+}
