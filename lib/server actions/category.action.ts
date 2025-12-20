@@ -11,8 +11,12 @@ import actionHandler from "../handlers/action";
 import { CategorySchema, PaginatedSearchParamsSchema } from "../validation";
 import handleError from "../handlers/error";
 import { handleUpload } from "../utils";
-import { Category } from "@/models";
+import { Category, Product } from "@/models";
 import mongoose from "mongoose";
+import { auth } from "@/auth";
+import { dbConnect } from "../mongoose";
+import { revalidatePath } from "next/cache";
+import { DASHBOARDROUTES } from "@/constants/routes";
 
 export async function addCatergory(
   params: CategoryParams
@@ -61,8 +65,11 @@ export async function getCategories(
     return handleError(validated) as ErrorResponse;
 
   const { page = 1, pageSize, query } = validated.params!;
-  
-  const filterQuery: mongoose.QueryFilter<typeof Category> = { isActive: true };
+
+  const filterQuery: mongoose.QueryFilter<typeof Category> = {
+    isActive: true,
+    slug: { $ne: "uncategorized" },
+  };
   if (query) {
     const sanitized = query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     filterQuery.name = { $regex: sanitized, $options: "i" };
@@ -103,6 +110,68 @@ export async function getCategories(
         isNext,
       },
     };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}
+
+export async function deleteCategory(id: string): Promise<ActionResponse> {
+  const session = await auth();
+  if (session?.user.role !== "admin") {
+    return handleError(new Error("Unauthorized")) as ErrorResponse;
+  }
+
+  try {
+    await dbConnect();
+
+    const category = await Category.findByIdAndUpdate(id, { isActive: false });
+    if (!category) throw new Error("Category not found");
+
+    let uncategorized = await Category.findOne({ slug: "uncategorized" });
+    if (!uncategorized) {
+      uncategorized = await Category.create({
+        name: "Uncategorized",
+        slug: "uncategorized",
+        image: "/images/uncategorized.svg",
+        isActive: true,
+      });
+    }
+
+    await Promise.all([
+      Product.updateMany(
+        { category: { $in: [category._id] } },
+        [
+          {
+            $set: {
+              category: {
+                $filter: {
+                  input: "$category",
+                  cond: { $ne: ["$$this", category._id] },
+                },
+              },
+            },
+          },
+          {
+            $set: {
+              category: {
+                $cond: [
+                  { $eq: [{ $size: "$category" }, 0] },
+                  [uncategorized!._id],
+                  "$category",
+                ],
+              },
+            },
+          },
+        ],
+        { updatePipeline: true } // ✅ Add this option
+      ),
+      Category.updateMany({ parentId: category._id }, { parentId: undefined }),
+    ]);
+
+    revalidatePath(DASHBOARDROUTES.CATEGORY);
+    revalidatePath("/");
+
+    return { success: true };
   } catch (error) {
     return handleError(error) as ErrorResponse;
   }

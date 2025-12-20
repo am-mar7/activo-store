@@ -44,6 +44,11 @@ interface PaginatedSearchParams {
   sort?: string;
 }
 
+interface RouteParams {
+  params: Promise<Record<string, string>>;
+  searchParams: Promise<Record<string, string>>;
+}
+
 interface SignInWithOauthParams {
   provider: "google" | "github";
   providerAccountId: string;
