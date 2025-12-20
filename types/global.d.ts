@@ -107,3 +107,8 @@ interface CategoryParams {
   slug: string;
   isActive?: boolean;
 }
+
+interface EditCategoryParams extends CategoryParams {
+  id: string;
+  image?: File;
+}

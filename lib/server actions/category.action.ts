@@ -4,11 +4,16 @@ import {
   ActionResponse,
   CategoryParams,
   CategoryType,
+  EditCategoryParams,
   ErrorResponse,
   PaginatedSearchParams,
 } from "@/types/global";
 import actionHandler from "../handlers/action";
-import { CategorySchema, PaginatedSearchParamsSchema } from "../validation";
+import {
+  CategorySchema,
+  EditCategorySchema,
+  PaginatedSearchParamsSchema,
+} from "../validation";
 import handleError from "../handlers/error";
 import { handleUpload } from "../utils";
 import { Category, Product } from "@/models";
@@ -171,6 +176,59 @@ export async function deleteCategory(id: string): Promise<ActionResponse> {
     revalidatePath(DASHBOARDROUTES.CATEGORYS);
     revalidatePath("/");
 
+    return { success: true };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}
+
+export async function getCategory(
+  id: string
+): Promise<ActionResponse<CategoryType>> {
+  try {
+    await dbConnect();
+    const category = await Category.findById(id).lean();
+    if (!category) throw new Error("Category not found");
+
+    return {
+      success: true,
+      data: JSON.parse(JSON.stringify(category)),
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}
+
+export async function editCategory(params: EditCategoryParams):Promise<ActionResponse> {
+  const validated = await actionHandler({
+    params,
+    schema: EditCategorySchema.partial(),
+    authorizetionProccess: true,
+  });
+  if (validated instanceof Error)
+    return handleError(validated) as ErrorResponse;
+
+  if (validated.session?.user.role !== "admin")
+    return handleError(new Error("Unauthorized")) as ErrorResponse;
+  const { name, parentId, image, slug, id } = validated.params!;
+  try {
+    const category = await Category.findById(id);
+    if (!category) throw new Error("Category not found");
+
+    if (image) {
+      const { data, success, error } = await handleUpload(image);
+      console.log(data);
+
+      if (!success || !data?.url)
+        throw new Error(error?.message || "Upload failed");
+
+      category.image = data?.url;
+    }
+    if (name !== category.name) category.name = name;
+    if (slug !== category.slug) category.slug = slug;
+    if (parentId !== category.parentId) category.parentId = parentId;
+
+    await category.save();
     return { success: true };
   } catch (error) {
     return handleError(error) as ErrorResponse;

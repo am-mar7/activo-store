@@ -143,3 +143,13 @@ export const CategorySchema = z.object({
   slug: z.string().min(1, "Slug is required"),
   isActive: z.boolean().default(true),
 });
+
+export const EditCategorySchema = CategorySchema.extend({
+  id: z.string().min(1, "ID is required"),
+  image: z
+    .instanceof(File)
+    .refine((file) => file.type.startsWith("image/"), {
+      message: "File must be an image",
+    })
+    .optional(),
+});

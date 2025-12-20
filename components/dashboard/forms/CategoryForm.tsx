@@ -19,12 +19,15 @@ import {
 import Uploader from "@/components/Uploader";
 import { DASHBOARDROUTES } from "@/constants/routes";
 import { getFriendlyErrorMessage } from "@/lib/error-messages";
-import { addCatergory } from "@/lib/server actions/category.action";
+import {
+  addCatergory,
+  editCategory,
+} from "@/lib/server actions/category.action";
 import { CategorySchema } from "@/lib/validation";
 import { CategoryType } from "@/types/global";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
@@ -41,12 +44,16 @@ type CategoryFromType = {
   defaultValues: CategoryFromValues;
   formType: "ADD" | "EDIT";
   categories: categoryOption[];
+  existingImageUrl?: string;
+  id?: string;
 };
 
 export default function CategoryForm({
   defaultValues,
   formType,
   categories,
+  existingImageUrl,
+  id,
 }: CategoryFromType) {
   const form = useForm<CategoryFromValues>({
     resolver: zodResolver(schema),
@@ -55,6 +62,7 @@ export default function CategoryForm({
   const [files, setFiles] = useState<File[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [imagesError, setImagesError] = useState<string | null>(null);
+  const [existingImages, setExistingImages] = useState<string[]>([]);
   const router = useRouter();
 
   const generateSlug = function (text: string): string {
@@ -71,34 +79,60 @@ export default function CategoryForm({
   const handleSubmit = async () => {
     const slug = generateSlug(form.getValues().name);
     console.log(form.getValues(), slug, files[0]);
-    if (files.length === 0) {
+    if (files.length === 0 && formType === "ADD") {
       setImagesError("you must add image");
       return;
     }
-    const params = {
-      name: form.getValues().name,
-      parentId:
-        form.getValues().parentId === "none"
-          ? undefined
-          : form.getValues().parentId,
-      image: files[0],
-      slug,
-      isActive: true,
-    };
-    const { success, error } = await addCatergory(params);
-    if (success) {
-      router.push(DASHBOARDROUTES.CATEGORY);
-      toast.success("Category added successfully");
+
+    if (formType === "ADD") {
+      const params = {
+        name: form.getValues().name,
+        parentId:
+          form.getValues().parentId === "none"
+            ? undefined
+            : form.getValues().parentId,
+        image: files[0],
+        slug,
+        isActive: true,
+      };
+      const { success, error } = await addCatergory(params);
+      if (success) {
+        router.push(DASHBOARDROUTES.CATEGORYS);
+        toast.success("Category added successfully");
+      } else {
+        setError(getFriendlyErrorMessage(error));
+      }
     } else {
-      setError(getFriendlyErrorMessage(error));
+      const params = {
+        name: form.getValues().name,
+        parentId:
+          form.getValues().parentId === "none"
+            ? undefined
+            : form.getValues().parentId,
+        image: files[0],
+        slug,
+        isActive: true,
+        id: id!,
+      };
+      const { success, error } = await editCategory(params);
+      if (success) {
+        router.push(DASHBOARDROUTES.CATEGORYS);
+        toast.success("Category updated successfully");
+      } else {
+        setError(getFriendlyErrorMessage(error));
+      }
     }
   };
-
+  useEffect(() => {
+    if (formType === "EDIT" && existingImageUrl) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setExistingImages([existingImageUrl]); // Set existing image URL
+    }
+  }, [existingImageUrl, formType]);
   const buttonText = formType === "ADD" ? "Add Category" : "Update Category";
 
   return (
     <div className="space-y-3 max-w-7xl">
-      {" "}
       <div className="flex flex-col lg:flex-row gap-8  mx-auto py-5">
         <FormProvider {...form}>
           <form
@@ -132,14 +166,13 @@ export default function CategoryForm({
               )}
             />
 
-            {/* Categories Field with Tags */}
             <FormField
               name="parentId"
               control={form.control}
-              render={() => (
+              render={({ field }) => (
                 <FormItem>
                   <FormLabel>Categories</FormLabel>
-                  <Select>
+                  <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger className="bg-slate-50">
                         <SelectValue placeholder="Select categories" />
@@ -203,13 +236,16 @@ export default function CategoryForm({
           >
             <h3 className="text-lg font-semibold mb-4">Category Image</h3>
             <Uploader
-              initialImages={files}
               onImagesChange={(files: File[]) => {
                 setFiles(files);
                 setImagesError(null);
               }}
               maxFiles={1}
               maxSizePerFile={1}
+              existingImageUrls={existingImages}
+              onExistingImagesChange={(images: string[]) =>
+                setExistingImages(images)
+              }
             />
             <p className="text-xs text-muted-foreground mt-3">
               Upload high-quality image of your category
