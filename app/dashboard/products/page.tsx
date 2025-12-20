@@ -45,7 +45,7 @@ export default async function Products({ searchParams }: RouteParams) {
                 key={_id}
                 title={title}
                 image={images[0]}
-                href={DASHBOARDROUTES.EDITPRODUCT}
+                href={DASHBOARDROUTES.EDITPRODUCT(_id)}
               />
             ))}
           </div>

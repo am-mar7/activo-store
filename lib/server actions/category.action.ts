@@ -168,7 +168,7 @@ export async function deleteCategory(id: string): Promise<ActionResponse> {
       Category.updateMany({ parentId: category._id }, { parentId: undefined }),
     ]);
 
-    revalidatePath(DASHBOARDROUTES.CATEGORY);
+    revalidatePath(DASHBOARDROUTES.CATEGORYS);
     revalidatePath("/");
 
     return { success: true };

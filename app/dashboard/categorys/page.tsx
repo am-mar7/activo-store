@@ -19,7 +19,7 @@ export default async function Category({ searchParams }: RouteParams) {
       <div className="flex flex-col xs:flex-row gap-2 items-center">
         <div className="flex-1 max-xs:w-full">
           <LocalSearch
-            route={DASHBOARDROUTES.CATEGORY}
+            route={DASHBOARDROUTES.CATEGORYS}
             placeholder="search for categories"
           />
         </div>
@@ -44,7 +44,7 @@ export default async function Category({ searchParams }: RouteParams) {
                 key={_id}
                 title={name}
                 image={image}
-                href={DASHBOARDROUTES.EDITCATEGORY}
+                href={DASHBOARDROUTES.EDITCATEGORY(_id)}
               />
             ))}
           </div>

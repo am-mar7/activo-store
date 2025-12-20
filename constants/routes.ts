@@ -10,10 +10,10 @@ export const DASHBOARDROUTES = {
   USERS: "/dashboard/users",
   PRODUCTS: "/dashboard/products",
   ADDPRODUCT: "/dashboard/products/add",
-  EDITPRODUCT: "/dashboard/products/edit",
-  CATEGORY: "/dashboard/categorys",
+  EDITPRODUCT: (id: string) => `/dashboard/products/edit/${id}`,
+  CATEGORYS: "/dashboard/categorys",
   ADDCATEGORY: "/dashboard/categorys/add",
-  EDITCATEGORY: "/dashboard/categorys/edit",
+  EDITCATEGORY: (id: string) => `/dashboard/categorys/edit/${id}`,
   PROMOCODES: "/dashboard/promocodes",
   REVIEWS: "/dashboard/reviews",
 };

@@ -27,7 +27,7 @@ export const DashboardLinks = [
   },
   {
     icon: FolderTree,
-    route: DASHBOARDROUTES.CATEGORY,
+    route: DASHBOARDROUTES.CATEGORYS,
     label: "Categories",
   },
   {
