@@ -24,7 +24,25 @@ type CategoryType = {
   slug: string;
   isActive: boolean;
   parentId?: string;
-}
+  createdAt: Date;
+  updatedAt: Date;
+};
+type ProductType = {
+  _id: string;
+  title: string;
+  description: string;
+  category: string[];
+  oldPrice?: number;
+  newPrice: number;
+  variants: IVariant[];
+  collection: "winter" | "summer";
+  averageRating: number;
+  totalReviews: number;
+  images: string[];
+  isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+};
 
 type UploadedImageData = {
   success: boolean;
@@ -32,7 +50,7 @@ type UploadedImageData = {
   url: string;
   thumbnailUrl: string;
   name: string;
-}
+};
 
 // params
 
@@ -73,7 +91,7 @@ interface RouteParams {
 interface ProductParams {
   title: string;
   description: string;
-  category: string[]; 
+  category: string[];
   oldPrice?: number;
   newPrice: number;
   images: File[];

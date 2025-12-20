@@ -11,6 +11,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { deleteCategory } from "@/lib/server actions/category.action";
+import { deleteProduct } from "@/lib/server actions/product.action";
 import { Trash2 } from "lucide-react";
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
@@ -25,6 +26,7 @@ export default function DeleteBtn({ type , _id}: Props) {
   const [isOpen, setIsOpen] = useState(false);
   const onDeleteMap = {
     "category":deleteCategory,
+    "product": deleteProduct,
   }   
   const handleDelete = async () => {
     startTransition(async () => {
