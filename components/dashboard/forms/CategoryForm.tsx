@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/select";
 import Uploader from "@/components/Uploader";
 import { DASHBOARDROUTES } from "@/constants/routes";
+import { getFriendlyErrorMessage } from "@/lib/error-messages";
 import { addCatergory } from "@/lib/server actions/category.action";
 import { CategorySchema } from "@/lib/validation";
 import { CategoryType } from "@/types/global";
@@ -89,10 +90,7 @@ export default function CategoryForm({
       router.push(DASHBOARDROUTES.CATEGORY);
       toast.success("Category added successfully");
     } else {
-      setError(
-        error?.message ||
-          "An error occurred while adding the product. Please try again."
-      );
+      setError(getFriendlyErrorMessage(error));
     }
   };
 

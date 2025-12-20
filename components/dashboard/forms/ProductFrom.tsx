@@ -33,6 +33,7 @@ import VariantBuilder from "../VariantBuilder";
 import { IVariant } from "@/models/product.model";
 import { DASHBOARDROUTES } from "@/constants/routes";
 import { toast } from "sonner";
+import { getFriendlyErrorMessage } from "@/lib/error-messages";
 
 const schema = ProductSchema.omit({
   images: true,
@@ -88,10 +89,7 @@ export default function ProductFrom({
       router.push(DASHBOARDROUTES.PRODUCTS);
       toast.success("Product added successfully");
     } else {
-      setError(
-        error?.message ||
-          "An error occurred while adding the product. Please try again."
-      );
+      setError(getFriendlyErrorMessage(error));
     }
   };
 

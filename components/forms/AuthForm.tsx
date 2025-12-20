@@ -24,6 +24,7 @@ import { ActionResponse } from "@/types/global";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { getFriendlyErrorMessage } from "@/lib/error-messages";
 
 type AuthFromType<T extends FieldValues> = {
   defaultValues: T;
@@ -59,7 +60,7 @@ export default function AuthForm<T extends FieldValues>({
       });
       router.push(ROUTES.HOME);
     } else {
-      setError(result.error?.message || "SomeThing went Wrong, please try again");
+      setError(getFriendlyErrorMessage(error));
     }
   };
 
