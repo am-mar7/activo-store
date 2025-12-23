@@ -100,6 +100,11 @@ interface ProductParams {
   isActive?: boolean;
 }
 
+interface EditProductParams extends ProductParams {
+  id: string;
+  oldImages: string[];
+}
+
 interface CategoryParams {
   parentId?: string;
   name: string;

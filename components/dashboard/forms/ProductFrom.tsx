@@ -24,11 +24,11 @@ import { ProductSchema } from "@/lib/validation";
 import { CategoryType } from "@/types/global";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { X } from "lucide-react";
 import z from "zod";
-import { addProduct } from "@/lib/server actions/product.action";
+import { addProduct, editProduct } from "@/lib/server actions/product.action";
 import VariantBuilder from "../VariantBuilder";
 import { IVariant } from "@/models/product.model";
 import { DASHBOARDROUTES } from "@/constants/routes";
@@ -48,18 +48,25 @@ type ProductFromType = {
   defaultValues: ProductFormValues;
   formType: "ADD" | "EDIT";
   categories: categoryOption[];
+  oldImages?: string[];
+  id?: string;
+  oldVariants?: IVariant[];
 };
 
 export default function ProductFrom({
   defaultValues,
   formType,
   categories,
+  id,
+  oldImages,
+  oldVariants = [],
 }: ProductFromType) {
   const [files, setFiles] = useState<File[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const [variants, setVariant] = useState<IVariant[]>([]);
+  const [variants, setVariant] = useState<IVariant[]>(oldVariants);
   const [imagesError, setImagesError] = useState<string | null>(null);
   const [variantsError, setVariantsError] = useState<string | null>(null);
+  const [existingImages, setExistingImages] = useState<string[]>([]);
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(schema),
     defaultValues: defaultValues,
@@ -70,8 +77,7 @@ export default function ProductFrom({
   const handleSubmit = async function (data: ProductFormValues) {
     // Submit logic here
     console.log("Submitting form with data:", data, files, variants);
-
-    if (files.length === 0) {
+    if (files.length === 0 && existingImages.length === 0) {
       setImagesError("At least one image is required");
       return;
     }
@@ -79,17 +85,32 @@ export default function ProductFrom({
       setVariantsError("please fill the stock table");
       return;
     }
-    console.log(data, files, variants);
-    const { success, error } = await addProduct({
-      ...data,
-      images: files,
-      variants,
-    });
-    if (success) {
-      router.push(DASHBOARDROUTES.PRODUCTS);
-      toast.success("Product added successfully");
+    if (formType === "ADD") {
+      const { success, error } = await addProduct({
+        ...data,
+        images: files,
+        variants,
+      });
+      if (success) {
+        router.push(DASHBOARDROUTES.PRODUCTS);
+        toast.success("Product added successfully");
+      } else {
+        setError(getFriendlyErrorMessage(error));
+      }
     } else {
-      setError(getFriendlyErrorMessage(error));
+      const { success, error } = await editProduct({
+        id: id!,
+        ...data,
+        images: files,
+        oldImages: existingImages,
+        variants,
+      });
+      if (success) {
+        router.push(DASHBOARDROUTES.PRODUCTS);
+        toast.success("Product updated successfully");
+      } else {
+        setError(getFriendlyErrorMessage(error));
+      }
     }
   };
 
@@ -111,6 +132,11 @@ export default function ProductFrom({
   };
 
   const currentTitle = form.watch("title");
+  useEffect(() => {
+    if (formType === "EDIT" && oldImages) {
+      setExistingImages(oldImages);
+    }
+  }, [oldImages, formType]);
   return (
     <div className="space-y-3 max-w-7xl">
       <div className="flex flex-col lg:flex-row gap-8  mx-auto py-5">
@@ -347,11 +373,14 @@ export default function ProductFrom({
           >
             <h3 className="text-lg font-semibold mb-4">Product Images</h3>
             <Uploader
-              initialImages={files}
               onImagesChange={(files: File[]) => {
                 setFiles(files);
                 setImagesError(null);
               }}
+              existingImageUrls={existingImages}
+              onExistingImagesChange={(images: string[]) =>
+                setExistingImages(images)
+              }
             />
             <p className="text-xs text-muted-foreground mt-3">
               Upload high-quality images of your product. First image will be

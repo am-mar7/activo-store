@@ -207,6 +207,17 @@ export default function VariantBuilder({
     return () => clearTimeout(debounceTimer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [productTitle]);
+  useEffect(() => {
+    variants.forEach((variant) => {
+      if (variant.color)
+        setSelectedColors((prev) => [
+          ...new Set([...prev, ...(variant.color ? [variant.color] : [])]),
+        ]);
+      setSelectedSizes((prev) => [
+        ...new Set([...prev, ...(variant.size ? [variant.size] : [])]),
+      ]);
+    });
+  }, [variants]);
 
   return (
     <div className="space-y-6 bg-white rounded-lg border p-6 shadow-sm">
@@ -361,18 +372,16 @@ export default function VariantBuilder({
       </div>
 
       {/* Fill Stock Button */}
-      {selectedSizes.length > 0 &&
-        selectedColors.length > 0 &&
-        !showStockTable && (
-          <Button
-            type="button"
-            onClick={handleFillStock}
-            className="w-full"
-            variant="outline"
-          >
-            show stock table
-          </Button>
-        )}
+      {!showStockTable && (
+        <Button
+          type="button"
+          onClick={handleFillStock}
+          className="w-full"
+          variant="outline"
+        >
+          show stock table
+        </Button>
+      )}
 
       {/* Stock Table */}
       {showStockTable && (
@@ -385,7 +394,7 @@ export default function VariantBuilder({
               size="sm"
               onClick={() => setShowStockTable(false)}
             >
-              hide
+              cancel
             </Button>
           </div>
 

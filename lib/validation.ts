@@ -134,6 +134,16 @@ export const ProductSchema = z
     }
   );
 
+export const EditProductSchema = ProductSchema.safeExtend({
+  id: z.string().min(1, "ID is required"),
+  oldImages: z.array(z.string().url("Invalid image URL")),
+  images: z.array(
+    z.instanceof(File).refine((file) => file.type.startsWith("image/"), {
+      message: "File must be an image",
+    })
+  ),
+});
+
 export const CategorySchema = z.object({
   parentId: z.string().optional(),
   name: z.string().min(1, "Name is required"),

@@ -1,12 +1,17 @@
 "use server";
 
-import { PaginatedSearchParamsSchema, ProductSchema } from "./../validation";
+import {
+  EditProductSchema,
+  PaginatedSearchParamsSchema,
+  ProductSchema,
+} from "./../validation";
 import {
   ActionResponse,
   ProductParams,
   ErrorResponse,
   PaginatedSearchParams,
   ProductType,
+  EditProductParams,
 } from "@/types/global";
 import actionHandler from "../handlers/action";
 import handleError from "../handlers/error";
@@ -142,6 +147,22 @@ export async function getProducts(
   }
 }
 
+export async function getProduct(
+  id: string
+): Promise<ActionResponse<ProductType>> {
+  try {
+    await dbConnect();
+    const product = await Product.findById(id);
+    if (!product) throw new NotFoundError("Product");
+    return {
+      success: true,
+      data: JSON.parse(JSON.stringify(product)),
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}
+
 export async function deleteProduct(id: string): Promise<ActionResponse> {
   const session = await auth();
   if (session?.user.role !== "admin") {
@@ -165,6 +186,64 @@ export async function deleteProduct(id: string): Promise<ActionResponse> {
     revalidatePath(DASHBOARDROUTES.PRODUCTS);
     revalidatePath("/");
 
+    return { success: true };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}
+
+export async function editProduct(
+  params: EditProductParams
+): Promise<ActionResponse> {
+  const validated = await actionHandler({
+    params,
+    schema: EditProductSchema,
+    authorizetionProccess: true,
+  });
+  if (validated instanceof Error)
+    return handleError(validated) as ErrorResponse;
+
+  if (validated.session?.user.role !== "admin")
+    return handleError(new Error("Unauthorized")) as ErrorResponse;
+
+  const { id, images, oldImages, ...restData } = validated.params!;
+  try {
+    const product = await Product.findById(id);
+    if (!product) throw new NotFoundError("Product");
+
+    const imageLinks = [...oldImages];
+    if (images.length > 0) {
+      const uploadResults = await Promise.allSettled(
+        images.map((image) => handleUpload(image))
+      );
+
+      const failedUploads: number[] = [];
+
+      uploadResults.forEach((result, index) => {
+        if (result.status === "fulfilled" && result.value.success) {
+          imageLinks.push(result.value.data!.url);
+        } else {
+          failedUploads.push(index);
+          console.error(
+            `Image ${index} upload failed:`,
+            result.status === "rejected" ? result.reason : result.value.error
+          );
+        }
+      });
+
+      if (imageLinks.length === 0) {
+        throw new Error("All image uploads failed. Please try again.");
+      }
+      if (failedUploads.length > 0) {
+        console.warn(`${failedUploads.length} image(s) failed to upload`);
+      }
+    }
+
+    await Product.findByIdAndUpdate(
+      id,
+      { ...restData, images: imageLinks },
+      { new: true }
+    );
     return { success: true };
   } catch (error) {
     return handleError(error) as ErrorResponse;
