@@ -1,5 +1,12 @@
 const ROUTES = {
   HOME: "/",
+  PROFILE: "/profile",
+  CATEGORY: (slug: string) => `/category/${slug}`,
+  PRODUCT: (id: string) => `/product/${id}`,
+  CART: "/cart",
+  WISHLIST: "/wishlist",
+  ORDERS: "/orders",
+  COLLECTION: (slug: string) => `/collection/${slug}`,
   SIGN_IN: "/sign-in",
   SIGN_UP: "/sign-up",
 };
