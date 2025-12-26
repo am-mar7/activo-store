@@ -23,11 +23,12 @@ interface Category {
   
   interface Props {
     categories: Category[];
+    invert?: boolean;
   }
 
 type SubMenuType = "categories" | "collections" | null;
 
-export default function MobileNavigation({ categories }: Props) {
+export default function MobileNavigation({ categories , invert = false }: Props) {
   const [activeSubmenu, setActiveSubmenu] = useState<SubMenuType>(null);
 
   const handleBack = () => {
@@ -46,7 +47,7 @@ export default function MobileNavigation({ categories }: Props) {
           variant="secondary"
           className="p-0! bg-transparent border-0 shadow-none sm:hidden"
         >
-          <AlignLeft className="w-8 h-8" />
+          <AlignLeft className={`w-8 h-8 ${invert?"text-slate-50":""}`} />
         </Button>
       </SheetTrigger>
       <SheetContent

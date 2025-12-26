@@ -14,8 +14,14 @@ import {
 import { getCategories } from "@/lib/server actions/category.action";
 import Image from "next/image";
 import MobileNavigation from "./MobileNavigation";
+import { cn } from "@/lib/utils";
 
-export default async function Navbar() {
+interface Props {
+  className?: string;
+  isHome?: boolean;
+}
+
+export default async function Navbar({ className, isHome = false }: Props) {
   const { data } = await getCategories({});
   const { categories } = data || {};
   console.log(categories);
@@ -26,9 +32,14 @@ export default async function Navbar() {
       slug: cat.slug,
     })) || [];
   return (
-    <div className="shadow-md px-5 sm:px-10 py-2.5 flex-between bg-transparent">
+    <div
+      className={cn(
+        className,
+        "px-5 sm:px-10 py-2.5 flex-between bg-transparent"
+      )}
+    >
       <div className="flex-center gap-3 sm:hidden">
-        <MobileNavigation categories={serializedCategories} />
+        <MobileNavigation invert={isHome} categories={serializedCategories} />
         <Link href={ROUTES.HOME}>
           <Image
             src="/images/site-logo2.png"
@@ -42,7 +53,9 @@ export default async function Navbar() {
       <div className="flex-center max-sm:hidden">
         <Link
           href={ROUTES.HOME}
-          className="mr-4 text-slate-700 hover:text-slate-900 transition-colors font-medium"
+          className={`mr-4 ${
+            isHome ? "text-slate-100" : "text-slate-700 hover:text-slate-900"
+          } transition-colors font-medium`}
         >
           shop all
         </Link>
@@ -50,7 +63,13 @@ export default async function Navbar() {
         <NavigationMenu>
           <NavigationMenuList>
             <NavigationMenuItem>
-              <NavigationMenuTrigger className="bg-transparent text-md border-none hover:bg-transparent! p-0! hover:underline shadow-none text-slate-700 hover:text-slate-900 focus:bg-transparent! focus-visible:bg-transparent! focus:outline-none focus-visible:ring-0 data-[state=open]:bg-transparent! data-[state=open]:underline data-active:bg-transparent!">
+              <NavigationMenuTrigger
+                className={`bg-transparent text-md border-none hover:bg-transparent! p-0! hover:underline shadow-none ${
+                  isHome
+                    ? "text-slate-100 hover:text-slate-100 data-[state=open]:text-slate-100! focus:text-slate-100!"
+                    : "text-slate-700 hover:text-slate-900"
+                } focus:bg-transparent! focus-visible:bg-transparent! focus:outline-none focus-visible:ring-0 data-[state=open]:bg-transparent! data-[state=open]:underline data-active:bg-transparent!`}
+              >
                 shop by category
               </NavigationMenuTrigger>
               <NavigationMenuContent className="bg-neutral-50! hover: z-2">
@@ -72,7 +91,13 @@ export default async function Navbar() {
             </NavigationMenuItem>
 
             <NavigationMenuItem>
-              <NavigationMenuTrigger className="bg-transparent text-md border-none hover:bg-transparent! p-0! hover:underline shadow-none text-slate-700 hover:text-slate-900 focus:bg-transparent! focus-visible:bg-transparent! focus:outline-none focus-visible:ring-0 data-[state=open]:bg-transparent! data-[state=open]:underline data-active:bg-transparent! ml-2.5">
+              <NavigationMenuTrigger
+                className={`bg-transparent text-md border-none hover:bg-transparent! p-0! hover:underline shadow-none ${
+                  isHome
+                    ? "text-slate-100 hover:text-slate-100 data-[state=open]:text-slate-100! focus:text-slate-100!"
+                    : "text-slate-700 hover:text-slate-900"
+                } focus:bg-transparent! focus-visible:bg-transparent! focus:outline-none focus-visible:ring-0 data-[state=open]:bg-transparent! data-[state=open]:underline data-active:bg-transparent!`}
+              >
                 collections
               </NavigationMenuTrigger>
               <NavigationMenuContent className="bg-neutral-50! z-100">
@@ -104,12 +129,24 @@ export default async function Navbar() {
         </NavigationMenu>
       </div>
       <div className="flex-center">
-        <SearchToggler className="mr-1 sm:mr-3" />
+        <SearchToggler
+          className={`mr-1 sm:mr-3 ${
+            isHome ? "text-slate-100" : "text-slate-900"
+          }`}
+        />
         <Link href={ROUTES.CART} className="flex-center mr-3 sm:mr-5">
-          <LiaOpencart className="w-7 h-7 text-slate-900" />
+          <LiaOpencart
+            className={`w-7 h-7 ${
+              isHome ? "text-slate-100" : "text-slate-900"
+            }`}
+          />
         </Link>
         <Link href={ROUTES.PROFILE} className="flex-center">
-          <FaRegUserCircle className="w-6 h-6 text-slate-900 font-bold" />
+          <FaRegUserCircle
+            className={`w-6 h-6 ${
+              isHome ? "text-slate-100" : "text-slate-900"
+            }`}
+          />
         </Link>
       </div>
     </div>

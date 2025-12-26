@@ -6,7 +6,7 @@ type Props = {
 export default function SearchToggler({ className }: Props) {
   return (
     <div className={className}>
-      <MdOutlineSearch className="w-7 h-7 text-slate-800 cursor-pointer" />
+      <MdOutlineSearch className="w-7 h-7 cursor-pointer" />
     </div>
   );
 }

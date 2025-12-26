@@ -1,3 +1,5 @@
+import Navbar from "@/components/navigation/Navbar";
+
 export default function RootLayout({
   children,
 }: {
@@ -5,7 +7,8 @@ export default function RootLayout({
 }) {
   return (
     <div>
-        {children}
+      <Navbar className="shadow-md" />
+      {children}
     </div>
   );
 }
