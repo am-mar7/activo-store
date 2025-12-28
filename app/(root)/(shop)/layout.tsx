@@ -9,7 +9,7 @@ export default function RootLayout({
   return (
     <div>
       <Navbar className="shadow-md" />
-      {children}
+      <div className="min-h-[65vh]">{children}</div>
       <Footer />
     </div>
   );
