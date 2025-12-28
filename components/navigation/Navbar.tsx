@@ -64,7 +64,7 @@ export default async function Navbar({ className, isHome = false }: Props) {
           <NavigationMenuList>
             <NavigationMenuItem>
               <NavigationMenuTrigger
-                className={`bg-transparent text-md border-none hover:bg-transparent! p-0! hover:underline shadow-none ${
+                className={`bg-transparent text-md border-none hover:bg-transparent! p-0! hover:underline shadow-none mr-2 ${
                   isHome
                     ? "text-slate-100 hover:text-slate-100 data-[state=open]:text-slate-100! focus:text-slate-100!"
                     : "text-slate-700 hover:text-slate-900"
