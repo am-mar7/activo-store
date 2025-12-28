@@ -4,6 +4,7 @@ import {
   EditProductSchema,
   PaginatedSearchParamsSchema,
   ProductSchema,
+  getCategoriedProductsSchema,
 } from "./../validation";
 import {
   ActionResponse,
@@ -12,6 +13,7 @@ import {
   PaginatedSearchParams,
   ProductType,
   EditProductParams,
+  getCategoriedProductsParams,
 } from "@/types/global";
 import actionHandler from "../handlers/action";
 import handleError from "../handlers/error";
@@ -23,6 +25,7 @@ import { revalidatePath } from "next/cache";
 import { DASHBOARDROUTES } from "@/constants/routes";
 import { auth } from "@/auth";
 import { NotFoundError } from "../http-errors";
+import { ICategoryDoc } from "@/models/category.model";
 
 export async function addProduct(
   params: ProductParams
@@ -263,6 +266,44 @@ export async function getBestSellers(): Promise<ActionResponse<ProductType[]>> {
     return {
       success: true,
       data: JSON.parse(JSON.stringify(products)),
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}
+
+export async function getCategoriedProducts(
+  params: getCategoriedProductsParams
+): Promise<ActionResponse<{ products: ProductType[]; isNext: boolean }>> {
+  const validated = await actionHandler({
+    params,
+    schema: getCategoriedProductsSchema,
+  });
+  if (validated instanceof Error)
+    return handleError(validated) as ErrorResponse;
+
+  const { slug, page = 1, pageSize = 10 } = validated.params!;
+  const skip = (page - 1) * pageSize;
+  try {
+    const category = (await Category.findOne({
+      slug,
+      isActive: true,
+    }).lean()) as ICategoryDoc;
+    if (!category) throw new NotFoundError("Category");
+
+    const [products, count] = await Promise.all([
+      Product.find({ isActive: true, category: category._id })
+        .skip(skip)
+        .limit(pageSize)
+        .lean(),
+      Product.countDocuments({ isActive: true, category: category._id }),
+    ]);
+
+    const isNext = count > products.length + skip;
+
+    return {
+      success: true,
+      data: { products: JSON.parse(JSON.stringify(products)), isNext },
     };
   } catch (error) {
     return handleError(error) as ErrorResponse;

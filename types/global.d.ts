@@ -117,3 +117,7 @@ interface EditCategoryParams extends CategoryParams {
   id: string;
   image?: File;
 }
+
+interface getCategoriedProductsParams extends PaginatedSearchParams {
+  slug: string;
+}

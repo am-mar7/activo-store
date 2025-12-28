@@ -26,6 +26,7 @@ const CategorySchema = new mongoose.Schema<ICategory>(
 );
 
 CategorySchema.index({ parentId: 1, isActive: 1 });
+CategorySchema.index({ slug: 1, isActive: 1 });
 
 const Category =
   models?.Category || mongoose.model<ICategory>("Category", CategorySchema);
