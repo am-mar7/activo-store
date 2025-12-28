@@ -52,7 +52,7 @@ export default async function Navbar({ className, isHome = false }: Props) {
 
       <div className="flex-center max-sm:hidden">
         <Link
-          href={ROUTES.HOME}
+          href={ROUTES.COLLECTION("all")}
           className={`mr-4 ${
             isHome ? "text-slate-100" : "text-slate-700 hover:text-slate-900"
           } transition-colors font-medium`}

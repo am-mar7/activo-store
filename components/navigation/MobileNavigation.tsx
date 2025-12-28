@@ -65,7 +65,7 @@ export default function MobileNavigation({ categories , invert = false }: Props)
             <nav className="px-5 space-y-4 mt-6">
               <SheetClose asChild>
                 <Link
-                  href={ROUTES.HOME}
+                  href={ROUTES.COLLECTION("all")}
                   className="block text-slate-700 hover:text-slate-900 text-lg font-medium transition-colors"
                 >
                   shop all

@@ -271,6 +271,7 @@ export default function ProductFrom({
                     <SelectContent className="z-2 bg-slate-50">
                       <SelectItem value="winter">Winter Collection</SelectItem>
                       <SelectItem value="summer">Summer Collection</SelectItem>
+                      <SelectItem value="both">both</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />

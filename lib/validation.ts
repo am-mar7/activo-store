@@ -110,7 +110,7 @@ export const ProductSchema = z
         })
       )
       .min(1, "At least one variant is required"),
-    collection: z.enum(["winter", "summer"]),
+    collection: z.enum(["winter", "summer" , "both"]),
     images: z
       .array(
         z.instanceof(File).refine((file) => file.type.startsWith("image/"), {

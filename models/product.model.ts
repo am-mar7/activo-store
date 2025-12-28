@@ -54,7 +54,7 @@ export const ProductSchema = new Schema<IProduct>(
         message: "Product must have at least one variant",
       },
     },
-    collection: { type: String, enum: ["winter", "summer"], required: true },
+    collection: { type: String, enum: ["winter", "summer" , "both"], required: true },
     averageRating: { type: Number, default: 0 },
     totalReviews: { type: Number, default: 0 },
     sold: { type: Number, default: 0, required: true },

@@ -35,7 +35,7 @@ type ProductType = {
   oldPrice?: number;
   newPrice: number;
   variants: IVariant[];
-  collection: "winter" | "summer";
+  collection: "winter" | "summer" | "both";
   averageRating: number;
   totalReviews: number;
   images: string[];
@@ -96,7 +96,7 @@ interface ProductParams {
   newPrice: number;
   images: File[];
   variants: IVariant[];
-  collection: "winter" | "summer";
+  collection: "winter" | "summer" | "both";
   isActive?: boolean;
 }
 
