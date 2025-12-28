@@ -94,13 +94,13 @@ export default function Footer() {
             </ul>
           </div>
         </div>
-
-        {/* Copyright */}
-        <div className="flex items-end">
-          <p className="text-neutral-300 text-sm">
-            © {new Date().getFullYear()} ACTIVO. All rights reserved.
-          </p>
-        </div>
+      </div>
+      {/* Copyright */}
+      <div className="flex-center flex-col">
+        <div className="w-8/10 border-t border-gray-700 pt-6"></div>
+        <p className="text-neutral-300 text-sm text-center w-full mb-5">
+          © {new Date().getFullYear()} ACTIVO. All rights reserved.
+        </p>
       </div>
     </footer>
   );

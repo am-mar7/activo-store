@@ -250,14 +250,14 @@ export async function editProduct(
   }
 }
 
-export async function getBestSellers() {
+export async function getBestSellers(): Promise<ActionResponse<ProductType[]>> {
   const collection = getCurrentSeason();
   try {
     await dbConnect();
 
     const products = await Product.find({ isActive: true, collection })
       .sort({ createdAt: -1 })
-      .limit(4)
+      .limit(10)
       .lean();
     if (!products) throw new Error("Failed to get products");
     return {
