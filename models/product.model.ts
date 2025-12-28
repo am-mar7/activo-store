@@ -29,6 +29,7 @@ export interface IProduct {
   collection: "winter" | "summer";
   averageRating: number;
   totalReviews: number;
+  sold: number;
   images: string[];
   isActive: boolean;
 }
@@ -56,7 +57,8 @@ export const ProductSchema = new Schema<IProduct>(
     collection: { type: String, enum: ["winter", "summer"], required: true },
     averageRating: { type: Number, default: 0 },
     totalReviews: { type: Number, default: 0 },
-
+    sold: { type: Number, default: 0, required: true },
+    
     images: {
       type: [String],
       required: true,

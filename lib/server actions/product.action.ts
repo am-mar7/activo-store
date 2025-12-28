@@ -16,7 +16,7 @@ import {
 import actionHandler from "../handlers/action";
 import handleError from "../handlers/error";
 import { Cart, Category, Product, Wishlist } from "@/models";
-import { handleUpload } from "../utils";
+import { getCurrentSeason, handleUpload } from "../utils";
 import { QueryFilter } from "mongoose";
 import { dbConnect } from "../mongoose";
 import { revalidatePath } from "next/cache";
@@ -245,6 +245,25 @@ export async function editProduct(
       { new: true }
     );
     return { success: true };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}
+
+export async function getBestSellers() {
+  const collection = getCurrentSeason();
+  try {
+    await dbConnect();
+
+    const products = await Product.find({ isActive: true, collection })
+      .sort({ createdAt: -1 })
+      .limit(4)
+      .lean();
+    if (!products) throw new Error("Failed to get products");
+    return {
+      success: true,
+      data: JSON.parse(JSON.stringify(products)),
+    };
   } catch (error) {
     return handleError(error) as ErrorResponse;
   }
