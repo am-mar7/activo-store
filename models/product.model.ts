@@ -26,7 +26,7 @@ export interface IProduct {
   oldPrice?: number;
   newPrice: number;
   variants: IVariant[];
-  collection: "winter" | "summer";
+  collection: "winter" | "summer" | "both";
   averageRating: number;
   totalReviews: number;
   sold: number;

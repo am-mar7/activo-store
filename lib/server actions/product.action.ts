@@ -309,3 +309,54 @@ export async function getCategoriedProducts(
     return handleError(error) as ErrorResponse;
   }
 }
+
+export async function getProductsByCollections(
+  params: getCategoriedProductsParams
+): Promise<ActionResponse<{ products: ProductType[]; isNext: boolean }>> {
+  const validated = await actionHandler({
+    params,
+    schema: getCategoriedProductsSchema,
+  });
+  if (validated instanceof Error)
+    return handleError(validated) as ErrorResponse;
+
+  const { slug, page = 1, pageSize = 10 } = validated.params!;
+  const skip = (page - 1) * pageSize;
+
+  try {
+    let collectionFilter: QueryFilter<typeof Product>;
+
+    if (slug === "all") {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      collectionFilter = {collection: { $in: ["winter", "summer", "both"] },} as any;
+    } else if (slug === "summer") {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      collectionFilter = { collection: { $in: ["summer", "both"] } } as any;
+    } else if (slug === "winter") {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      collectionFilter = { collection: { $in: ["winter", "both"] } } as any;
+    } else {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      collectionFilter = { collection: slug } as any;
+    }
+
+    const filter: QueryFilter<typeof Product> = {
+      isActive: true,
+      ...collectionFilter,
+    };
+
+    const [products, count] = await Promise.all([
+      Product.find(filter).skip(skip).limit(pageSize).lean(),
+      Product.countDocuments(filter),
+    ]);
+
+    const isNext = skip + products.length < count;
+
+    return {
+      success: true,
+      data: { products: JSON.parse(JSON.stringify(products)), isNext },
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}
