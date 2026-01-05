@@ -121,3 +121,7 @@ interface EditCategoryParams extends CategoryParams {
 interface getCategoriedProductsParams extends PaginatedSearchParams {
   slug: string;
 }
+
+interface getProductsByCategoryIdParams extends PaginatedSearchParams {
+  id: string;
+}

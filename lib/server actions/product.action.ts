@@ -5,6 +5,7 @@ import {
   PaginatedSearchParamsSchema,
   ProductSchema,
   getCategoriedProductsSchema,
+  getProductsByCategoryIdSchema,
 } from "./../validation";
 import {
   ActionResponse,
@@ -14,6 +15,7 @@ import {
   ProductType,
   EditProductParams,
   getCategoriedProductsParams,
+  getProductsByCategoryIdParams,
 } from "@/types/global";
 import actionHandler from "../handlers/action";
 import handleError from "../handlers/error";
@@ -351,6 +353,39 @@ export async function getProductsByCollections(
     ]);
 
     const isNext = skip + products.length < count;
+
+    return {
+      success: true,
+      data: { products: JSON.parse(JSON.stringify(products)), isNext },
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}
+
+export async function getProductsByCategoryId(
+  params: getProductsByCategoryIdParams
+): Promise<ActionResponse<{ products: ProductType[]; isNext: boolean }>> {
+  const validated = await actionHandler({
+    params,
+    schema: getProductsByCategoryIdSchema,
+  });
+  if (validated instanceof Error)
+    return handleError(validated) as ErrorResponse;
+
+  const { id , page = 1, pageSize = 50 } = validated.params!;
+  const skip = (page - 1) * pageSize;
+  try {
+
+    const [products, count] = await Promise.all([
+      Product.find({ isActive: true, category: id })
+        .skip(skip)
+        .limit(pageSize)
+        .lean(),
+      Product.countDocuments({ isActive: true, category: id }),
+    ]);
+
+    const isNext = count > products.length + skip;
 
     return {
       success: true,

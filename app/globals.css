@@ -67,6 +67,7 @@
   --font-space-grotesk: var(--font-space-grotesk);
 
   /* Breakpoints */
+  --breakpoint-2xs: 360px;
   --breakpoint-xs: 475px;
   --breakpoint-sm: 640px;
   --breakpoint-md: 768px;
@@ -235,10 +236,12 @@
 }
 
 /* Gradient Utilities */
-@utility bg-primary-gradient {
+@utility bg-primary-gradient2 {
   background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
 }
-
+@utility bg-primary-gradient {
+  background: linear-gradient(135deg, #757ef4 0%, #2e4ef7 100%);
+}
 @utility bg-accent-gradient {
   background: linear-gradient(135deg, #dad8f6 0%, #afadef 100%);
 }

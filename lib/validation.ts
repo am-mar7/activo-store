@@ -167,3 +167,7 @@ export const EditCategorySchema = CategorySchema.extend({
 export const getCategoriedProductsSchema = PaginatedSearchParamsSchema.extend({
   slug: z.string().min(1, "category slug is required"),
 });
+
+export const getProductsByCategoryIdSchema = PaginatedSearchParamsSchema.extend({
+  id: z.string().min(1, "category id is required"),
+});

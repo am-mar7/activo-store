@@ -14,7 +14,7 @@ const TikTokIcon = ({ className }: { className?: string }) => (
 
 export default function Footer() {
   return (
-    <footer className="bg-primary-gradient text-neutral-200">
+    <footer className="bg-primary-gradient2 text-neutral-200">
       <div className="mx-auto px-4 sm:px-10 2xl:px-20 lg:px-8 py-8">
         <div className="md:flex-between gap-8">
           {/* Brand Section */}
@@ -56,7 +56,7 @@ export default function Footer() {
           </div>
 
           {/* Customer Service */}
-          <div className="md:w-1/3">
+          <div className="md:w-1/3 mt-5 md:mt-0">
             <h3 className="text-white font-semibold mb-4">Customer Service</h3>
             <ul className="space-y-2">
               <li>

@@ -1,7 +1,90 @@
-import React from 'react'
+import Loading from "@/app/loading";
+import NotFound from "@/app/not-found";
+import SizeGuide from "@/components/buttons/SizeGuide";
+import ProductCard from "@/components/cards/ProductCard";
+import AddToCartForm from "@/components/forms/AddToCartForm";
+import ProductImageCarousel from "@/components/ProductCarousal";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+} from "@/components/ui/carousel";
 
-export default function ProductDetails() {
+import {
+  getProduct,
+  getProductsByCategoryId,
+} from "@/lib/server actions/product.action";
+import { formatPrice } from "@/lib/utils";
+import { RouteParams } from "@/types/global";
+import { Suspense } from "react";
+
+export default async function ProductDetails({ params }: RouteParams) {
+  const { id } = await params;
+  const { success, data: product } = await getProduct(id);
+  if (!success || !product) return NotFound();
+
+  const { title, description, images, oldPrice, newPrice, variants, category } =
+    product;
+
   return (
-    <div>ProductDetails</div>
-  )
+    <div className="flex-center flex-col">
+      <div className="max-w-7xl w-full flex flex-col md:flex-row px-5 my-10">
+        <div className="w-full md:w-1/2">
+          <ProductImageCarousel images={images} />
+        </div>
+        <div className="w-full mt-6 md:mt-0 md:w-1/2 md:px-15 overflow-y-auto no-scrollbar max-h-180">
+          <p className="text-lg md:text-xl flex gap-3">
+            {oldPrice && <span className="line-through">LE {oldPrice}</span>}
+            <span>LE {formatPrice(newPrice, "EGP")}</span>
+          </p>
+          <h1 className="h3-semibold text-slate-900">{title}</h1>
+          <p className="text-slate-600 body-medium">{description}</p>
+          <SizeGuide className="my-3" image="/images/size-guide.png" />
+          <AddToCartForm variants={variants} _id={id} />
+        </div>
+      </div>
+      <Suspense fallback={<Loading />}>
+        <CategoriedProducts categories={category} />
+      </Suspense>
+    </div>
+  );
+}
+
+async function CategoriedProducts({ categories }: { categories: string[] }) {
+  const results = await Promise.all(
+    categories.map((id) => getProductsByCategoryId({ id }))
+  );
+
+  const allProducts = results
+    .filter((result) => result.success && result.data && !result.error)
+    .flatMap((result) => result?.data?.products);
+
+  if (allProducts.length === 0) return null;
+
+  return (
+    <div className="relative my-5 w-full xl:w-fit px-5">
+      <h1 className="h3-semibold text-slate-800 my-2">You may also like</h1>
+      <Carousel
+        className="w-full"
+        opts={{
+          align: "start",
+          loop: true,
+        }}
+      >
+        <CarouselContent className="-ml-2 md:-ml-4 max-w-7xl">
+          {allProducts.map(
+            (product, index) =>
+              product && (
+                <CarouselItem
+                  key={index}
+                  className="pl-2 md:pl-4 basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5"
+                >
+                  <ProductCard product={product} />
+                </CarouselItem>
+              )
+          )}
+        </CarouselContent>
+      </Carousel>
+    </div>
+  );
 }
