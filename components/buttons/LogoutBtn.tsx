@@ -2,18 +2,23 @@
 import { LogOut } from "lucide-react";
 import { useState } from "react";
 import { Button } from "../ui/button";
-import { Logout } from "@/lib/server actions/user.action";
+import { Logout } from "@/lib/server actions/auth.action";
+import ROUTES from "@/constants/routes";
+
+interface Props {
+  isMobile?: boolean;
+  redirection?: string;
+}
 
 export default function LogoutBtn({
   isMobile = false,
-}: {
-  isMobile?: boolean;
-}) {
+  redirection = ROUTES.HOME,
+}: Props) {
   const [loading, setLoading] = useState(false);
 
   const handleLogOut = async () => {
     setLoading(true);
-    await Logout();
+    await Logout(redirection);
     setLoading(false);
   };
   return (
@@ -25,7 +30,9 @@ export default function LogoutBtn({
       }`}
     >
       <LogOut />
-      <span className={isMobile ? "" : "max-xl:hidden"}>{loading ? "Logging out..." : "Logout"}</span>
+      <span className={isMobile ? "" : "max-xl:hidden"}>
+        {loading ? "Logging out..." : "Logout"}
+      </span>
     </Button>
   );
 }

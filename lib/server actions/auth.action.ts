@@ -10,6 +10,12 @@ import Account, { IAccountDoc } from "@/models/account.model";
 import { signIn } from "@/auth";
 import { NotFoundError } from "../http-errors";
 import actionHandler from "../handlers/action";
+import { signOut } from "@/auth";
+import ROUTES from "@/constants/routes";
+
+export async function Logout(redirection = ROUTES.HOME) {
+  await signOut({ redirectTo: redirection });
+}
 
 export async function credentialsSignUp(
   params: AuthCredentials
@@ -19,9 +25,9 @@ export async function credentialsSignUp(
     schema: SignUpSchema,
   });
 
-  if (validated instanceof Error) 
+  if (validated instanceof Error)
     return handleError(validated) as ErrorResponse;
-  
+
   const { name, email, password } = validated.params!;
 
   const session = await mongoose.startSession();
