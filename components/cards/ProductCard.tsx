@@ -5,10 +5,9 @@ import Link from "next/link";
 import FavButton from "../buttons/FavButton";
 interface Props {
   product: ProductType;
-  isFavorite?: boolean;
 }
 
-export default function ProductCard({ product, isFavorite = false }: Props) {
+export default function ProductCard({ product }: Props) {
   const { title, images, oldPrice, newPrice, _id } = product;
 
   return (
@@ -20,7 +19,7 @@ export default function ProductCard({ product, isFavorite = false }: Props) {
         height={300}
         className="w-full h-60 xs:h-75 sm:h-80 md:h-90 object-center object-cover"
       />
-      <FavButton className="absolute right-2 top-2 z-2" isFavorite={isFavorite} />
+      <FavButton className="absolute right-2 top-2 z-2" product={product._id} />
       <div className="p-1">
         <h4 className="max-sm:body-semibold sm:h4-semibold">{title}</h4>
         <p className="max-sm:body-medium">
