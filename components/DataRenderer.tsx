@@ -32,19 +32,32 @@ interface StateSkeletonProps {
   error?: boolean;
 }
 
-function StateSkeleton({ icon, title, message, button , error = false }: StateSkeletonProps) {
+function StateSkeleton({
+  icon,
+  title,
+  message,
+  button,
+  error = false,
+}: StateSkeletonProps) {
   return (
     <div className="mt-16 w-full flex-center flex-col">
-      <div className={`mb-8  ${error ? "text-destructive":"text-muted-foreground"}`}>
+      <div
+        className={`mb-8  ${
+          error ? "text-destructive" : "text-muted-foreground"
+        }`}
+      >
         {icon}
       </div>
-      <h2 className="h2-semibold">{title}</h2>
-      <p className="body-regular mt- 1.5 mb-3 max-w-md text-center">
+      <h2 className="h2-semibold text-slate-900">{title}</h2>
+      <p className="body-regular text-slate-500 mt- 1.5 mb-3 max-w-md text-center">
         {message}
       </p>
 
       {button && (
-        <Button asChild className="bg-primary-500 text-neutral-50 hover:bg-primary-gradient">
+        <Button
+          asChild
+          className="bg-primary-600 text-neutral-50 hover:bg-primary-gradient"
+        >
           <Link href={button?.href}>{button.text}</Link>
         </Button>
       )}
