@@ -1,4 +1,5 @@
 "use client";
+import { getFriendlyErrorMessage } from "@/lib/error-messages";
 import {
   addProductToWishlist,
   deleteProductFromWishlist,
@@ -7,6 +8,7 @@ import { cn } from "@/lib/utils";
 import { useWishlistStore } from "@/stores/useWishlistStore";
 import { Heart, Loader2 } from "lucide-react";
 import { useEffect, useState, useTransition } from "react";
+import { toast } from "sonner";
 
 interface Props {
   className?: string;
@@ -28,8 +30,9 @@ export default function FavButton({ className, product }: Props) {
       if (success) {
         useWishlistStore.getState().toggleWishlist(product);
         setIsFav(!isFav);
+      } else {
+        toast.error(getFriendlyErrorMessage(error));
       }
-      console.log(error);
     });
   };
 

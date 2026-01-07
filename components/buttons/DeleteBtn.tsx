@@ -10,6 +10,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { getFriendlyErrorMessage } from "@/lib/error-messages";
 import { deleteCategory } from "@/lib/server actions/category.action";
 import { deleteProduct } from "@/lib/server actions/product.action";
 import { Trash2 } from "lucide-react";
@@ -21,26 +22,39 @@ interface Props {
   _id: string;
 }
 
-export default function DeleteBtn({ type , _id}: Props) {
+export default function DeleteBtn({ type, _id }: Props) {
   const [isPending, startTransition] = useTransition();
   const [isOpen, setIsOpen] = useState(false);
   const onDeleteMap = {
-    "category":deleteCategory,
-    "product": deleteProduct,
-  }   
+    category: deleteCategory,
+    product: deleteProduct,
+  };
   const handleDelete = async () => {
     startTransition(async () => {
       setIsOpen(false);
-      const onDelete = onDeleteMap[type as keyof typeof onDeleteMap] || (() => Promise.resolve({ success: false, error: { message: "Invalid type" } }));
+      const onDelete =
+        onDeleteMap[type as keyof typeof onDeleteMap] ||
+        (() =>
+          Promise.resolve({
+            success: false,
+            error: { message: "Invalid type" },
+          }));
       const { success, error } = await onDelete(_id);
-      console.log({ success, error });      
-      if (!success) toast.error(error?.message || `Failed to delete ${type}`);
+      console.log({ success, error });
+      if (!success)
+        toast.error(
+          getFriendlyErrorMessage(error) || `Failed to delete ${type}`
+        );
     });
   };
   return (
     <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
       <AlertDialogTrigger>
-        <Trash2 className={`hover:text-destructive cursor-pointer ${isPending ? "opacity-40":""}`} />
+        <Trash2
+          className={`hover:text-destructive cursor-pointer ${
+            isPending ? "opacity-40" : ""
+          }`}
+        />
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>

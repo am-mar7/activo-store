@@ -2,6 +2,7 @@ import React from "react";
 import { Button } from "./ui/button";
 import Link from "next/link";
 import { AlertCircle, PackageOpen } from "lucide-react";
+import { getFriendlyErrorMessage } from "@/lib/error-messages";
 
 interface Props<T> {
   success: boolean;
@@ -50,7 +51,7 @@ function StateSkeleton({
       </div>
       <h2 className="h2-semibold text-slate-900">{title}</h2>
       <p className="body-regular text-slate-500 mt- 1.5 mb-3 max-w-md text-center">
-        {message}
+        {error ? getFriendlyErrorMessage(message) : message}
       </p>
 
       {button && (

@@ -22,7 +22,7 @@ export default function AddToCartForm({ variants, _id }: Props) {
     setError(null);
     const variant = variants.find((v) => v.color === color && v.size === size);
     if (!variant) {
-      setError("Some thing went wrong");
+      setError("Some required inputs are missing recheck please.");
       return;
     }
     // add to cart via server actions
@@ -33,7 +33,7 @@ export default function AddToCartForm({ variants, _id }: Props) {
     setError(null);
     const variant = variants.find((v) => v.color === color && v.size === size);
     if (!variant) {
-      setError("Some thing went wrong");
+      setError("Some required inputs are missing recheck please.");
       return;
     }
     // make order via server actions

@@ -1,8 +1,8 @@
-// app/error.tsx
 "use client";
 
 import { useEffect } from "react";
 import { AlertCircle, RefreshCw } from "lucide-react";
+import { getFriendlyErrorMessage } from "@/lib/error-messages";
 
 export default function Error({
   error,
@@ -27,7 +27,8 @@ export default function Error({
             Oops! Something went wrong
           </h3>
           <p className="text-slate-600">
-            {error.message || "An unexpected error occurred. Please try again."}
+            {getFriendlyErrorMessage(error) ||
+              "An unexpected error occurred. Please try again."}
           </p>
         </div>
 

@@ -4,6 +4,7 @@ import Image from "next/image";
 import ROUTES from "@/constants/routes";
 import { signIn } from "next-auth/react";
 import { Button } from "../ui/button";
+import { getFriendlyErrorMessage } from "@/lib/error-messages";
 
 export default function SocialAuthForm() {
   const handleSocialAuth = async () => {
@@ -12,7 +13,7 @@ export default function SocialAuthForm() {
     } catch (error) {
       toast.error(
         error instanceof Error
-          ? error.message
+          ? getFriendlyErrorMessage(error)
           : `Social auth with google is not implemented yet.`
       );
     }
