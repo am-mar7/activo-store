@@ -5,6 +5,9 @@ import { Toaster } from "sonner";
 import { auth } from "@/auth";
 import { getWishlistIds } from "@/lib/server actions/wishlist.action";
 import { WishlistInitializer } from "@/components/Initializers/WishlistInitializer";
+import { getCartState } from "@/lib/server actions/cart.action";
+import { CartInitializer } from "@/components/Initializers/CartInitializer";
+import { CartItemStore } from "@/stores/useCartStore";
 
 const Inter = localFont({
   src: "../public/fonts/interVF.ttf",
@@ -29,8 +32,15 @@ export default async function RootLayout({
   const session = await auth();
   const userId = session?.user.id;
   let wishlistIds: string[] = [];
+  let cartItems: CartItemStore[] = [];
   if (userId) {
-    const { data } = await getWishlistIds(userId);
+    const [{ data }, result] = await Promise.all([
+      getWishlistIds(userId),
+      getCartState(session.user.id),
+    ]);
+    console.log("result", result);
+
+    if (result.success && result.data) cartItems = result.data.cartItems;
     if (data) wishlistIds = data;
   }
 
@@ -39,6 +49,7 @@ export default async function RootLayout({
       <body
         className={`${Inter.className} ${SpaceGrotesk.variable} antialiased`}
       >
+        <CartInitializer cartItems={cartItems} />
         <WishlistInitializer wishlistIds={wishlistIds} />
         <Toaster position="top-right" richColors />
         <main>{children}</main>

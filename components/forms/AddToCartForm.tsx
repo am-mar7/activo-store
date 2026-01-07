@@ -1,15 +1,22 @@
 "use client";
 
 import { ProductType } from "@/types/global";
-import { useState } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
 import { Minus, Package, Plus } from "lucide-react";
+import { useCartStore } from "@/stores/useCartStore";
+import { upsertCartItem } from "@/lib/server actions/cart.action";
+import { toast } from "sonner";
+import { getFriendlyErrorMessage } from "@/lib/error-messages";
 type Props = Pick<ProductType, "variants" | "_id">;
 
 export default function AddToCartForm({ variants, _id }: Props) {
   const [color, setColor] = useState(variants[0].color);
   const [size, setSize] = useState(variants[0].size);
+  const [sku, setSku] = useState(variants[0].sku);
+  const [inCart, setInCart] = useState(false);
+  const [upserting, startUpserting] = useTransition();
   const [error, setError] = useState<string | null>(null);
   const [stock, setStock] = useState(variants[0].stock);
   const [quantity, setQuantity] = useState(1);
@@ -18,15 +25,32 @@ export default function AddToCartForm({ variants, _id }: Props) {
     ...new Set(variants.map((variant) => variant.color as string)),
   ];
 
-  const handleAddToCart = async () => {
+  const handleUpsertCartItem = () => {
     setError(null);
     const variant = variants.find((v) => v.color === color && v.size === size);
     if (!variant) {
       setError("Some required inputs are missing recheck please.");
       return;
     }
-    // add to cart via server actions
-    console.log(quantity, variant, _id);
+    startUpserting(async () => {
+      const type = inCart ? "update" : "add";
+      const { success, error } = await upsertCartItem({
+        sku,
+        quantity,
+        product: _id,
+        type,
+      });
+      console.log(success);
+
+      if (!success) {
+        toast.error(getFriendlyErrorMessage(error));
+        setError(getFriendlyErrorMessage(error));
+      } else {
+        useCartStore
+          .getState()
+          .addItem({ product: _id, variantSku: sku, quantity });
+      }
+    });
   };
 
   const handleBuyNow = async () => {
@@ -53,9 +77,20 @@ export default function AddToCartForm({ variants, _id }: Props) {
       if ((variant.color === color, variant.size === size)) {
         setStock(variant.stock);
         setQuantity(Math.min(quantity, variant.stock));
+        setSku(variant.sku);
       }
     });
   };
+
+  useEffect(() => {
+    const isInCart = useCartStore.getState().isInCart(_id, sku);
+    console.log("cartItems", useCartStore.getState().items);
+    console.log("sku and _id", _id, sku);
+    const item = useCartStore.getState().getItem(_id, sku);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setInCart(isInCart);
+    setQuantity(item?.quantity || 1);
+  }, [_id, sku]);
 
   return (
     <div className="space-y-2.5 mb-5">
@@ -113,7 +148,7 @@ export default function AddToCartForm({ variants, _id }: Props) {
 
           <span className="px-4">{quantity}</span>
           <button
-            disabled={quantity === stock}
+            disabled={quantity === 1}
             onClick={() => setQuantity(Math.max(1, quantity - 1))}
           >
             <Minus className={`${quantity === 1 ? "opacity-50" : ""}`} />
@@ -145,13 +180,23 @@ export default function AddToCartForm({ variants, _id }: Props) {
         )}
 
         <Button
-          disabled={stock === 0}
-          onClick={handleAddToCart}
+          disabled={stock === 0 || upserting}
+          onClick={handleUpsertCartItem}
           className={`${
             stock === 0 ? "bg-slate-500 opacity-50" : "bg-primary-gradient"
-          } px-4 py-2 w-full text-center text-neutral-50`}
+          } px-4 py-2 w-full text-center text-neutral-50 ${
+            upserting ? "opacity-50" : ""
+          }`}
         >
-          {stock > 0 ? "Add to cart" : "Out of stock"}
+          {stock === 0
+            ? "Out of stock"
+            : upserting
+            ? inCart
+              ? "Updating..."
+              : "Adding..."
+            : inCart
+            ? "Update quantity"
+            : "Add to cart"}
         </Button>
 
         <Button

@@ -110,7 +110,7 @@ export const ProductSchema = z
         })
       )
       .min(1, "At least one variant is required"),
-    collection: z.enum(["winter", "summer" , "both"]),
+    collection: z.enum(["winter", "summer", "both"]),
     images: z
       .array(
         z.instanceof(File).refine((file) => file.type.startsWith("image/"), {
@@ -168,6 +168,15 @@ export const getCategoriedProductsSchema = PaginatedSearchParamsSchema.extend({
   slug: z.string().min(1, "category slug is required"),
 });
 
-export const getProductsByCategoryIdSchema = PaginatedSearchParamsSchema.extend({
-  id: z.string().min(1, "category id is required"),
+export const getProductsByCategoryIdSchema = PaginatedSearchParamsSchema.extend(
+  {
+    id: z.string().min(1, "category id is required"),
+  }
+);
+
+export const UpsertCartItemSchema = z.object({
+  product: z.string().min(1, "product id is required"),
+  sku: z.string().min(1, "sku is required"),
+  quantity: z.int().min(1, "quantity can't be less than 1"),
+  type: z.enum(["add", "update"]),
 });

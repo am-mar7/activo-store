@@ -125,3 +125,10 @@ interface getCategoriedProductsParams extends PaginatedSearchParams {
 interface getProductsByCategoryIdParams extends PaginatedSearchParams {
   id: string;
 }
+
+interface UpsertCartItemParams {
+  product: string;
+  sku: string;
+  quantity: number;
+  type: "add" | "update";
+}
