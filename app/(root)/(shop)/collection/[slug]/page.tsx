@@ -27,7 +27,7 @@ export default async function Collections({
 
   return (
     <div className="flex-center flex-col ">
-      <div className="max-w-7xl px-5 w-full py-10">
+      <div className="max-w-7xl px-5 w-full">
         <h2 className="h2-semibold">
           {" "}
           {slug === "all" ? "All Products" : `${slug} Collection`}{" "}

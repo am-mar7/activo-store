@@ -1,4 +1,5 @@
 import Footer from "@/components/Footer";
+import { Breadcrumbs } from "@/components/navigation/BreadCrumb";
 import Navbar from "@/components/navigation/Navbar";
 
 export default function RootLayout({
@@ -9,7 +10,10 @@ export default function RootLayout({
   return (
     <div>
       <Navbar className="shadow-md" />
-      <div className="min-h-[65vh]">{children}</div>
+      <div className="flex flex-center mt-2">
+        <Breadcrumbs className="w-full max-w-7xl px-5" />
+      </div>
+      <div className="min-h-[60vh]">{children}</div>
       <Footer />
     </div>
   );

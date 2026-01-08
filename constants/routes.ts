@@ -5,7 +5,7 @@ const ROUTES = {
   PRODUCT: (id: string) => `/product/${id}`,
   CART: "/cart",
   WISHLIST: "/wishlist",
-  ORDERS: "/orders",
+  ADDRESSES: "/profile/addresses",
   COLLECTION: (slug: string) => `/collection/${slug}`,
   SIGN_IN: "/sign-in",
   SIGN_UP: "/sign-up",

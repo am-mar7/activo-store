@@ -31,8 +31,8 @@ export default async function Wishlist() {
           }}
           render={(products) => (
             <>
-              <h2 className="text-slate-800 h3-semibold mt-5 sm:mt-8">Your Wishlist</h2>
-              <div className="mt-3 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid:cols-6 gap-4">
+              <h2 className="text-slate-800 h3-semibold px-5">Your Wishlist</h2>
+              <div className="mt-3 grid grid-cols-2 px-5 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid:cols-6 gap-4">
                 {products?.map((product) => (
                   <ProductCard key={product._id} product={product} />
                 ))}

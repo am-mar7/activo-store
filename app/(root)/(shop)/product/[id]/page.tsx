@@ -28,7 +28,7 @@ export default async function ProductDetails({ params }: RouteParams) {
 
   return (
     <div className="flex-center flex-col">
-      <div className="max-w-7xl w-full flex flex-col md:flex-row px-5 my-10">
+      <div className="max-w-7xl w-full flex flex-col md:flex-row px-5 my-4">
         <div className="w-full md:w-1/2">
           <ProductImageCarousel images={images} />
         </div>
@@ -44,47 +44,56 @@ export default async function ProductDetails({ params }: RouteParams) {
         </div>
       </div>
       <Suspense fallback={<Loading />}>
-        <CategoriedProducts categories={category} />
+        <CategoriedProducts categories={category} id={id} />
       </Suspense>
     </div>
   );
 }
 
-async function CategoriedProducts({ categories }: { categories: string[] }) {
+async function CategoriedProducts({
+  categories,
+  id,
+}: {
+  categories: string[];
+  id: string;
+}) {
   const results = await Promise.all(
     categories.map((id) => getProductsByCategoryId({ id }))
   );
 
-  const allProducts = results
+  let allProducts = results
     .filter((result) => result.success && result.data && !result.error)
     .flatMap((result) => result?.data?.products);
 
   if (allProducts.length === 0) return null;
+  allProducts = allProducts.filter((p) => p?._id !== id);
 
   return (
-    <div className="relative my-5 w-full xl:w-fit px-5">
-      <h1 className="h3-semibold text-slate-800 my-2">You may also like</h1>
-      <Carousel
-        className="w-full"
-        opts={{
-          align: "start",
-          loop: true,
-        }}
-      >
-        <CarouselContent className="-ml-2 md:-ml-4 max-w-7xl">
-          {allProducts.map(
-            (product, index) =>
-              product && (
-                <CarouselItem
-                  key={index}
-                  className="pl-2 md:pl-4 basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5"
-                >
-                  <ProductCard product={product} />
-                </CarouselItem>
-              )
-          )}
-        </CarouselContent>
-      </Carousel>
+    <div className="flex-center flex-col w-full">
+      <div className="relative my-5 w-full max-w-7xl px-5">
+        <h1 className="h3-semibold text-slate-800 my-2">You may also like</h1>
+        <Carousel
+          className="w-full"
+          opts={{
+            align: "start",
+            loop: true,
+          }}
+        >
+          <CarouselContent className="-ml-2 md:-ml-4 max-w-7xl">
+            {allProducts.map(
+              (product, index) =>
+                product && (
+                  <CarouselItem
+                    key={index}
+                    className="pl-2 md:pl-4 basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5"
+                  >
+                    <ProductCard product={product} />
+                  </CarouselItem>
+                )
+            )}
+          </CarouselContent>
+        </Carousel>
+      </div>
     </div>
   );
 }
