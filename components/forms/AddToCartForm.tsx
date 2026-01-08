@@ -65,29 +65,28 @@ export default function AddToCartForm({ variants, _id }: Props) {
   };
 
   const handleChangeVariant = ({
-    size,
-    color,
+    newSize,
+    newColor,
   }: {
-    size?: string;
-    color?: string;
+    newSize?: string;
+    newColor?: string;
   }) => {
-    if (size) setSize(size);
-    if (color) setColor(color);
+    if (!newSize) newSize = size;
+    if (!newColor) newColor = color;
     variants.forEach((variant) => {
-      if ((variant.color === color, variant.size === size)) {
+      if (variant.color === newColor && variant.size === newSize) {
         setStock(variant.stock);
         setQuantity(Math.min(quantity, variant.stock));
         setSku(variant.sku);
       }
     });
+    if (newSize) setSize(newSize);
+    if (newColor) setColor(newColor);
   };
 
   useEffect(() => {
     const isInCart = useCartStore.getState().isInCart(_id, sku);
-    console.log("cartItems", useCartStore.getState().items);
-    console.log("sku and _id", _id, sku);
     const item = useCartStore.getState().getItem(_id, sku);
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setInCart(isInCart);
     setQuantity(item?.quantity || 1);
   }, [_id, sku]);
@@ -107,7 +106,7 @@ export default function AddToCartForm({ variants, _id }: Props) {
               }`}
             >
               <button
-                onClick={() => handleChangeVariant({ size: currSize })}
+                onClick={() => handleChangeVariant({ newSize: currSize })}
                 className="base-regular w-full h-full  px-4 py-1"
               >
                 {currSize.toUpperCase()}
@@ -123,7 +122,7 @@ export default function AddToCartForm({ variants, _id }: Props) {
           {colors.map((currColor, idx) => (
             <button
               key={idx}
-              onClick={() => handleChangeVariant({ color: currColor })}
+              onClick={() => handleChangeVariant({ newColor: currColor })}
               className={`w-6 h-6 rounded-full border-2 transition-all ${
                 color === currColor
                   ? "border-slate-900 scale-105"
