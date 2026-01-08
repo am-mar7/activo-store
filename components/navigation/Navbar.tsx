@@ -1,7 +1,6 @@
 import ROUTES from "@/constants/routes";
 import Link from "next/link";
 import { LiaOpencart } from "react-icons/lia";
-import { FaRegUserCircle } from "react-icons/fa";
 import SearchToggler from "../buttons/SearchToggler";
 import {
   NavigationMenu,
@@ -15,6 +14,8 @@ import { getCategories } from "@/lib/server actions/category.action";
 import Image from "next/image";
 import MobileNavigation from "./MobileNavigation";
 import { cn } from "@/lib/utils";
+import { auth } from "@/auth";
+import UserAvatar from "../UserAvatar";
 
 interface Props {
   className?: string;
@@ -22,15 +23,19 @@ interface Props {
 }
 
 export default async function Navbar({ className, isHome = false }: Props) {
-  const { data } = await getCategories({});
+  const [{ data }, session] = await Promise.all([getCategories({}), auth()]);
+
+  const user = session?.user;
   const { categories } = data || {};
-  console.log(categories);
+  console.log(session?.user);
+  
   const serializedCategories =
     categories?.map((cat) => ({
       _id: cat._id,
       name: cat.name,
       slug: cat.slug,
     })) || [];
+
   return (
     <div
       className={cn(
@@ -134,20 +139,27 @@ export default async function Navbar({ className, isHome = false }: Props) {
             isHome ? "text-slate-100" : "text-slate-900"
           }`}
         />
-        <Link href={ROUTES.CART} className="flex-center mr-3 sm:mr-5">
-          <LiaOpencart
-            className={`w-7 h-7 ${
-              isHome ? "text-slate-100" : "text-slate-900"
-            }`}
-          />
-        </Link>
-        <Link href={ROUTES.PROFILE} className="flex-center">
-          <FaRegUserCircle
-            className={`w-6 h-6 ${
-              isHome ? "text-slate-100" : "text-slate-900"
-            }`}
-          />
-        </Link>
+        {!user ? (
+          <Link
+            className={`px-6 py-1 border-2 border-primary text-primary rounded-lg font-medium hover:border-white ${isHome ? "text-slate-50":"text-slate-900"}  transition-all duration-200`}
+            href={ROUTES.SIGN_IN}
+          >
+            Login
+          </Link>
+        ) : (
+          <>
+            <Link href={ROUTES.CART} className="flex-center mr-3 sm:mr-4">
+              <LiaOpencart
+                className={`w-7 h-7 ${
+                  isHome ? "text-slate-100" : "text-slate-900"
+                }`}
+              />
+            </Link>
+            <Link href={ROUTES.PROFILE} className="flex-center">
+                <UserAvatar isHome={isHome} user={user}/>
+            </Link>
+          </>
+        )}
       </div>
     </div>
   );
