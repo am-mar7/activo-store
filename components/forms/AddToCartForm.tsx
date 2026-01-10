@@ -49,6 +49,28 @@ export default function AddToCartForm({ variants, _id }: Props) {
         useCartStore
           .getState()
           .addItem({ product: _id, variantSku: sku, quantity });
+        setInCart(true);
+
+        toast.success(
+          <div className="flex items-center justify-between gap-3">
+            <span>
+              product {type === "add" ? "added" : "updated"} successfully
+            </span>
+            <a
+              href="/cart"
+              className="text-sm font-medium underline hover:no-underline"
+              onClick={(e) => {
+                e.preventDefault();
+                window.location.href = "/cart";
+              }}
+            >
+              View Cart
+            </a>
+          </div>,
+          {
+            duration: 4000,
+          }
+        );
       }
     });
   };

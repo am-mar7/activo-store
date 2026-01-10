@@ -1,7 +1,7 @@
-import React from 'react'
 
-export default function Profile() {
-  return (
-    <div>Profile</div>
-  )
+
+export default async function Profile() {
+
+
+  return <>profile</>;
 }
