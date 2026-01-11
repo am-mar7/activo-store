@@ -5,20 +5,26 @@ import {
   ActionResponse,
   UpsertCartItemParams,
   ErrorResponse,
+  cartState,
+  cartItem,
+  removeFromCartParams,
 } from "@/types/global";
 import { dbConnect } from "../mongoose";
 import { Cart } from "@/models";
-import { UpsertCartItemSchema } from "../validation";
+import { removeFromCartSchema, UpsertCartItemSchema } from "../validation";
 import actionHandler from "../handlers/action";
-import { UnauthorizedError } from "../http-errors";
+import { NotFoundError, UnauthorizedError } from "../http-errors";
 import { revalidatePath } from "next/cache";
 import ROUTES from "@/constants/routes";
+import { ICartDoc } from "@/models/cart.model";
 
-export async function getCartState(userId: string) {
+export async function getCartState(
+  userId: string
+): Promise<ActionResponse<{ cartItems: cartState[] }>> {
   try {
     await dbConnect();
 
-    const cart = await Cart.findOne({ userId }).lean();
+    const cart = (await Cart.findOne({ userId }).lean()) as ICartDoc;
 
     if (!cart) {
       return {
@@ -39,6 +45,30 @@ export async function getCartState(userId: string) {
       data: {
         cartItems: transformedItems,
       },
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}
+
+export async function getCartItems(
+  userId: string
+): Promise<ActionResponse<cartItem[]>> {
+  try {
+    await dbConnect();
+
+    const cart = await Cart.findOne({ userId }).populate("cartItems.product");
+
+    if (!cart) {
+      return {
+        success: true,
+        data: [],
+      };
+    }
+
+    return {
+      success: true,
+      data: JSON.parse(JSON.stringify(cart.cartItems)),
     };
   } catch (error) {
     return handleError(error) as ErrorResponse;
@@ -95,6 +125,46 @@ export async function upsertCartItem(
     revalidatePath(ROUTES.CART);
     revalidatePath(ROUTES.PRODUCT(product));
     revalidatePath("/", "layout");
+    return { success: true };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}
+
+export async function removeFromCart(
+  params: removeFromCartParams
+): Promise<ActionResponse> {
+  const validated = await actionHandler({
+    params,
+    schema: removeFromCartSchema,
+    authorizetionProccess: true,
+  });
+  if (validated instanceof Error)
+    return handleError(validated) as ErrorResponse;
+
+  const { sku, product } = validated.params!;
+  const userId = validated.session?.user.id;
+
+  try {
+    const cart = (await Cart.findOne({ userId })) as ICartDoc;
+    if (!cart) throw new NotFoundError("Cart");
+    const updatedCartItems = cart.cartItems.filter(
+      (item) => item.product.toString() !== product && item.variantSku !== sku
+    );
+    const updatedCart = await Cart.findOneAndUpdate(
+      {
+        userId,
+        "cartItems.product": product,
+        "cartItems.variantSku": sku,
+      },
+      { cartItems: updatedCartItems }
+    );
+    if (!updatedCart) throw new NotFoundError("Item");
+
+    revalidatePath(ROUTES.CART);
+    revalidatePath(ROUTES.PRODUCT(product));
+    revalidatePath("/", "layout");
+
     return { success: true };
   } catch (error) {
     return handleError(error) as ErrorResponse;

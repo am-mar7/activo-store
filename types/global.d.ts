@@ -132,3 +132,20 @@ interface UpsertCartItemParams {
   quantity: number;
   type: "add" | "update";
 }
+
+interface cartState {
+  product: string;
+  variantSku: string;
+  quantity: number;
+}
+
+interface cartItem {
+  product: ProductType;
+  variantSku: string;
+  quantity: number;
+}
+
+interface removeFromCartParams {
+  product: string;
+  sku: string;
+}

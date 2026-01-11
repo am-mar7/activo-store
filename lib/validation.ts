@@ -180,3 +180,8 @@ export const UpsertCartItemSchema = z.object({
   quantity: z.int().min(1, "quantity can't be less than 1"),
   type: z.enum(["add", "update"]),
 });
+
+export const removeFromCartSchema = z.object({
+  product: z.string().min(1, "product id is required"),
+  sku: z.string().min(1, "sku is required"),
+});
