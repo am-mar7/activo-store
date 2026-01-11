@@ -8,7 +8,7 @@ export interface ICartItem {
 
 const CartItemSchema = new mongoose.Schema<ICartItem>(
   {
-    product: { type: Schema.Types.ObjectId, ref: "product", required: true },
+    product: { type: Schema.Types.ObjectId, ref: "Product", required: true },
     variantSku: { type: String, required: true },
     quantity: { type: Number, default: 1, min: 1 },
   },

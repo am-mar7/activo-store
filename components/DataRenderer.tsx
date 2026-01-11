@@ -49,10 +49,12 @@ function StateSkeleton({
       >
         {icon}
       </div>
-      <h2 className="h2-semibold text-slate-900">{title}</h2>
-      <p className="body-regular text-slate-500 mt- 1.5 mb-3 max-w-md text-center">
-        {error ? getFriendlyErrorMessage(message) : message}
-      </p>
+      <h2 className="h2-semibold text-slate-900 text-center">{title}</h2>
+      {title !== message && (
+        <p className="body-regular text-slate-500 mt- 1.5 my-3 max-w-md text-center">
+          {error ? getFriendlyErrorMessage(message) : message}
+        </p>
+      )}
 
       {button && (
         <Button
@@ -77,8 +79,11 @@ export default function DataRenderer<T>({
     return (
       <StateSkeleton
         icon={<AlertCircle className="w-32 h-32 stroke-[1.5]" />}
-        title={error?.message || "Error"}
-        message={JSON.stringify(error?.details) || "Something went wrong"}
+        title={getFriendlyErrorMessage(error?.message) || "Error"}
+        message={
+          getFriendlyErrorMessage(JSON.stringify(error?.details)) ||
+          "Something went wrong"
+        }
         error={true}
       />
     );
