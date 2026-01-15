@@ -24,3 +24,25 @@
         home
         product/:id
         category/:slug
+
+remaining in plateform
+
+    orders page (in profile)
+    addresses page (in profile)
+    comment section (in product details)
+    buy now button logic (in product details)
+    global search (UI and logic)
+    forget password 
+    email verfication for creating accouts
+    handle after admin login to navigate to dashboard
+    add dashboard link (only admins can see it)
+    promo code in cart page
+
+remaining in dashboard
+
+    analytical view (over view page) too hard tho
+    orders page (view orders , cancel them , update status)
+    users page (view users , change thier role , make new admin)
+    promo code page (view , update , add new code)
+    reviews (just view , maybe delete comment)
+    (optonal) settings page (shipping cost , upload hero image , upload image for size guide , make banner offer) 

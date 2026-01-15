@@ -33,7 +33,7 @@ interface StateSkeletonProps {
   error?: boolean;
 }
 
-function StateSkeleton({
+export function StateSkeleton({
   icon,
   title,
   message,

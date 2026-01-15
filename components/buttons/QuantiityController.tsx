@@ -24,22 +24,25 @@ export default function QuantiityController({
   const [quantity, setQuantity] = useState(initialQuantity);
 
   useEffect(() => {
-    const debounceTimer = setTimeout(() => {
-      startUpdating(async () => {
-        const { success, error } = await upsertCartItem({
-          type: "update",
-          product: productId,
-          sku: variantSku,
-          quantity,
+    if (quantity !== initialQuantity) {
+      const debounceTimer = setTimeout(() => {
+        startUpdating(async () => {
+          const { success, error } = await upsertCartItem({
+            type: "update",
+            product: productId,
+            sku: variantSku,
+            quantity,
+          });
+          if (success)
+            useCartStore
+              .getState()
+              .updateQuantity(productId, variantSku, quantity);
+          else toast.error(getFriendlyErrorMessage(error));
         });
-        if (success)
-          useCartStore
-            .getState()
-            .updateQuantity(productId, variantSku, quantity);
-        else toast.error(getFriendlyErrorMessage(error));
-      });
-    }, 1500);
-    return () => clearTimeout(debounceTimer);
+      }, 1500);
+      return () => clearTimeout(debounceTimer);
+    }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [quantity]);
 

@@ -8,6 +8,7 @@ import { WishlistInitializer } from "@/components/Initializers/WishlistInitializ
 import { getCartState } from "@/lib/server actions/cart.action";
 import { CartInitializer } from "@/components/Initializers/CartInitializer";
 import { CartItemStore } from "@/stores/useCartStore";
+import { SessionProvider } from "next-auth/react";
 
 const Inter = localFont({
   src: "../public/fonts/interVF.ttf",
@@ -49,10 +50,12 @@ export default async function RootLayout({
       <body
         className={`${Inter.className} ${SpaceGrotesk.variable} antialiased`}
       >
-        <CartInitializer cartItems={cartItems} />
-        <WishlistInitializer wishlistIds={wishlistIds} />
-        <Toaster position="top-right" richColors />
-        <main>{children}</main>
+        <SessionProvider session={session}>
+          <CartInitializer cartItems={cartItems} />
+          <WishlistInitializer wishlistIds={wishlistIds} />
+          <Toaster position="top-right" richColors />
+          <main>{children}</main>
+        </SessionProvider>
       </body>
     </html>
   );
