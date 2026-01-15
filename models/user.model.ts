@@ -15,6 +15,8 @@ export const AddressSchema = new mongoose.Schema<IAddress>({
   details: { type: String, required: true },
 });
 
+AddressSchema.index({ city: 1, phone: 1, details: 1 }, { unique: true });
+
 export interface IUser {
   name: string;
   email: string;

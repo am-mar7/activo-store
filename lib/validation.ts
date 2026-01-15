@@ -185,3 +185,56 @@ export const removeFromCartSchema = z.object({
   product: z.string().min(1, "product id is required"),
   sku: z.string().min(1, "sku is required"),
 });
+
+const orderItemSchema = z.object({
+  product: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid product ID"),
+  variantSku: z.string().min(1, "Variant SKU is required"),
+  variantColor: z.string().optional(),
+  variantSize: z.string().optional(),
+  productTitle: z.string().min(1, "Product title is required"),
+  productImage: z.string().min(1, "Product image is required"),
+  priceAtPurchase: z.number().nonnegative("Price must be positive"),
+  quantity: z.number().int().min(1, "Quantity must be at least 1"),
+  subTotal: z.number().nonnegative().optional(),
+});
+
+const paymentSchema = z.object({
+  method: z.enum(["visa", "COD"]),
+  status: z.enum(["pending", "completed", "failed", "refunded"]),
+  transactionId: z.string().optional(),
+  gatewayResponse: z.record(z.string(), z.any()).optional(),
+});
+
+export const upsertOrderSchema = z.object({
+  orderItems: z.array(orderItemSchema).min(1, "At least one item required"),
+  totalPrice: z.number().nonnegative(),
+  shippingAddress: z.object({
+    city: z.string().min(1, "City is required"),
+    phone: z.string().min(10, "Valid phone number required"),
+    details: z.string().min(5, "Detailed address is required"),
+  }),
+  payment: paymentSchema,
+  status: z
+    .enum(["pending", "delivering", "cancelled", "delivered"])
+    .optional(),
+  shippingCost: z.number().nonnegative(),
+  promoCode: z
+    .object({
+      code: z.string(),
+      discount: z.number().min(0).max(100),
+      discountAmount: z.number().nonnegative(),
+    })
+    .optional(),
+});
+
+export const addressFormSchema = z.object({
+  city: z.string().min(1, "City is required"),
+  phone: z
+    .string()
+    .regex(/^(\+20|0)?1[0125]\d{8}$/, "Invalid Egyptian phone number"),
+  details: z.string().min(10, "Please provide detailed address information"),
+});
+
+export const addAddressSchema = addressFormSchema.extend({
+  isDefault: z.boolean().optional(),
+});

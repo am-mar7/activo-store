@@ -30,13 +30,13 @@ export const handleUpload = async (
   if (!file) {
     return handleError(new Error("No file provided")) as ErrorResponse;
   }
-  
-  const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+
+  const validTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
   const maxSize = 5 * 1024 * 1024;
 
   if (!validTypes.includes(file.type)) {
     return handleError(
-      new Error(`Invalid file type. Allowed types: ${validTypes.join(', ')}`)
+      new Error(`Invalid file type. Allowed types: ${validTypes.join(", ")}`)
     ) as ErrorResponse;
   }
 
@@ -49,7 +49,7 @@ export const handleUpload = async (
   try {
     const formData = new FormData();
     formData.append("file", file);
-    
+
     const url = `${config.env.apiEndPoint}/auth/image`;
 
     const response = await fetch(url, {
@@ -58,7 +58,7 @@ export const handleUpload = async (
       // Add timeout to prevent hanging requests
       signal: AbortSignal.timeout(30000), // 30 seconds
     });
-    console.log("Upload response:", response);    
+    console.log("Upload response:", response);
     if (!response.ok) {
       let errorMessage = "Upload failed";
       try {
@@ -71,21 +71,21 @@ export const handleUpload = async (
     }
 
     const data: UploadedImageData = await response.json();
-    
+
     if (!data.url) {
       throw new Error("Invalid response: missing image URL");
     }
 
-    return { 
-      success: true, 
-      data 
+    return {
+      success: true,
+      data,
     } as ActionResponse<UploadedImageData>;
-
   } catch (err) {
-    const errorMessage = err instanceof Error 
-      ? err.message 
-      : "An unknown error occurred during upload";
-    
+    const errorMessage =
+      err instanceof Error
+        ? err.message
+        : "An unknown error occurred during upload";
+
     console.error("Upload error:", errorMessage);
     return handleError(new Error(errorMessage)) as ErrorResponse;
   }
@@ -93,4 +93,38 @@ export const handleUpload = async (
 
 export function formatPrice(price: number, currency: string = "$"): string {
   return `${price.toFixed(2)} ${currency}`;
+}
+
+export function formatAddress(address: {
+  city: string;
+  phone: string;
+  details: string;
+}) {
+  const normalize = (text: string) =>
+    text
+      .trim()
+      .replace(/\s*-\s*/g, " - ") 
+      .replace(/\s+/g, " "); 
+
+  const formatCity = (city: string) => {
+    const c = normalize(city);
+    return c.charAt(0).toUpperCase() + c.slice(1).toLowerCase();
+  };
+
+  return {
+    city: formatCity(address.city),
+    phone: address.phone.trim(),
+    details: normalize(address.details).toLowerCase(),
+  };
+}
+
+/**
+ * Validates Egyptian phone number
+ * Format: 0 + [10,11,12,15] + 8 digits
+ * Examples: 01012345678, 01112345678, 01212345678, 01512345678
+ */
+export function isValidEgyptianPhone(phone: string): boolean {
+  const cleanPhone = phone.replace(/\s|-/g, ""); // Remove spaces/dashes
+  const regex = /^0(10|11|12|15)\d{8}$/;
+  return regex.test(cleanPhone);
 }

@@ -1,4 +1,4 @@
-import { AddressSchema, IAddress } from "./user.model";
+import { IAddress } from "./user.model";
 import mongoose, { models, Schema, Types, Document } from "mongoose";
 
 export interface IOrderItem {
@@ -75,7 +75,7 @@ export interface IOrder {
   orderItems: IOrderItem[];
   totalPrice: number;
   status: "pending" | "delivering" | "cancelled" | "delivered";
-  shippingAddress: IAddress;
+  shippingAddress: Pick<IAddress, "city" | "details" | "phone">;
   payment: IPayment;
   shippingCost: number;
   promoCode?: IPromoCode;
@@ -100,7 +100,14 @@ const OrderSchema = new mongoose.Schema<IOrder>(
       default: "pending",
     },
     shippingAddress: {
-      type: AddressSchema,
+      type: new Schema(
+        {
+          city: String,
+          phone: String,
+          details: String,
+        },
+        { _id: false }
+      ),
       required: true,
     },
     payment: {

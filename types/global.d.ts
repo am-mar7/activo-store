@@ -1,3 +1,4 @@
+import { IPayment } from "@/models/order.model";
 import { NextResponse } from "next/server";
 
 interface ActionResponse<T = null> {
@@ -148,4 +149,41 @@ interface cartItem {
 interface removeFromCartParams {
   product: string;
   sku: string;
+}
+
+interface OrderItemType {
+  product: string;
+  variantSku: string;
+  variantColor?: string;
+  variantSize?: string;
+  productTitle: string;
+  productImage: string;
+  priceAtPurchase: number;
+  quantity: number;
+  subTotal?: number;
+}
+
+interface upsertOrderParams {
+  orderItems: OrderItemType[];
+  totalPrice: number;
+  shippingAddress: {
+    city: string;
+    phone: string;
+    details: string;
+  };
+  status?: "pending" | "delivering" | "cancelled" | "delivered";
+  payment: IPayment;
+  shippingCost: number;
+  promoCode?: {
+    code: string;
+    discount: number;
+    discountAmount: number;
+  };
+}
+
+interface addAddressParams {
+  city: string;
+  phone: string;
+  details: string;
+  isDefault: boolean;
 }
