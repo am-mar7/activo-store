@@ -1,3 +1,4 @@
+import Loading from "@/app/loading";
 import { auth } from "@/auth";
 import LogoutBtn from "@/components/buttons/LogoutBtn";
 import TryAgain from "@/components/TryAgain";
@@ -10,6 +11,7 @@ import { ActionResponse } from "@/types/global";
 import { Heart, LayoutDashboard, MapPin } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { Suspense } from "react";
 
 export default async function ProfileLayout({
   children,
@@ -88,7 +90,9 @@ export default async function ProfileLayout({
           </aside>
 
           {/* Main Content */}
-          <main className="md:col-span-3">{children}</main>
+          <main className="md:col-span-3">
+            <Suspense fallback={<Loading />}>{children}</Suspense>
+          </main>
         </div>
       </div>
     </div>

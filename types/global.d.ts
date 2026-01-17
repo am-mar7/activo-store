@@ -28,6 +28,7 @@ type CategoryType = {
   createdAt: Date;
   updatedAt: Date;
 };
+
 type ProductType = {
   _id: string;
   title: string;
@@ -52,6 +53,51 @@ type UploadedImageData = {
   thumbnailUrl: string;
   name: string;
 };
+
+export interface OrderItemType {
+  product: string;
+  variantSku: string;
+  variantColor?: string;
+  variantSize?: string;
+  productTitle: string;
+  productImage: string;
+  priceAtPurchase: number;
+  quantity: number;
+  subTotal?: number;
+}
+
+export interface PaymentType {
+  method: "visa" | "COD";
+  status: "pending" | "completed" | "failed" | "refunded";
+  transactionId?: string;
+  gatewayResponse?: object;
+}
+
+export interface PromoCodeType {
+  code: string;
+  discount: number;
+  discountAmount: number;
+}
+
+export interface ShippingAddressType {
+  city: string;
+  phone: string;
+  details: string;
+}
+
+export interface OrderType {
+  _id?: string;
+  userId: string;
+  orderItems: OrderItemType[];
+  totalPrice: number;
+  status: "pending" | "delivering" | "cancelled" | "delivered";
+  shippingAddress: ShippingAddressType;
+  payment: PaymentType;
+  shippingCost: number;
+  promoCode?: PromoCodeType;
+  createdAt?: string;
+  updatedAt?: string;
+}
 
 // params
 
@@ -186,4 +232,9 @@ interface addAddressParams {
   phone: string;
   details: string;
   isDefault: boolean;
+}
+
+interface updateOrderStatusParams {
+  orderId: string;
+  status: "pending" | "delivering" | "cancelled" | "delivered";
 }

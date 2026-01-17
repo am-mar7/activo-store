@@ -1,15 +1,29 @@
 "use server";
 
-import { ActionResponse, ErrorResponse, upsertOrderParams } from "@/types/global";
+import {
+  ActionResponse,
+  ErrorResponse,
+  OrderType,
+  PaginatedSearchParams,
+  updateOrderStatusParams,
+  upsertOrderParams,
+} from "@/types/global";
 import actionHandler from "../handlers/action";
-import { upsertOrderSchema } from "../validation";
+import {
+  PaginatedSearchParamsSchema,
+  updateOrderStatusSchema,
+  upsertOrderSchema,
+} from "../validation";
 import handleError from "../handlers/error";
 import { Cart, Order } from "@/models";
 import { revalidatePath } from "next/cache";
 import ROUTES from "@/constants/routes";
 import mongoose, { Types } from "mongoose";
+import { UnauthorizedError } from "../http-errors";
 
-export async function PlaceOrder(params: upsertOrderParams):Promise<ActionResponse> {
+export async function PlaceOrder(
+  params: upsertOrderParams
+): Promise<ActionResponse> {
   const validated = await actionHandler({
     params,
     schema: upsertOrderSchema,
@@ -53,5 +67,78 @@ export async function PlaceOrder(params: upsertOrderParams):Promise<ActionRespon
     return handleError(error) as ErrorResponse;
   } finally {
     session.endSession();
+  }
+}
+
+export async function UpdateOrderStatus(
+  params: updateOrderStatusParams
+): Promise<ActionResponse> {
+  const validated = await actionHandler({
+    params,
+    schema: updateOrderStatusSchema,
+    authorizetionProccess: true,
+  });
+  if (validated instanceof Error)
+    return handleError(validated) as ErrorResponse;
+
+  const userId = validated.session?.user.id;
+  const { orderId, status } = validated.params!;
+  try {
+    const order = await Order.findOneAndUpdate(
+      { _id: orderId, userId, status: "pending" },
+      { status },
+      { new: true }
+    );
+    if (!order) throw new Error("Failed to cancel order");
+
+    revalidatePath(ROUTES.PROFILE);
+
+    return { success: true, data: JSON.parse(JSON.stringify(order)) };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}
+
+export async function getOrders(
+  params: PaginatedSearchParams
+): Promise<ActionResponse<{ isNext: boolean; orders: OrderType[] }>> {
+  const validated = await actionHandler({
+    params,
+    schema: PaginatedSearchParamsSchema,
+    authorizetionProccess: true,
+  });
+  if (validated instanceof Error)
+    return handleError(validated) as ErrorResponse;
+
+  const { page = 1, pageSize = 10, filter } = validated.params!;
+  const skip = (page - 1) * pageSize;
+
+  const session = validated.session;
+  const userId = session?.user.id;
+
+  try {
+    if (!userId) throw new UnauthorizedError();
+
+    const filterQuery: mongoose.QueryFilter<typeof Order> = {
+      userId,
+    };
+
+    if (
+      filter &&
+      ["pending", "delivering", "cancelled", "delivered"].includes(filter)
+    ) {
+      filterQuery.status = filter;
+    }
+
+    const orders = await Order.find(filterQuery).skip(skip).limit(pageSize);
+    const count = await Order.countDocuments(filterQuery);
+
+    const isNext = count > orders.length + skip;
+    return {
+      success: true,
+      data: { isNext, orders: JSON.parse(JSON.stringify(orders)) },
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
   }
 }

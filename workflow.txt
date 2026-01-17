@@ -25,20 +25,23 @@
         product/:id
         category/:slug
 
-remaining in plateform
+remaining in plateform (5 days)
 
-    orders page (in profile)
-    addresses page (in profile)
+    orders page (in profile) // done
+    addresses page (in profile) // working on
     comment section (in product details)
-    buy now button logic (in product details)
+    buy now button logic (in product details) // working on
     global search (UI and logic)
     forget password 
     email verfication for creating accouts
     handle after admin login to navigate to dashboard
     add dashboard link (only admins can see it)
-    promo code in cart page
+    promo code in cart page // working on
+    order details with ability to update the order(very optional)
+    filtering
+    pagination
 
-remaining in dashboard
+remaining in dashboard (3-4 days)
 
     analytical view (over view page) too hard tho
     orders page (view orders , cancel them , update status)

@@ -238,3 +238,8 @@ export const addressFormSchema = z.object({
 export const addAddressSchema = addressFormSchema.extend({
   isDefault: z.boolean().optional(),
 });
+
+export const updateOrderStatusSchema = z.object({
+  orderId: z.string().min(1, "Order ID is required"),
+  status: z.enum(["pending", "delivering", "cancelled", "delivered"]),
+});
