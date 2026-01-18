@@ -22,7 +22,6 @@ import {
 } from "@/lib/server actions/auth.action";
 import { ActionResponse } from "@/types/global";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { getFriendlyErrorMessage } from "@/lib/error-messages";
 
@@ -42,8 +41,6 @@ export default function AuthForm<T extends FieldValues>({
     defaultValues: defaultValues as DefaultValues<T>,
   });
 
-  const router = useRouter();
-  // 2. Define a submit handler.
   const handleSubmit = async function () {
     const onSubmit =
       formType === "SIGN_IN" ? credentialsSignIn : credentialsSignUp;
@@ -58,9 +55,8 @@ export default function AuthForm<T extends FieldValues>({
       toast.success(successMSG, {
         duration: 3000,
       });
-      router.push(ROUTES.HOME);
     } else {
-      setError(getFriendlyErrorMessage(error));
+      setError(getFriendlyErrorMessage(result.error));
     }
   };
 

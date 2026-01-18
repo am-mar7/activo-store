@@ -12,7 +12,6 @@ const publicApiRoutes = [
   "/api/users/:id",
 ];
 
-// Check if a path matches any pattern in the array
 function matchesRoute(pathname: string, routes: string[]): boolean {
   return routes.some((route) => {
     // Handle wildcard patterns
@@ -25,11 +24,9 @@ function matchesRoute(pathname: string, routes: string[]): boolean {
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Check if it's an API route
   const isApiRoute = pathname.startsWith("/api");
 
   if (isApiRoute) {
-    // Allow public API routes
     if (matchesRoute(pathname, publicApiRoutes)) {
       return NextResponse.next();
     }
@@ -37,14 +34,12 @@ export async function middleware(request: NextRequest) {
     if (session?.user.role === "admin") {
       return NextResponse.next();
     }
-    // Protect all other API routes
     return NextResponse.json(
       { success: false, error: "Unauthorized" },
       { status: 401 }
     );
   }
 
-  // Handle protected page routes
   if (matchesRoute(pathname, protectedRoutes)) {
     const session = await auth();
     if (!session?.user?.id) {
@@ -56,12 +51,26 @@ export async function middleware(request: NextRequest) {
 
   if (matchesRoute(pathname, adminRoutes)) {
     const session = await auth();
-    console.log(session?.user);
 
     if (session?.user?.role !== "admin") {
       const signInUrl = new URL(ROUTES.SIGN_IN, request.url);
       signInUrl.searchParams.set("callbackUrl", pathname);
       return NextResponse.redirect(signInUrl);
+    }
+  }
+
+  const session = await auth();
+
+  if (session?.user) {
+    if (
+      session.user.role === "admin" &&
+      (pathname === "/" || pathname === ROUTES.SIGN_IN)
+    ) {
+      return NextResponse.redirect(new URL("/dashboard", request.url));
+    }
+
+    if (session.user.role === "user" && pathname === ROUTES.SIGN_IN) {
+      return NextResponse.redirect(new URL(ROUTES.HOME, request.url));
     }
   }
 
