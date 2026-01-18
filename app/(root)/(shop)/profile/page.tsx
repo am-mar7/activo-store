@@ -14,7 +14,7 @@ export default async function Profile({ searchParams }: RouteParams) {
   const { orders } = data || { isNext: false, orders: [] };
 
   return (
-    <div>
+    <div className="mb-5 bg-linear-to-br from-neutral-100 to-neutral-200 py-8 px-4 sm:px-6 lg:px-8">
       <DataRenderer
         success={success}
         error={error}
@@ -25,7 +25,13 @@ export default async function Profile({ searchParams }: RouteParams) {
           button: { text: "Browse cart", href: ROUTES.CART },
         }}
         render={(orders) => (
-          <div className="space-y-2">
+          <div className="space-y-2 py-8 px-4 sm:px-6 lg:px-8 mb-5 bg-linear-to-br from-neutral-100 to-neutral-200">
+            <div>
+              <h1 className="h2-bold text-neutral-900">My Orders</h1>
+              <p className="body-medium text-neutral-700 mb-3">
+                Manage your track your orders
+              </p>
+            </div>
             {orders?.map((order, index) => (
               <OrderCard index={index} key={order._id} order={order} />
             ))}

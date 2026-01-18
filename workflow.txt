@@ -28,7 +28,7 @@
 remaining in plateform (5 days)
 
     orders page (in profile) // done
-    addresses page (in profile) // working on
+    addresses page (in profile) // done
     comment section (in product details)
     buy now button logic (in product details) // working on
     global search (UI and logic)

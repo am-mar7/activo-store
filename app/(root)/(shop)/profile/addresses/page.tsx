@@ -1,6 +1,118 @@
+import { getAddresses } from "@/lib/server actions/addresses.action";
+import { MapPin, Phone, Home, Star } from "lucide-react";
+import DataRenderer from "@/components/DataRenderer";
+import SetDefaultAddressBtn from "@/components/buttons/SetDefaultAddressBtn";
+import AddAddressForm from "@/components/forms/AddAddressForm";
 
-export default function page() {
+export default async function AddressesPage() {
+  const { success, data, error } = await getAddresses();
+
   return (
-    <div>page</div>
-  )
+    <div className="mb-5 bg-linear-to-br from-neutral-100 to-neutral-200 py-8 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-5xl mx-auto">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
+          <div className="self-start">
+            <h1 className="h2-bold text-neutral-900">My Addresses</h1>
+            <p className="body-medium text-neutral-700 mb-3">
+              Manage your delivery addresses
+            </p>
+          </div>
+
+          <AddAddressForm className="md:w-1/2" toggleBtn={true} />
+        </div>
+
+        <DataRenderer
+          success={success}
+          data={data}
+          error={error}
+          empty={{
+            title: "No Addresses Yet",
+            message:
+              "Add your first delivery address to get started with your orders",
+            button: {
+              text: "Add New Address",
+              href: "/addresses/new",
+            },
+          }}
+          render={(addresses) => (
+            <div className="space-y-4">
+              {addresses?.map((address, index) => (
+                <div
+                  key={address._id?.toString() || index}
+                  className={`bg-white rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 border-2 ${
+                    address.isDefault
+                      ? "border-primary-500"
+                      : "border-slate-200 hover:border-slate-300"
+                  } overflow-hidden`}
+                >
+                  <div className="flex flex-col lg:flex-row lg:items-center gap-6 p-4">
+                    <div className="flex-1 grid grid-cols-1 sm:grid-cols-3 gap-6">
+                      <div className="flex-center gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center shrink-0">
+                          <Home className="w-5 h-5 text-blue-600" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs text-secondary uppercase tracking-wide mb-1">
+                            City
+                          </p>
+                          <p className="text-primary font-semibold capitalize truncate">
+                            {address.city}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Details */}
+                      <div className="flex-center gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-green-50 flex items-center justify-center shrink-0">
+                          <MapPin className="w-5 h-5 text-green-600" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs text-secondary uppercase tracking-wide mb-1">
+                            Address
+                          </p>
+                          <p className="text-primary text-sm leading-relaxed line-clamp-2">
+                            {address.details}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Phone */}
+                      <div className="flex-center gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-purple-50 flex items-center justify-center shrink-0">
+                          <Phone className="w-5 h-5 text-purple-600" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs text-secondary uppercase tracking-wide mb-1">
+                            Phone
+                          </p>
+                          <p className="text-primary font-mono font-semibold truncate">
+                            {address.phone}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="shrink-0">
+                      {!address.isDefault ? (
+                        <SetDefaultAddressBtn
+                          addressId={address._id?.toString() || ""}
+                        />
+                      ) : (
+                        <div className="flex-1 px-4 py-2 body-medium rounded-lg bg-primary-gradient hover:bg-primary/90 active:bg-primary/80 text-white transition-all duration-300 shadow-md hover:shadow-lg flex-center gap-2">
+                          <Star className="w-5 h-5 text-white fill-white" />
+                          <span className="text-white body-medium font-semibold">
+                            Default
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        />
+      </div>
+    </div>
+  );
 }

@@ -9,7 +9,7 @@ import actionHandler from "../handlers/action";
 import { addAddressSchema } from "../validation";
 import handleError from "../handlers/error";
 import { User } from "@/models";
-import { IUserDoc } from "@/models/user.model";
+import { IAddress, IUserDoc } from "@/models/user.model";
 import { revalidatePath } from "next/cache";
 import ROUTES from "@/constants/routes";
 import { dbConnect } from "../mongoose";
@@ -36,11 +36,10 @@ export async function addAddress(
     const user = (await User.findById(userId)) as IUserDoc;
 
     const isDuplicate = user.addresses.some(
-      addr => addr.city === city && 
-              addr.phone === phone && 
-              addr.details === details
+      (addr) =>
+        addr.city === city && addr.phone === phone && addr.details === details
     );
-    
+
     if (isDuplicate) {
       throw new Error("This address already exists");
     }
@@ -62,7 +61,9 @@ export async function addAddress(
   }
 }
 
-export async function setAddressAsDefault(addressId: string): Promise<ActionResponse> {
+export async function setAddressAsDefault(
+  addressId: string
+): Promise<ActionResponse> {
   try {
     await dbConnect();
     const session = await auth();
@@ -77,8 +78,22 @@ export async function setAddressAsDefault(addressId: string): Promise<ActionResp
       isDefault: address._id?.toString() === addressId,
     }));
     await user.save();
-
+    revalidatePath(ROUTES.ADDRESSES);
     return { success: true };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}
+
+export async function getAddresses(): Promise<ActionResponse<IAddress[]>> {
+  try {
+    await dbConnect();
+    const session = await auth();
+    const userId = session?.user.id;
+    if (!userId) throw new UnauthorizedError();
+    const user = (await User.findById(userId)) as IUserDoc;
+
+    return { success: true, data: JSON.parse(JSON.stringify(user.addresses)) };
   } catch (error) {
     return handleError(error) as ErrorResponse;
   }
