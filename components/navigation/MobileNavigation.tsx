@@ -16,19 +16,22 @@ import Link from "next/link";
 import ROUTES from "@/constants/routes";
 
 interface Category {
-    _id: string;
-    name: string;
-    slug: string;
-  }
-  
-  interface Props {
-    categories: Category[];
-    invert?: boolean;
-  }
+  _id: string;
+  name: string;
+  slug: string;
+}
+
+interface Props {
+  categories: Category[];
+  invert?: boolean;
+}
 
 type SubMenuType = "categories" | "collections" | null;
 
-export default function MobileNavigation({ categories , invert = false }: Props) {
+export default function MobileNavigation({
+  categories,
+  invert = false,
+}: Props) {
   const [activeSubmenu, setActiveSubmenu] = useState<SubMenuType>(null);
 
   const handleBack = () => {
@@ -47,7 +50,7 @@ export default function MobileNavigation({ categories , invert = false }: Props)
           variant="secondary"
           className="p-0! bg-transparent border-0 shadow-none sm:hidden"
         >
-          <AlignLeft className={`w-8 h-8 ${invert?"text-slate-50":""}`} />
+          <AlignLeft className={`w-8 h-8 ${invert ? "text-slate-50" : ""}`} />
         </Button>
       </SheetTrigger>
       <SheetContent
@@ -87,6 +90,15 @@ export default function MobileNavigation({ categories , invert = false }: Props)
                 <span>collections</span>
                 <ChevronRight size={20} />
               </button>
+
+              <SheetClose asChild>
+                <Link
+                  className="block text-slate-700 hover:text-slate-900 text-lg font-medium transition-colors"
+                  href={ROUTES.DASHBOARD}
+                >
+                  Admin panel
+                </Link>
+              </SheetClose>
             </nav>
           </div>
 

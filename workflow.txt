@@ -32,8 +32,7 @@ remaining in plateform (5 days)
     global search (UI and logic)
     forget password 
     email verfication for creating accouts
-    handle after admin login to navigate to dashboard // done
-    add dashboard link (only admins can see it) // working one
+    add dashboard link (only admins can see it) // done
     promo code in cart page // working on
     order details with ability to update the order(very optional)
     filtering

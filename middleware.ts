@@ -64,7 +64,7 @@ export async function middleware(request: NextRequest) {
   if (session?.user) {
     if (
       session.user.role === "admin" &&
-      (pathname === "/" || pathname === ROUTES.SIGN_IN)
+      (pathname === ROUTES.SIGN_IN)
     ) {
       return NextResponse.redirect(new URL("/dashboard", request.url));
     }

@@ -9,6 +9,7 @@ const ROUTES = {
   COLLECTION: (slug: string) => `/collection/${slug}`,
   SIGN_IN: "/sign-in",
   SIGN_UP: "/sign-up",
+  DASHBOARD: "/dashboard",
 };
 
 export const DASHBOARDROUTES = {

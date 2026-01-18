@@ -1,3 +1,4 @@
+import { FastNavigation } from "@/components/navigation/FastNavigaion";
 import Navbar from "@/components/navigation/Navbar";
 
 export default function RootLayout({
@@ -7,7 +8,7 @@ export default function RootLayout({
 }) {
   return (
     <div>
-      <div 
+      <div
         className="bg-cover bg-center relative bg-no-repeat h-125 md:h-150 lg:h-175"
         style={{ backgroundImage: "url('/images/hero.png')" }}
       >
@@ -21,6 +22,7 @@ export default function RootLayout({
         </div>
       </div>
       {children}
+      <FastNavigation />
     </div>
   );
 }
