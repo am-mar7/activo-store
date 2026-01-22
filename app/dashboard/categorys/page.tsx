@@ -8,10 +8,12 @@ import { Plus } from "lucide-react";
 import Link from "next/link";
 
 export default async function Category({ searchParams }: RouteParams) {
-  const { page, query } = await searchParams;
+  const { page, query , filter , pageSize } = await searchParams;
   const { data, success, error } = await getCategories({
     page: Number(page) || 1,
     query,
+    filter,
+    pageSize: Number(pageSize) || 25,
   });
   const { categories } = data || {};
   return (

@@ -7,14 +7,15 @@ import { getUsers } from "@/lib/server actions/user.action";
 import { RouteParams } from "@/types/global";
 
 export default async function Users({ searchParams }: RouteParams) {
-  const { page, query, filter } = await searchParams;
+  const { page, query, filter, pageSize } = await searchParams;
   const { data, success, error } = await getUsers({
     page: Number(page) || 1,
     query,
     filter,
+    pageSize: Number(pageSize) | 25,
   });
 
-  const { items:users , isNext , total} = data || {};
+  const { items: users, isNext, total } = data || {};
   return (
     <div className="max-w-7xl w-full overflow-x-auto">
       <div className="flex w-full flex-col xs:flex-row gap-2 items-center">
@@ -34,7 +35,7 @@ export default async function Users({ searchParams }: RouteParams) {
             <div className="min-w-250 w-full mb-4">
               {users && <UsersList users={users} />}
             </div>
-            <Pagination isNext={isNext} total={total}/>
+            <Pagination isNext={isNext} total={total} />
           </>
         )}
         empty={{
