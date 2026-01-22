@@ -1,7 +1,15 @@
-import React from 'react'
+import PromoCodeForm from "@/components/dashboard/forms/PromoCodeForm";
 
 export default function AddPromoCode() {
+  const defaultValues = {
+    code: "",
+    percentage: 10,
+    maxDiscount: 100,
+    minPurchase: 1000,
+  };
   return (
-    <div>AddPromoCode</div>
-  )
+    <>
+      <PromoCodeForm formType="ADD" defaultValues={defaultValues} />
+    </>
+  );
 }

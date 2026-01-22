@@ -248,3 +248,23 @@ export const changeUserRoleSchema = z.object({
   userId: z.string().min(1, "user id is required"),
   role: z.enum(["user", "admin"]),
 });
+
+export const PromoCodeSchema = z.object({
+  code: z
+    .string()
+    .min(3, "Code must be at least 3 characters")
+    .max(20, "Code must be at most 20 characters")
+    .toUpperCase(),
+  percentage: z
+    .number()
+    .min(0, "Percentage must be at least 0")
+    .max(100, "Percentage cannot exceed 100"),
+  maxDiscount: z.number().min(0, "Max discount must be at least 0"),
+  minPurchase: z.number().min(0, "Min purchase must be at least 0"),
+  usageLimit: z.number().min(0, "Usage limit must be at least 0").optional(),
+  expiredAt: z.date().optional(),
+});
+
+export const editPromoCodeSchema = PromoCodeSchema.extend({
+  id: z.string().min(1, "ID is required"),
+});

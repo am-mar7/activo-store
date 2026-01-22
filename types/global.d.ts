@@ -124,7 +124,7 @@ export interface OrderType {
   updatedAt?: string;
 }
 
-export interface OrderDetailedType extends Omit<OrderType, 'userId'> {
+export interface OrderDetailedType extends Omit<OrderType, "userId"> {
   user: IUserDoc;
 }
 
@@ -271,4 +271,17 @@ interface updateOrderStatusParams {
 interface changeUserRoleParams {
   userId: string;
   role: "admin" | "user";
+}
+
+interface promoCodeParams {
+  code: string;
+  percentage: number;
+  maxDiscount: number;
+  minPurchase: number;
+  usageLimit?: number;
+  expiredAt?: Date;
+}
+
+interface editPromoCodeParams extends promoCodeParams {
+  id: string;
 }

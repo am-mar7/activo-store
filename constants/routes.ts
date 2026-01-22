@@ -26,5 +26,7 @@ export const DASHBOARDROUTES = {
   REVIEWS: "/dashboard/reviews",
   USERDETAILS: (id: string) => `/dashboard/users/${id}`,
   ORDERDETAILS: (id: string) => `/dashboard/orders/${id}`,
+  ADDPROMOCODE: "promocodes/add",
+  EDITPROMOCODE: (id: string) => `/dashboard/promocodes/edit/${id}`,
 };
 export default ROUTES;
