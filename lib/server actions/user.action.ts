@@ -73,7 +73,8 @@ export async function getUsers(
 
 export async function deleteUser(id: string): Promise<ActionResponse> {
   try {
-    const [session] = await Promise.all([auth(), dbConnect()]);
+    await dbConnect();
+    const session = await auth();
 
     const isAdmin = session?.user.role === "admin";
     if (!isAdmin) throw new UnauthorizedError("Unauthorized access");

@@ -27,21 +27,21 @@
 
 remaining in plateform (5 days)
 
-    comment section (in product details) // day 3
-    buy now button logic (in product details) // day 2
-    global search (UI and logic) // day 1
-    forget password // day 4
-    email verfication for creating accouts // day 4
-    promo code in cart page // day 2
+    comment section (in product details)
+    buy now button logic (in product details)
+    global search (UI and logic)
+    forget password
+    email verfication for creating accouts
+    promo code in cart page
     order details with ability to update the order(very optional)
-    filtering // day 1
-    pagination // day 1
+    filtering 
+    pagination 
 
 remaining in dashboard (3-4 days)
 
-    analytical view (over view page) too hard tho day 3 & 4
-    orders page (view orders , cancel them , update status) day 1
+    analytical view (over view page) 
+    orders page (view orders , cancel them , update status) done
     users page (view users , change thier role , make new admin) done
-    promo code page (view , update , add new code) day 3
-    reviews (just view , maybe delete comment) day 2
+    promo code page (view , update , add new code) done
+    reviews (just view , maybe delete comment)
     (optonal) settings page (shipping cost , upload hero image , upload image for size guide , make banner offer) day 2 

@@ -71,6 +71,19 @@ type ProductType = {
   updatedAt: Date;
 };
 
+type PromoCodeType ={
+  _id: string;
+  code: string;
+  discount: number;
+  discountAmount: number;
+  usageLimit?: number;
+  usageCount: number;
+  minPurchase: number;
+  expiredAt?: Date;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 type UploadedImageData = {
   success: boolean;
   fileId: string;
