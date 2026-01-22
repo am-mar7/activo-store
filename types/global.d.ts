@@ -1,4 +1,5 @@
 import { IPayment } from "@/models/order.model";
+import { IUserDoc } from "@/models/user.model";
 import { NextResponse } from "next/server";
 import { ReactNode } from "react";
 
@@ -12,7 +13,7 @@ interface ActionResponse<T = null> {
   status?: number;
 }
 
-interface PaginatedActionResponse <T> extends ActionResponse {
+interface PaginatedActionResponse<T> extends ActionResponse {
   data?: {
     items: T[];
     total: number;
@@ -78,8 +79,6 @@ type UploadedImageData = {
   name: string;
 };
 
-
-
 export interface OrderItemType {
   product: string;
   variantSku: string;
@@ -123,6 +122,10 @@ export interface OrderType {
   promoCode?: PromoCodeType;
   createdAt?: string;
   updatedAt?: string;
+}
+
+export interface OrderDetailedType extends Omit<OrderType, 'userId'> {
+  user: IUserDoc;
 }
 
 // params
