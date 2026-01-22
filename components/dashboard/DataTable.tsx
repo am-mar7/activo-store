@@ -35,11 +35,13 @@ import {
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  input?: { placeholder: string; value: string };
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
+  input,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -68,21 +70,23 @@ export function DataTable<TData, TValue>({
       rowSelection,
     },
   });
-
+  const { placeholder, value } = input || {};
   return (
     <div className="w-full">
-      <div className="flex z-2 items-center mb-2 gap-2">
-        <Input
-          placeholder="Filter emails..."
-          value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table.getColumn("email")?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm"
-        />
+      <div className="flex-between w-full px-0.5 z-2 mb-2 gap-2">
+        {value && placeholder && (
+          <Input
+            placeholder={placeholder}
+            value={(table.getColumn(value)?.getFilterValue() as string) ?? ""}
+            onChange={(event) =>
+              table.getColumn("email")?.setFilterValue(event.target.value)
+            }
+            className="max-w-sm"
+          />
+        )}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto">
+            <Button variant="outline" >
               Columns <ChevronDown className="ml-2 h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>

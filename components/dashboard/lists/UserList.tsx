@@ -229,5 +229,5 @@ export function UsersList({ users }: UsersListProps) {
     setLoading(null);
   }
 
-  return <DataTable columns={columns} data={users} />;
+  return <DataTable input={{placeholder:"filter by Email..." , value:"email"}} columns={columns} data={users} />;
 }
