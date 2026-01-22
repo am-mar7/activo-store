@@ -20,7 +20,7 @@ export default async function Users({ searchParams }: RouteParams) {
       <div className="flex w-full flex-col xs:flex-row gap-2 items-center">
         <div className="flex-1 max-xs:w-full">
           <LocalSearch
-            route={DASHBOARDROUTES.PRODUCTS}
+            route={DASHBOARDROUTES.USERS}
             placeholder="search for users"
           />
         </div>
