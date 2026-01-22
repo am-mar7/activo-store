@@ -1,5 +1,6 @@
 import { IPayment } from "@/models/order.model";
 import { NextResponse } from "next/server";
+import { ReactNode } from "react";
 
 interface ActionResponse<T = null> {
   success: boolean;
@@ -11,12 +12,35 @@ interface ActionResponse<T = null> {
   status?: number;
 }
 
+interface PaginatedActionResponse <T> extends ActionResponse {
+  data?: {
+    items: T[];
+    total: number;
+    isNext: boolean;
+  };
+}
+
 type SuccessResponse<T = null> = ActionResponse<T> & { success: true };
 type ErrorResponse = ActionResponse<undefined> & { success: false };
 type APIResponse<T = null> = NextResponse<SuccessResponse<T> | ErrorResponse>;
 type APIErrorResponse = NextResponse<ErrorResponse>;
 
 // types
+
+interface Column<T> {
+  key: keyof T | string;
+  header: string;
+  render?: (row: T) => ReactNode;
+  sortable?: boolean;
+  width?: string;
+}
+interface TableProps<T> {
+  data: T[];
+  columns: Column<T>[];
+  rowKey: keyof T;
+  loading?: boolean;
+  onRowClick?: (row: T) => void;
+}
 
 type CategoryType = {
   _id: string;
@@ -53,6 +77,8 @@ type UploadedImageData = {
   thumbnailUrl: string;
   name: string;
 };
+
+
 
 export interface OrderItemType {
   product: string;
@@ -237,4 +263,9 @@ interface addAddressParams {
 interface updateOrderStatusParams {
   orderId: string;
   status: "pending" | "delivering" | "cancelled" | "delivered";
+}
+
+interface changeUserRoleParams {
+  userId: string;
+  role: "admin" | "user";
 }

@@ -11,13 +11,12 @@ export default function Dashboardlayout({ children }: Props) {
     <div>
       <Navbar />
       <div className="flex">
-        {" "}
         <div className="sm:w-27.5 xl:w-66.5">
           {/* fixed position  */}
           <Sidebar />
         </div>
-        <section className="flex flex-1 min-h-screen">
-          <div className="mx-auto px-4 py-2 sm:px-8 sm:py-4 w-full">{children}</div>
+        <section className="flex flex-1 min-h-screen overflow-x-auto">
+          <div className="mx-auto px-4 py-2 sm:px-8 sm:py-4 w-full min-w-0">{children}</div>
         </section>
       </div>
     </div>

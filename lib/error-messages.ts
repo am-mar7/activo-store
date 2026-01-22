@@ -2,6 +2,9 @@
 export function getFriendlyErrorMessage(error: any): string {
   const errorMessage = error?.message || String(error);
 
+  if (errorMessage.includes("Cannot")) {
+    return errorMessage;
+  }
   // MongoDB Duplicate Key Error (E11000)
   if (
     errorMessage.includes("E11000") ||

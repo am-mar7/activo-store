@@ -243,3 +243,8 @@ export const updateOrderStatusSchema = z.object({
   orderId: z.string().min(1, "Order ID is required"),
   status: z.enum(["pending", "delivering", "cancelled", "delivered"]),
 });
+
+export const changeUserRoleSchema = z.object({
+  userId: z.string().min(1, "user id is required"),
+  role: z.enum(["user", "admin"]),
+});
