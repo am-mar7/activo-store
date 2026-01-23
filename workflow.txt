@@ -40,8 +40,5 @@ remaining in plateform (5 days)
 remaining in dashboard (3-4 days)
 
     analytical view (over view page) 
-    orders page (view orders , cancel them , update status) done
-    users page (view users , change thier role , make new admin) done
-    promo code page (view , update , add new code) done
     reviews (just view , maybe delete comment)
     (optonal) settings page (shipping cost , upload hero image , upload image for size guide , make banner offer) day 2 

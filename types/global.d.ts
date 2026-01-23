@@ -74,8 +74,8 @@ type ProductType = {
 type PromoCodeType ={
   _id: string;
   code: string;
-  discount: number;
-  discountAmount: number;
+  percentage: number;
+  maxDiscount: number;
   usageLimit?: number;
   usageCount: number;
   minPurchase: number;
