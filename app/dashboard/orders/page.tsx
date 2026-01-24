@@ -26,7 +26,7 @@ export default async function Orders({ searchParams }: RouteParams) {
       </div>
       {!tryAgain && orders && (
         <div className="bg-white">
-          <h3 className="h3-semibold text-slate-800 mb-1.5 px-1">Orders</h3>
+          <h3 className="h3-semibold text-slate-800  mt-4 mb-1.5 px-1">Orders</h3>
           <OrdersList showCustomer={true} orders={orders} />
 
           <div className="mt-1.5">
