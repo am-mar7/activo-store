@@ -111,7 +111,7 @@ export interface PaymentType {
   gatewayResponse?: object;
 }
 
-export interface PromoCodeType {
+export interface CodeType {
   code: string;
   discount: number;
   discountAmount: number;
@@ -132,7 +132,7 @@ export interface OrderType {
   shippingAddress: ShippingAddressType;
   payment: PaymentType;
   shippingCost: number;
-  promoCode?: PromoCodeType;
+  promoCode?: CodeType;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -283,6 +283,11 @@ interface addAddressParams {
 interface updateOrderStatusParams {
   orderId: string;
   status: "pending" | "delivering" | "cancelled" | "delivered";
+}
+
+interface updatePaymentStatusParams {
+  orderId: string;
+  status: "pending" | "completed" | "failed" | "refunded";
 }
 
 interface changeUserRoleParams {

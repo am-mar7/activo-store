@@ -9,6 +9,7 @@ import {
   PaginatedActionResponse,
   PaginatedSearchParams,
   updateOrderStatusParams,
+  updatePaymentStatusParams,
   upsertOrderParams,
 } from "@/types/global";
 import actionHandler from "../handlers/action";
@@ -16,6 +17,7 @@ import {
   getUserOrdersSchema,
   PaginatedSearchParamsSchema,
   updateOrderStatusSchema,
+  updatePaymentStatusSchema,
   upsertOrderSchema,
 } from "../validation";
 import handleError from "../handlers/error";
@@ -24,6 +26,8 @@ import { revalidatePath } from "next/cache";
 import ROUTES, { DASHBOARDROUTES } from "@/constants/routes";
 import mongoose, { Types } from "mongoose";
 import { UnauthorizedError } from "../http-errors";
+import { dbConnect } from "../mongoose";
+import { auth } from "@/auth";
 
 export async function PlaceOrder(
   params: upsertOrderParams
@@ -104,6 +108,36 @@ export async function UpdateOrderStatus(
   }
 }
 
+export async function upatePaymentStatus(
+  params: updatePaymentStatusParams
+): Promise<ActionResponse> {
+  const validated = await actionHandler({
+    params,
+    schema: updatePaymentStatusSchema,
+    authorizetionProccess: true,
+  });
+  if (validated instanceof Error)
+    return handleError(validated) as ErrorResponse;
+
+  const userId = validated.session?.user.id;
+  const { orderId, status } = validated.params!;
+  try {
+    const order = await Order.findOneAndUpdate(
+      { _id: orderId, userId },
+      { "payment.status": status },
+      { new: true }
+    );
+    if (!order) throw new Error("Failed to cancel order");
+
+    revalidatePath(ROUTES.PROFILE);
+    revalidatePath(DASHBOARDROUTES.ORDERS);
+    revalidatePath(DASHBOARDROUTES.ORDERDETAILS(orderId));
+    return { success: true, data: JSON.parse(JSON.stringify(order)) };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}
+
 export async function getOrders(
   params: getUserOrdersParams
 ): Promise<ActionResponse<{ isNext: boolean; orders: OrderType[] }>> {
@@ -166,9 +200,12 @@ export async function getAllOrders(
     const skip = (page - 1) * pageSize;
 
     const baseFilter: mongoose.QueryFilter<typeof Order> = {};
-    if (filter &&["pending", "delivering", "cancelled", "delivered"].includes(filter)) 
+    if (
+      filter &&
+      ["pending", "delivering", "cancelled", "delivered"].includes(filter)
+    )
       baseFilter.status = filter;
-    
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const pipeline: any[] = [
       ...(Object.keys(baseFilter).length > 0 ? [{ $match: baseFilter }] : []),
@@ -227,6 +264,39 @@ export async function getAllOrders(
     return {
       success: true,
       data: { isNext, items: JSON.parse(JSON.stringify(orders)), total },
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}
+
+export async function getOrder(
+  id: string
+): Promise<ActionResponse<OrderDetailedType>> {
+  try {
+    await dbConnect();
+    const session = await auth();
+    const isAdmin = session?.user.role === "admin";
+    const userId = session?.user.id;
+    const order = await Order.findById(id)
+      .populate("userId", "name email phone _id image")
+      .lean()
+      .then((order) => {
+        if (!order) return null;
+        return {
+          ...order,
+          user: order.userId,
+          userId: undefined,
+        };
+      });
+
+    if (!order) throw new Error("Order not found");
+    if (!isAdmin && (!order.user || order.user._id.toString() !== userId))
+      throw new UnauthorizedError();
+
+    return {
+      success: true,
+      data: JSON.parse(JSON.stringify(order)),
     };
   } catch (error) {
     return handleError(error) as ErrorResponse;
