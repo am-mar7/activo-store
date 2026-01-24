@@ -71,7 +71,7 @@ type ProductType = {
   updatedAt: Date;
 };
 
-type PromoCodeType ={
+type PromoCodeType = {
   _id: string;
   code: string;
   percentage: number;
@@ -82,7 +82,7 @@ type PromoCodeType ={
   expiredAt?: Date;
   createdAt: Date;
   updatedAt: Date;
-}
+};
 
 type UploadedImageData = {
   success: boolean;
@@ -267,6 +267,10 @@ interface upsertOrderParams {
     discount: number;
     discountAmount: number;
   };
+}
+
+interface getUserOrdersParams extends PaginatedSearchParams {
+  userId: string;
 }
 
 interface addAddressParams {

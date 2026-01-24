@@ -198,6 +198,10 @@ const orderItemSchema = z.object({
   subTotal: z.number().nonnegative().optional(),
 });
 
+export const getUserOrdersSchema = PaginatedSearchParamsSchema.extend({
+  userId: z.string().min(1, "user id is required"),
+});
+
 const paymentSchema = z.object({
   method: z.enum(["visa", "COD"]),
   status: z.enum(["pending", "completed", "failed", "refunded"]),

@@ -3,6 +3,7 @@
 import {
   ActionResponse,
   ErrorResponse,
+  getUserOrdersParams,
   OrderDetailedType,
   OrderType,
   PaginatedActionResponse,
@@ -12,6 +13,7 @@ import {
 } from "@/types/global";
 import actionHandler from "../handlers/action";
 import {
+  getUserOrdersSchema,
   PaginatedSearchParamsSchema,
   updateOrderStatusSchema,
   upsertOrderSchema,
@@ -103,21 +105,18 @@ export async function UpdateOrderStatus(
 }
 
 export async function getOrders(
-  params: PaginatedSearchParams
+  params: getUserOrdersParams
 ): Promise<ActionResponse<{ isNext: boolean; orders: OrderType[] }>> {
   const validated = await actionHandler({
     params,
-    schema: PaginatedSearchParamsSchema,
+    schema: getUserOrdersSchema,
     authorizetionProccess: true,
   });
   if (validated instanceof Error)
     return handleError(validated) as ErrorResponse;
 
-  const { page = 1, pageSize = 10, filter } = validated.params!;
+  const { page = 1, pageSize = 10, filter, userId } = validated.params!;
   const skip = (page - 1) * pageSize;
-
-  const session = validated.session;
-  const userId = session?.user.id;
 
   try {
     if (!userId) throw new UnauthorizedError();

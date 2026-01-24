@@ -1,15 +1,25 @@
+import { auth } from "@/auth";
 import { OrderCard } from "@/components/cards/OrderCard";
 import DataRenderer from "@/components/DataRenderer";
 import ROUTES from "@/constants/routes";
 import { getOrders } from "@/lib/server actions/order.action";
 import { RouteParams } from "@/types/global";
+import { redirect } from "next/navigation";
 
 export default async function Profile({ searchParams }: RouteParams) {
-  const { filter, page, pageSize } = await searchParams;
+  const [{ filter, page, pageSize }, session] = await Promise.all([
+    searchParams,
+    auth(),
+  ]);
+
+  const userId = session?.user.id;
+  if(!userId)return redirect(ROUTES.SIGN_IN);
+
   const { success, data, error } = await getOrders({
     page: Number(page) || 1,
     pageSize: Number(pageSize) || 10,
     filter: String(filter),
+    userId,
   });
   const { orders } = data || { isNext: false, orders: [] };
 
