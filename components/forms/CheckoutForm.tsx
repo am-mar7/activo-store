@@ -33,6 +33,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { addressFormSchema } from "@/lib/validation";
+import { getPromoCodeByCode } from "@/lib/server actions/promocode.action";
+import { getFriendlyErrorMessage } from "@/lib/error-messages";
 
 interface Props {
   subTotal: number;
@@ -44,11 +46,28 @@ export default function CheckoutForm({ subTotal, className, items }: Props) {
   const [isOpen, setIsOpen] = useState(false);
   const [promoLoading, setPromoLoading] = useState(false);
   const [discount, setDiscount] = useState(0);
-  const [discountAmount, setDiscountAmount] = useState(0);
+  const [discountAmount, setDiscountAmount] = useState<number>(0);
   const [promoCode, setPromoCode] = useState<string>();
+  const [promoQuery, setPromoQuery] = useState<string>("");
   const [promoError, setPromoError] = useState<string>();
   const shippingCost = 0;
-  const checkPromo = () => {};
+
+  const checkPromo = async() => {
+    setPromoLoading(true);
+    setPromoError(undefined);
+    setPromoCode(undefined);
+    setDiscount(0);
+    setDiscountAmount(0);
+    const {success , error , data} = await getPromoCodeByCode(promoQuery?.toUpperCase()|| "");
+    if(error || !success || !data) setPromoError(getFriendlyErrorMessage(error));
+    else {
+      setDiscount(data.percentage);
+      const amount = (subTotal * data.percentage) / 100
+      setDiscountAmount(Number(amount.toFixed(2)));
+      setPromoCode(data.code);  
+    }
+    setPromoLoading(false);
+   };
 
   return (
     <>
@@ -76,8 +95,8 @@ export default function CheckoutForm({ subTotal, className, items }: Props) {
             <div className="flex flex-col xs:flex-row sm:flex-col xl:flex-row gap-2">
               <input
                 type="text"
-                value={promoCode || ""}
-                onChange={(e) => setPromoCode(e.target.value)}
+                value={promoQuery || ""}
+                onChange={(e) => setPromoQuery(e.target.value)}
                 placeholder="Enter a code to get discount"
                 className="flex-1 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:border-primary-900 outline-none transition-all"
               />

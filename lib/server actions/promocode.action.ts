@@ -217,3 +217,18 @@ export async function getPromoCode(
     return handleError(error) as ErrorResponse;
   }
 }
+
+export async function getPromoCodeByCode(
+  promocode: string
+): Promise<ActionResponse<PromoCodeType>> {
+  try {
+    await dbConnect();
+
+    const code = await PromoCode.findOne({ code:promocode });
+    if (!code) throw new Error("Promo code not found");
+
+    return { success: true, data: JSON.parse(JSON.stringify(code)) };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}
