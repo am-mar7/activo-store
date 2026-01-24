@@ -1,6 +1,6 @@
-import { IUser } from "@/models/user.model";
+import { IUser, IUserDoc } from "@/models/user.model";
 import fetchData from "./handlers/fetch";
-import { IAccount } from "@/models/account.model";
+import { IAccount, IAccountDoc } from "@/models/account.model";
 import { SignInWithOauthParams } from "@/types/global";
 
 const API_BASE_URL =
@@ -19,8 +19,8 @@ const api = {
       }),
   },
   users: {
-    getAll: () => fetchData(`${API_BASE_URL}/users`),
-    getById: (id: string) => fetchData(`${API_BASE_URL}/users/${id}`),
+    getAll: () => fetchData<IUserDoc[]>(`${API_BASE_URL}/users`),
+    getById: (id: string) => fetchData<IUserDoc>(`${API_BASE_URL}/users/${id}`),
     getByEmail: (email: string) =>
       fetchData(`${API_BASE_URL}/users/email`, {
         method: "POST",
@@ -40,25 +40,28 @@ const api = {
       fetchData(`${API_BASE_URL}/users/${id}`, { method: "DELETE" }),
   },
   accounts: {
-    getAll: () => fetchData(`${API_BASE_URL}/accounts`),
-    getById: (id: string) => fetchData(`${API_BASE_URL}/accounts/${id}`),
+    getAll: () => fetchData<IAccountDoc[]>(`${API_BASE_URL}/accounts`),
+    getById: (id: string) =>
+      fetchData<IAccountDoc>(`${API_BASE_URL}/accounts/${id}`),
     getByProvider: (providerAccountId: string) =>
-      fetchData(`${API_BASE_URL}/accounts/provider`, {
+      fetchData<IAccountDoc>(`${API_BASE_URL}/accounts/provider`, {
         method: "POST",
         body: JSON.stringify({ providerAccountId }),
       }),
     create: (accountData: Partial<IAccount>) =>
-      fetchData(`${API_BASE_URL}/accounts`, {
+      fetchData<IAccountDoc>(`${API_BASE_URL}/accounts`, {
         method: "POST",
         body: JSON.stringify(accountData),
       }),
     update: (id: string, accountData: Partial<IAccount>) =>
-      fetchData(`${API_BASE_URL}/accounts/${id}`, {
+      fetchData<IAccountDoc>(`${API_BASE_URL}/accounts/${id}`, {
         method: "PUT",
         body: JSON.stringify(accountData),
       }),
     delete: (id: string) =>
-      fetchData(`${API_BASE_URL}/accounts/${id}`, { method: "DELETE" }),
+      fetchData<IAccountDoc>(`${API_BASE_URL}/accounts/${id}`, {
+        method: "DELETE",
+      }),
   },
 };
 
