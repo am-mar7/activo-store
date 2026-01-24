@@ -157,44 +157,73 @@ export async function getAllOrders(
   if (validated instanceof Error)
     return handleError(validated) as ErrorResponse;
 
-  const { page = 1, pageSize = 10, filter } = validated.params!;
+  const { page = 1, pageSize = 10, filter, query } = validated.params!;
 
   const isAdmin = validated.session?.user.role === "admin";
 
   try {
     if (!isAdmin) throw new UnauthorizedError();
     const skip = (page - 1) * pageSize;
-    const filterQuery: mongoose.QueryFilter<typeof Order> = {};
-    if (
-      filter &&
-      ["pending", "delivering", "cancelled", "delivered"].includes(filter)
-    ) {
-      filterQuery.status = filter;
-    }
 
-    const [orders, total] = await Promise.all([
-      Order.find(filterQuery)
-        .sort({ createdAt: -1 })
-        .skip(skip)
-        .limit(pageSize)
-        .populate({
-          path: "userId",
-          options: {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            transform: (doc: any) => doc,
-          },
-        })
-        .lean()
-        .then((orders) =>
-          orders.map((order) => ({
-            ...order,
-            user: order.userId,
-            userId: undefined,
-          }))
-        ),
-      Order.countDocuments(filterQuery),
+    const baseFilter: mongoose.QueryFilter<typeof Order> = {};
+    if (filter &&["pending", "delivering", "cancelled", "delivered"].includes(filter)) 
+      baseFilter.status = filter;
+    
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const pipeline: any[] = [
+      ...(Object.keys(baseFilter).length > 0 ? [{ $match: baseFilter }] : []),
+      {
+        $lookup: {
+          from: "users",
+          localField: "userId",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      {
+        $unwind: {
+          path: "$user",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      ...(query
+        ? [
+            {
+              $match: {
+                $or: [
+                  { "user.name": { $regex: query, $options: "i" } },
+                  { "user.email": { $regex: query, $options: "i" } },
+                ],
+              },
+            },
+          ]
+        : []),
+      {
+        $sort: { createdAt: -1 },
+      },
+    ];
+    const countPipeline = [...pipeline, { $count: "total" }];
+
+    const dataPipeline = [
+      ...pipeline,
+      { $skip: skip },
+      { $limit: pageSize },
+      {
+        $project: {
+          userId: 0,
+        },
+      },
+    ];
+
+    const [ordersResult, countResult] = await Promise.all([
+      Order.aggregate(dataPipeline),
+      Order.aggregate(countPipeline),
     ]);
+
+    const orders = ordersResult;
+    const total = countResult[0]?.total || 0;
     const isNext = total > orders.length + skip;
+
     return {
       success: true,
       data: { isNext, items: JSON.parse(JSON.stringify(orders)), total },
