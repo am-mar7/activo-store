@@ -23,18 +23,22 @@ import { useState } from "react";
 
 interface OrdersListProps {
   orders: OrderDetailedType[];
+  showCustomer?: boolean;
 }
 
-export function OrdersList({ orders }: OrdersListProps) {
+export function OrdersList({ orders, showCustomer = true }: OrdersListProps) {
   const [loading, setLoading] = useState<string | null>(null);
   const availableStatuses: ["pending", "delivering", "delivered"] = [
     "pending",
     "delivering",
     "delivered",
   ];
-  const columns: ColumnDef<OrderDetailedType>[] = [
+
+  const hasUserData = orders.some(order => order.user);
+
+  const allColumns: ColumnDef<OrderDetailedType>[] = [
     {
-      accessorFn: (row) => `${row.user.name} ${row.user.email}`,
+      accessorFn: (row) => row.user ? `${row.user.name} ${row.user.email}` : "",
       id: "customer-search",
       header: () => null,
       cell: () => null,
@@ -55,6 +59,9 @@ export function OrdersList({ orders }: OrdersListProps) {
       header: "Customer",
       cell: ({ row }) => {
         const user = row.original.user;
+        if (!user) {
+          return <div className="text-sm text-muted-foreground">N/A</div>;
+        }
         return (
           <div className="flex flex-col">
             <span className="font-medium text-sm">{user.name}</span>
@@ -225,6 +232,13 @@ export function OrdersList({ orders }: OrdersListProps) {
     },
   ];
 
+  const columns = allColumns.filter(col => {
+    if ((col.id === "customer" || col.id === "customer-search") && (!showCustomer || !hasUserData)) {
+      return false;
+    }
+    return true;
+  });
+
   async function handleUpdateOrder(
     id: string,
     status: "cancelled" | "delivering" | "delivered" | "pending"
@@ -250,7 +264,7 @@ export function OrdersList({ orders }: OrdersListProps) {
 
   return (
     <DataTable
-      input={{ placeholder: "filter by customer", value: "customer-search" }}
+      input={hasUserData && showCustomer ? { placeholder: "filter by customer", value: "customer-search" } : undefined}
       columns={columns}
       data={orders}
     />

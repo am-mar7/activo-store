@@ -138,7 +138,7 @@ export interface OrderType {
 }
 
 export interface OrderDetailedType extends Omit<OrderType, "userId"> {
-  user: IUserDoc;
+  user?: IUserDoc;
 }
 
 // params

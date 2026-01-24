@@ -142,3 +142,18 @@ export async function ChangeRole(
     return handleError(error) as ErrorResponse;
   }
 }
+
+export async function getUserById(
+  id: string
+): Promise<ActionResponse<IUserDoc>> {
+  try {
+    await dbConnect();
+
+    const user = await User.findById(id);
+    if (!user) throw new NotFoundError("User");
+
+    return { success: true, data: JSON.parse(JSON.stringify(user)) };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}
