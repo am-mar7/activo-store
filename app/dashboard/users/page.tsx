@@ -1,5 +1,4 @@
 import { UsersList } from "@/components/dashboard/lists/UserList";
-import DataRenderer from "@/components/DataRenderer";
 import Pagination from "@/components/Pagination";
 import LocalSearch from "@/components/searchbars/LocalSearch";
 import { DASHBOARDROUTES } from "@/constants/routes";
@@ -16,34 +15,30 @@ export default async function Users({ searchParams }: RouteParams) {
   });
 
   const { items: users, isNext, total } = data || {};
+  const tryAgain = !success || error;
+
   return (
     <div className="max-w-7xl w-full overflow-x-auto">
-      <div className="flex w-full flex-col xs:flex-row gap-2 items-center">
-        <div className="flex-1 max-xs:w-full">
-          <LocalSearch
-            route={DASHBOARDROUTES.USERS}
-            placeholder="search for users"
-          />
-        </div>
+      <div className="flex-1">
+        <LocalSearch
+          route={DASHBOARDROUTES.USERS}
+          placeholder="search for users by name or email..."
+        />
       </div>
-      <DataRenderer
-        data={users}
-        success={success}
-        render={(users) => (
-          <>
-            <h2 className="h3-semibold mt-6 py-1">Users</h2>
-            <div className="min-w-250 w-full mb-4">
-              {users && <UsersList users={users} />}
-            </div>
-            <Pagination isNext={isNext} total={total} />
-          </>
-        )}
-        empty={{
-          title: "No Users Found",
-          message: "There are no Users yet. Hold On the traffic is comming.",
-        }}
-        error={error}
-      />
+      {!tryAgain && users && (
+        <div className="bg-white">
+          <h3 className="h3-semibold text-slate-800 mt-4 mb-1.5 px-1">
+            {" "}
+            Users
+          </h3>
+          <UsersList users={users} />
+          <div className="mt-1.5">
+            {users.length ? (
+              <Pagination page={page} total={total} isNext={isNext} />
+            ) : null}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

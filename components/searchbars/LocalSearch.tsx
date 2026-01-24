@@ -50,7 +50,7 @@ export default function LocalSearch({
         onChange={(e) => setQuery(e.target.value)}
         placeholder={placeholder}
         type="search"
-        className="border-none ring-0 bg-transparent! hover:ring-0 h-auto shadow-none focus:ring-0 focus:border-transparent p-0"
+        className="border-none body-medium! ring-0 bg-transparent! hover:ring-0 h-auto shadow-none focus:ring-0 focus:border-transparent p-0"
         style={{ outline: "none", boxShadow: "none" }}
       />
     </div>
