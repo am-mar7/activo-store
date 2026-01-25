@@ -84,6 +84,30 @@ type PromoCodeType = {
   updatedAt: Date;
 };
 
+type KPIType = {
+  revenue: {
+    total: number;
+    previous: number;
+    changePercent: number;
+  };
+  orders: {
+    total: number;
+    previous: number;
+    changePercent: number;
+  };
+  customers: {
+    total: number;
+    new: number;
+    previousNew: number;
+    changePercent: number;
+  };
+  aov: {
+    value: number;
+    previous: number;
+    changePercent: number;
+  };
+};
+
 type UploadedImageData = {
   success: boolean;
   fileId: string;
@@ -306,4 +330,10 @@ interface promoCodeParams {
 
 interface editPromoCodeParams extends promoCodeParams {
   id: string;
+}
+
+interface KPIParams {
+  from?: string | Date;
+  to?: string | Date;
+  preset?: "day" | "week" | "month";
 }

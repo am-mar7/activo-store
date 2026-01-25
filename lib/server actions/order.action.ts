@@ -91,18 +91,35 @@ export async function UpdateOrderStatus(
 
   const userId = validated.session?.user.id;
   const { orderId, status } = validated.params!;
+  
   try {
-    const order = await Order.findOneAndUpdate(
+    const order = await Order.findOne({ _id: orderId, userId });
+    if (!order) throw new Error("Order not found");
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const updateData: any = { status };
+
+    if (order.payment?.method === "COD") {
+      if (status === "cancelled") {
+        updateData["payment.status"] = "failed";
+      } else if (status === "delivered") {
+        updateData["payment.status"] = "completed";
+      }
+    }
+
+    const updatedOrder = await Order.findOneAndUpdate(
       { _id: orderId, userId },
-      { status },
+      updateData,
       { new: true }
     );
-    if (!order) throw new Error("Failed to cancel order");
+
+    if (!updatedOrder) throw new Error("Failed to update order");
 
     revalidatePath(ROUTES.PROFILE);
     revalidatePath(DASHBOARDROUTES.ORDERS);
     revalidatePath(DASHBOARDROUTES.ORDERDETAILS(orderId));
-    return { success: true, data: JSON.parse(JSON.stringify(order)) };
+    
+    return { success: true, data: JSON.parse(JSON.stringify(updatedOrder)) };
   } catch (error) {
     return handleError(error) as ErrorResponse;
   }

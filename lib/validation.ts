@@ -277,3 +277,9 @@ export const PromoCodeSchema = z.object({
 export const editPromoCodeSchema = PromoCodeSchema.extend({
   id: z.string().min(1, "ID is required"),
 });
+
+export const kpiSchema = z.object({
+  from: z.union([z.string(), z.date()]).optional(),
+  to: z.union([z.string(), z.date()]).optional(),
+  preset: z.enum(["day", "week", "month"]).optional(),
+});

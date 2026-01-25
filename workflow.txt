@@ -38,6 +38,6 @@ remaining in plateform (5 days)
 
 remaining in dashboard (3-4 days)
 
-    analytical view (over view page) 
+    analytical view (over view page) working on
     reviews (just view , maybe delete comment)
     (optonal) settings page (shipping cost , upload hero image , upload image for size guide , make banner offer) day 2 
