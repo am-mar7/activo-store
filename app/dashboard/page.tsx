@@ -1,12 +1,16 @@
 import TryAgain from "@/components/TryAgain";
 import { getFriendlyErrorMessage } from "@/lib/error-messages";
-import { getKPIs } from "@/lib/server actions/analytics.action";
+import {
+  getAnalyticsCharts,
+  getKPIs,
+} from "@/lib/server actions/analytics.action";
 import { Suspense } from "react";
 import Loading from "../loading";
 import { DollarSign, ShoppingCart, Users, TrendingUp } from "lucide-react";
 import { DateRangeSelector } from "@/components/buttons/DataRangeSelector";
 import KPICard from "@/components/cards/KPICard";
 import { RouteParams } from "@/types/global";
+import DataChart from "@/components/DataChart";
 
 type PageProps = {
   from?: string;
@@ -23,23 +27,32 @@ export default async function Overview({ searchParams }: RouteParams) {
       : undefined;
 
   return (
-    <div className="max-w-7xl space-y-3">
-      <DateRangeSelector />
-      <Suspense fallback={<Loading />}>
-        <KPIs to={to} from={from} preset={validPreset} />
-      </Suspense>
+    <div className="flex flex-col-reverse 2xl:flex-row gap-3 2xl:gap-0">
+      <div className="flex-1 space-y-3">
+        <Suspense fallback={<Loading />}>
+          <KPIs to={to} from={from} preset={validPreset} />
+        </Suspense>
+        <Suspense fallback={<Loading />}>    
+          <Charts to={to} from={from} preset={validPreset} />
+        </Suspense>
+      </div>
+      <div className="w-full 2xl:max-w-sm relative">
+        <div className="2xl:fixed top-4 right-5 2xl:max-w-sm">
+          <DateRangeSelector />
+        </div>
+      </div>
     </div>
   );
 }
 
 async function KPIs({ to, from, preset }: PageProps) {
   const { success, error, data } = await getKPIs({
-    from: from,
-    to: to,
-    preset: preset,
+    from,
+    to,
+    preset,
   });
   console.log("res", success, error, data);
-  
+
   if (!success || error || !data) {
     return <TryAgain message={getFriendlyErrorMessage(error)} />;
   }
@@ -83,6 +96,59 @@ async function KPIs({ to, from, preset }: PageProps) {
         iconBg="bg-orange-100"
         iconColor="text-orange-600"
       />
+    </div>
+  );
+}
+
+async function Charts({ to, from, preset }: PageProps) {
+  const { success, error, data } = await getAnalyticsCharts({
+    from,
+    to,
+    preset,
+  });
+  console.log("CHARTS RES", success, error, data);
+
+  if (!success || error || !data) {
+    return <TryAgain message={getFriendlyErrorMessage(error)} />;
+  }
+
+  return (
+    <div className="space-y-3">
+      <DataChart
+        title="Revenue Over Time"
+        data={data.revenueOverTime}
+        type="area"
+        iconName="TrendingUp"
+        iconBg="bg-emerald-100"
+        iconColor="text-emerald-600"
+        chartColor="#34d399"
+        valuePrefix="$"
+        tooltipColor="text-green-600"
+      />
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <DataChart
+          title="Orders Over Time"
+          data={data.ordersOverTime}
+          type="bar"
+          iconName="ShoppingCart"
+          iconBg="bg-sky-100"
+          iconColor="text-sky-600"
+          chartColor="#38bdf8"
+          valueSuffix=" orders"
+          tooltipColor="text-blue-600"
+        />
+        <DataChart
+          title="User Growth"
+          data={data.userGrowth}
+          type="line"
+          iconName="Users"
+          iconBg="bg-violet-200"
+          iconColor="text-violet-600"
+          chartColor="#a78bfa"
+          valueSuffix=" users"
+          tooltipColor="text-purple-600"
+        />
+      </div>
     </div>
   );
 }

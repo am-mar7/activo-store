@@ -108,6 +108,23 @@ type KPIType = {
   };
 };
 
+export type AnalyticsPoint = {
+  date: Date;
+  value: number;
+};
+
+type FormattedAnalyticsPoint = {
+  date: Date;
+  label: string;
+  value: number;
+};
+
+export type AnalyticsChartsType = {
+  revenueOverTime: FormattedAnalyticsPoint[];
+  ordersOverTime: FormattedAnalyticsPoint[];
+  userGrowth: FormattedAnalyticsPoint[];
+};
+
 type UploadedImageData = {
   success: boolean;
   fileId: string;
