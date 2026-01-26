@@ -3,6 +3,7 @@ import { getFriendlyErrorMessage } from "@/lib/error-messages";
 import {
   getAnalyticsCharts,
   getKPIs,
+  getTopProducts,
 } from "@/lib/server actions/analytics.action";
 import { Suspense } from "react";
 import Loading from "../loading";
@@ -11,6 +12,7 @@ import { DateRangeSelector } from "@/components/buttons/DataRangeSelector";
 import KPICard from "@/components/cards/KPICard";
 import { RouteParams } from "@/types/global";
 import DataChart from "@/components/DataChart";
+import TopProductsList from "@/components/dashboard/lists/TopProductsList";
 
 type PageProps = {
   from?: string;
@@ -32,8 +34,11 @@ export default async function Overview({ searchParams }: RouteParams) {
         <Suspense fallback={<Loading />}>
           <KPIs to={to} from={from} preset={validPreset} />
         </Suspense>
-        <Suspense fallback={<Loading />}>    
+        <Suspense fallback={<Loading />}>
           <Charts to={to} from={from} preset={validPreset} />
+        </Suspense>
+        <Suspense fallback={<Loading />}>
+          <TopProducts to={to} from={from} preset={validPreset} />
         </Suspense>
       </div>
       <div className="w-full 2xl:max-w-sm relative">
@@ -150,5 +155,32 @@ async function Charts({ to, from, preset }: PageProps) {
         />
       </div>
     </div>
+  );
+}
+
+async function TopProducts({ to, from, preset }: PageProps) {
+  const { success, error, data } = await getTopProducts({
+    from,
+    to,
+    preset,
+  });
+  console.log("TOP PRDOCUTS", success, error, data);
+
+  if (!success || error || !data) {
+    return <TryAgain message={getFriendlyErrorMessage(error)} />;
+  }
+  return (
+    <TopProductsList
+      data={{
+        byRevenue: data.byRevenue.map((product) => ({
+          ...product,
+          image: product.image || "",
+        })),
+        byQuantity: data.byQuantity.map((product) => ({
+          ...product,
+          image: product.image || "", 
+        })),
+      }}
+    />
   );
 }

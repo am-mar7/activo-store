@@ -125,6 +125,14 @@ export type AnalyticsChartsType = {
   userGrowth: FormattedAnalyticsPoint[];
 };
 
+type TopProduct = {
+  productId: string
+  title: string
+  image?: string
+  soldQty: number
+  revenue: number
+}
+
 type UploadedImageData = {
   success: boolean;
   fileId: string;

@@ -133,6 +133,7 @@ OrderSchema.pre("save", async function () {
 });
 OrderSchema.index({ userId: 1, createdAt: -1 });
 OrderSchema.index({ status: 1, createdAt: -1 });
+OrderSchema.index({ createdAt: 1, "payment.status": 1, status: 1 });
 
 const Order = models?.Order || mongoose.model<IOrder>("Order", OrderSchema);
 

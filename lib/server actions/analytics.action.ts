@@ -8,6 +8,7 @@ import {
   FormattedAnalyticsPoint,
   KPIParams,
   KPIType,
+  TopProduct,
 } from "@/types/global";
 import actionHandler from "../handlers/action";
 import { kpiSchema } from "../validation";
@@ -23,7 +24,7 @@ function resolveTimeUnit(from: Date, to: Date) {
   return "month";
 }
 
-function getFromAndAfter(
+function resolveDateRange(
   from?: Date | string,
   to?: Date | string,
   preset?: string
@@ -122,7 +123,7 @@ export async function getKPIs(
 
   const { from, to, preset } = validated.params!;
 
-  const { fromDate, toDate } = getFromAndAfter(from, to, preset);
+  const { fromDate, toDate } = resolveDateRange(from, to, preset);
 
   const periodDays = Math.ceil(
     (toDate.getTime() - fromDate.getTime()) / (1000 * 60 * 60 * 24)
@@ -267,7 +268,7 @@ export async function getAnalyticsCharts(
 
   const { from, to, preset } = validated.params!;
 
-  const { fromDate, toDate } = getFromAndAfter(from, to, preset);
+  const { fromDate, toDate } = resolveDateRange(from, to, preset);
 
   try {
     const isAdmin = validated.session?.user.role === "admin";
@@ -337,13 +338,81 @@ export async function getAnalyticsCharts(
         { $project: { _id: 0, date: "$_id", value: 1 } },
       ]),
     ]);
-    
+
     return {
       success: true,
       data: {
         revenueOverTime: formatChartData(revenueOverTime, timeUnit),
         ordersOverTime: formatChartData(ordersOverTime, timeUnit),
         userGrowth: formatChartData(userGrowth, timeUnit),
+      },
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}
+
+export async function getTopProducts(
+  params: KPIParams
+): Promise<
+  ActionResponse<{ byRevenue: TopProduct[]; byQuantity: TopProduct[] }>
+> {
+  const validated = await actionHandler({
+    params,
+    schema: kpiSchema,
+    authorizetionProccess: true,
+  });
+
+  if (validated instanceof Error)
+    return handleError(validated) as ErrorResponse;
+
+  const { from, to, preset } = validated.params!;
+
+  const { fromDate, toDate } = resolveDateRange(from, to, preset);
+
+  try {
+    const result = await Order.aggregate([
+      {
+        $match: {
+          createdAt: { $gte: fromDate, $lte: toDate },
+          "payment.status": "completed",
+          status: { $ne: "cancelled" },
+        },
+      },
+      { $unwind: "$orderItems" },
+      {
+        $group: {
+          _id: "$orderItems.product",
+          productTitle: { $first: "$orderItems.productTitle" },
+          productImage: { $first: "$orderItems.productImage" },
+          soldQty: { $sum: "$orderItems.quantity" },
+          revenue: { $sum: "$orderItems.subTotal" },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          productId: "$_id",
+          title: "$productTitle",
+          image: "$productImage",
+          soldQty: 1,
+          revenue: 1,
+        },
+      },
+      {
+        $facet: {
+          byRevenue: [{ $sort: { revenue: -1 } }, { $limit: 5 }],
+          byQuantity: [{ $sort: { soldQty: -1 } }, { $limit: 5 }],
+        },
+      },
+    ]).hint({ createdAt: 1, "payment.status": 1, status: 1 });
+    if (!result) throw new Error("Failed to get Top Products");
+
+    return {
+      success: true,
+      data: {
+        byRevenue: JSON.parse(JSON.stringify(result[0]?.byRevenue)) ?? [],
+        byQuantity: JSON.parse(JSON.stringify(result[0]?.byQuantity)) ?? [],
       },
     };
   } catch (error) {
