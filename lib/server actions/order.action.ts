@@ -90,11 +90,22 @@ export async function UpdateOrderStatus(
     return handleError(validated) as ErrorResponse;
 
   const userId = validated.session?.user.id;
+  const isAdmin = validated.session?.user.role === "admin";
   const { orderId, status } = validated.params!;
-  
+
+  console.log("PARAMS", orderId, status, userId);
+
   try {
-    const order = await Order.findOne({ _id: orderId, userId });
-    if (!order) throw new Error("Order not found");
+    const order = await Order.findById(orderId);
+    if (!order) {
+      console.log("ORDER NOT FOUND");
+      throw new Error("Order not found");
+    }
+
+    if (order.userId.toString() !== userId && !isAdmin)
+      throw new UnauthorizedError(
+        "You are not authorized to update this order"
+      );
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const updateData: any = { status };
@@ -108,7 +119,7 @@ export async function UpdateOrderStatus(
     }
 
     const updatedOrder = await Order.findOneAndUpdate(
-      { _id: orderId, userId },
+      { _id: orderId },
       updateData,
       { new: true }
     );
@@ -118,7 +129,7 @@ export async function UpdateOrderStatus(
     revalidatePath(ROUTES.PROFILE);
     revalidatePath(DASHBOARDROUTES.ORDERS);
     revalidatePath(DASHBOARDROUTES.ORDERDETAILS(orderId));
-    
+
     return { success: true, data: JSON.parse(JSON.stringify(updatedOrder)) };
   } catch (error) {
     return handleError(error) as ErrorResponse;

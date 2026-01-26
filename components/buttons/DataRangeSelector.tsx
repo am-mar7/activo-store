@@ -35,7 +35,7 @@ export function DateRangeSelector() {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    
+
     const fromValue = formData.get("from") as string;
     const toValue = formData.get("to") as string;
 
@@ -64,25 +64,53 @@ export function DateRangeSelector() {
     }
   };
 
+  const sumbitButton = (
+    <>
+      <div className="flex gap-2">
+        <Button
+          type="submit"
+          className="bg-gray-100 cursor-pointer"
+          disabled={!!preset}
+        >
+          Apply
+        </Button>
+        {(preset || from || to) && (
+          <Button
+            type="button"
+            variant="outline"
+            size="icon"
+            onClick={clearFilters}
+            title="Clear filters"
+          >
+            <X className="h-4 w-4" />
+          </Button>
+        )}
+      </div>
+    </>
+  );
+
   return (
     <div className="bg-white rounded-lg border border-gray-200 p-4 shadow-sm">
       <form onSubmit={handleSubmit} className="flex flex-wrap items-end gap-4">
         <div className="flex-1 min-w-45 space-y-2">
           <Label htmlFor="preset">Quick Select</Label>
-          <Select
-            value={preset || "custom"}
-            onValueChange={handlePresetChange}
-          >
-            <SelectTrigger id="preset">
-              <SelectValue placeholder="Custom Range" />
-            </SelectTrigger>
-            <SelectContent className="bg-neutral-50">
-              <SelectItem value="custom">Custom Range</SelectItem>
-              <SelectItem value="day">Today</SelectItem>
-              <SelectItem value="week">Last 7 Days</SelectItem>
-              <SelectItem value="month">Last 30 Days</SelectItem>
-            </SelectContent>
-          </Select>
+          <div className="flex-between">
+            <Select
+              value={preset || "custom"}
+              onValueChange={handlePresetChange}
+            >
+              <SelectTrigger id="preset">
+                <SelectValue placeholder="Custom Range" />
+              </SelectTrigger>
+              <SelectContent className="bg-neutral-50">
+                <SelectItem value="custom">Custom Range</SelectItem>
+                <SelectItem value="day">Today</SelectItem>
+                <SelectItem value="week">Last 7 Days</SelectItem>
+                <SelectItem value="month">Last 30 Days</SelectItem>
+              </SelectContent>
+            </Select>
+            <div className="hidden 2xl:block">{sumbitButton}</div>
+          </div>
         </div>
 
         <div className="flex-1 min-w-45 space-y-2">
@@ -114,23 +142,7 @@ export function DateRangeSelector() {
             <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
           </div>
         </div>
-
-        <div className="flex gap-2">
-          <Button type="submit" disabled={!!preset}>
-            Apply
-          </Button>
-          {(preset || from || to) && (
-            <Button
-              type="button"
-              variant="outline"
-              size="icon"
-              onClick={clearFilters}
-              title="Clear filters"
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          )}
-        </div>
+        <div className="2xl:hidden">{sumbitButton}</div>
       </form>
 
       {(preset || from || to) && (
