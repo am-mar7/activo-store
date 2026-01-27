@@ -9,12 +9,16 @@ import {
   KPIParams,
   KPIType,
   TopProduct,
+  WorstProduct,
 } from "@/types/global";
 import actionHandler from "../handlers/action";
 import { kpiSchema } from "../validation";
 import handleError from "../handlers/error";
-import { Order, User } from "@/models";
+import { Order, User, Wishlist } from "@/models";
 import { log } from "console";
+import { dbConnect } from "../mongoose";
+import { auth } from "@/auth";
+import { UnauthorizedError } from "../http-errors";
 
 function resolveTimeUnit(from: Date, to: Date) {
   const days = (to.getTime() - from.getTime()) / (1000 * 60 * 60 * 24);
@@ -414,6 +418,122 @@ export async function getTopProducts(
         byRevenue: JSON.parse(JSON.stringify(result[0]?.byRevenue)) ?? [],
         byQuantity: JSON.parse(JSON.stringify(result[0]?.byQuantity)) ?? [],
       },
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}
+
+export async function getWorstProducts(): Promise<
+  ActionResponse<WorstProduct[]>
+> {
+  try {
+    await dbConnect();
+    const session = await auth();
+
+    const isAdmin = session?.user.role === "admin";
+    if (!isAdmin) throw new UnauthorizedError("Unauthorized access");
+
+    const result = await Wishlist.aggregate([
+      {
+        $group: {
+          _id: "$productId",
+          wishlistCount: { $sum: 1 },
+        },
+      },
+      {
+        $match: {
+          wishlistCount: { $gte: 5 },
+        },
+      },
+      {
+        $lookup: {
+          from: "products",
+          localField: "_id",
+          foreignField: "_id",
+          as: "product",
+        },
+      },
+      { $unwind: "$product" },
+      {
+        $match: {
+          "product.createdAt": {
+            $lte: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000),
+          },
+        },
+      },
+      {
+        $lookup: {
+          from: "orders",
+          let: { productId: "$_id" },
+          pipeline: [
+            {
+              $match: {
+                status: "delivered",
+                "payment.status": "completed",
+              },
+            },
+            { $unwind: "$orderItems" },
+            {
+              $match: {
+                $expr: {
+                  $eq: ["$orderItems.product", "$$productId"],
+                },
+              },
+            },
+            {
+              $project: {
+                _id: 0,
+                "orderItems.quantity": 1,
+              },
+            },
+          ],
+          as: "matchedOrders",
+        },
+      },
+      {
+        $addFields: {
+          soldQty: {
+            $sum: {
+              $map: {
+                input: "$matchedOrders",
+                as: "order",
+                in: "$$order.orderItems.quantity",
+              },
+            },
+          },
+        },
+      },
+      {
+        $match: {
+          $expr: {
+            $or: [
+              { $eq: ["$soldQty", 0] },
+              {
+                $lte: [{ $multiply: ["$soldQty", 10] }, "$wishlistCount"],
+              },
+            ],
+          },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          productId: "$_id",
+          title: "$product.title",
+          image: { $arrayElemAt: ["$product.images", 0] },
+          wishlistCount: 1,
+          soldQty: 1,
+        },
+      },
+      { $sort: { wishlistCount: -1 } },
+      { $limit: 5 },
+    ]);
+    if (!result) throw new Error("Failed to get Top Products");
+
+    return {
+      success: true,
+      data: JSON.parse(JSON.stringify(result)),
     };
   } catch (error) {
     return handleError(error) as ErrorResponse;

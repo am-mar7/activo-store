@@ -125,12 +125,16 @@ export type AnalyticsChartsType = {
   userGrowth: FormattedAnalyticsPoint[];
 };
 
-type TopProduct = {
-  productId: string
-  title: string
-  image?: string
-  soldQty: number
-  revenue: number
+interface TopProduct {
+  productId: string;
+  title: string;
+  image?: string;
+  soldQty: number;
+  revenue: number;
+}
+
+interface WorstProduct extends Omit<TopProduct , "revenue"> {
+  wishlistCount: number;
 }
 
 type UploadedImageData = {

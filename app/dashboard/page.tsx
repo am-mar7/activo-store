@@ -4,6 +4,7 @@ import {
   getAnalyticsCharts,
   getKPIs,
   getTopProducts,
+  getWorstProducts,
 } from "@/lib/server actions/analytics.action";
 import { Suspense } from "react";
 import Loading from "../loading";
@@ -13,6 +14,7 @@ import KPICard from "@/components/cards/KPICard";
 import { RouteParams } from "@/types/global";
 import DataChart from "@/components/DataChart";
 import TopProductsList from "@/components/dashboard/lists/TopProductsList";
+import WorstProductsList from "@/components/dashboard/lists/WorstProductsList";
 
 type PageProps = {
   from?: string;
@@ -39,6 +41,9 @@ export default async function Overview({ searchParams }: RouteParams) {
         </Suspense>
         <Suspense fallback={<Loading />}>
           <TopProducts to={to} from={from} preset={validPreset} />
+        </Suspense>
+        <Suspense fallback={<Loading />}>
+          <WorstProducts />
         </Suspense>
       </div>
       <div className="w-full 2xl:max-w-sm relative">
@@ -178,9 +183,19 @@ async function TopProducts({ to, from, preset }: PageProps) {
         })),
         byQuantity: data.byQuantity.map((product) => ({
           ...product,
-          image: product.image || "", 
+          image: product.image || "",
         })),
       }}
     />
   );
+}
+
+async function WorstProducts() {
+  const { success, error, data } = await getWorstProducts();
+  console.log("WOSRT PRDOCUTS", success, error, data);
+
+  if (!success || error || !data) {
+    return <TryAgain message={getFriendlyErrorMessage(error)} />;
+  }
+  return <WorstProductsList data={data} />;
 }
