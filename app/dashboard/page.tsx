@@ -2,6 +2,7 @@ import TryAgain from "@/components/TryAgain";
 import { getFriendlyErrorMessage } from "@/lib/error-messages";
 import {
   getAnalyticsCharts,
+  getCategoriesPerfromance,
   getKPIs,
   getTopProducts,
   getWorstProducts,
@@ -15,6 +16,7 @@ import { RouteParams } from "@/types/global";
 import DataChart from "@/components/DataChart";
 import TopProductsList from "@/components/dashboard/lists/TopProductsList";
 import WorstProductsList from "@/components/dashboard/lists/WorstProductsList";
+import CategoriesPerformanceList from "@/components/dashboard/lists/CategoriesPerformanceList";
 
 type PageProps = {
   from?: string;
@@ -44,6 +46,9 @@ export default async function Overview({ searchParams }: RouteParams) {
         </Suspense>
         <Suspense fallback={<Loading />}>
           <WorstProducts />
+        </Suspense>
+        <Suspense fallback={<Loading />}>
+          <CategoriesPerformance to={to} from={from} preset={validPreset} />
         </Suspense>
       </div>
       <div className="w-full 2xl:max-w-sm relative">
@@ -198,4 +203,18 @@ async function WorstProducts() {
     return <TryAgain message={getFriendlyErrorMessage(error)} />;
   }
   return <WorstProductsList data={data} />;
+}
+
+async function CategoriesPerformance({ to, from, preset }: PageProps) {
+  const { success, error, data } = await getCategoriesPerfromance({
+    from,
+    to,
+    preset,
+  });
+  console.log("Categories Performance", success, error, data);
+
+  if (!success || error || !data) {
+    return <TryAgain message={getFriendlyErrorMessage(error)} />;
+  }
+  return <CategoriesPerformanceList data={data} />;
 }

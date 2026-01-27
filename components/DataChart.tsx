@@ -63,16 +63,16 @@ export default function DataChart({
 
   if (loading) {
     return (
-      <div className="rounded-xl border bg-white dark:bg-gray-900 p-6 space-y-4">
-        <div className="h-5 w-40 bg-gray-200 dark:bg-gray-700 rounded" />
-        <div className="h-75 bg-gray-100 dark:bg-gray-800 rounded-lg animate-pulse" />
+      <div className="rounded-xl border bg-white  p-6 space-y-4">
+        <div className="h-5 w-40 bg-gray-200  rounded" />
+        <div className="h-75 bg-gray-100 rounded-lg animate-pulse" />
       </div>
     );
   }
 
   if (chartData.length === 0) {
     return (
-      <div className="rounded-xl border bg-white dark:bg-gray-900 p-6">
+      <div className="rounded-xl border bg-white p-6">
         <Header
           title={title}
           Icon={Icon}
@@ -153,7 +153,7 @@ export default function DataChart({
     const point = chartData.find((p) => p.date === label);
 
     return (
-      <div className="rounded-lg border bg-white dark:bg-gray-800 p-3 shadow">
+      <div className="rounded-lg border bg-white p-3 shadow">
         <p className="text-xs text-gray-500">{point?.label}</p>
         <p className={`text-lg font-semibold ${tooltipColor}`}>
           {valuePrefix}
@@ -180,7 +180,7 @@ function Grid() {
   return (
     <CartesianGrid
       strokeDasharray="3 3"
-      className="stroke-gray-200 dark:stroke-gray-700"
+      className="stroke-gray-200"
     />
   );
 }

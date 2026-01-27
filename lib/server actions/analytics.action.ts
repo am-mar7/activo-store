@@ -4,6 +4,7 @@ import {
   ActionResponse,
   AnalyticsChartsType,
   AnalyticsPoint,
+  CategoryPerformance,
   ErrorResponse,
   FormattedAnalyticsPoint,
   KPIParams,
@@ -529,6 +530,99 @@ export async function getWorstProducts(): Promise<
       { $sort: { wishlistCount: -1 } },
       { $limit: 5 },
     ]);
+    if (!result) throw new Error("Failed to get Top Products");
+
+    return {
+      success: true,
+      data: JSON.parse(JSON.stringify(result)),
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}
+
+export async function getCategoriesPerfromance(
+  params: KPIParams
+): Promise<ActionResponse<CategoryPerformance[]>> {
+  const validated = await actionHandler({
+    params,
+    schema: kpiSchema,
+    authorizetionProccess: true,
+  });
+
+  if (validated instanceof Error)
+    return handleError(validated) as ErrorResponse;
+
+  const { from, to, preset } = validated.params!;
+  const { fromDate, toDate } = resolveDateRange(from, to, preset);
+  
+  try {
+    const result = await Order.aggregate([
+      {
+        $match: {
+          status: "delivered",
+          "payment.status": "completed",
+          createdAt: {
+            $gte: fromDate,
+            $lte: toDate,
+          },
+        },
+      },    
+      { $unwind: "$orderItems" },    
+      {
+        $lookup: {
+          from: "products",
+          localField: "orderItems.product",
+          foreignField: "_id",
+          as: "product",
+        },
+      },
+      { $unwind: "$product" },
+      {
+        $lookup: {
+          from: "categories",
+          localField: "product.category",
+          foreignField: "_id",
+          as: "category",
+        },
+      },
+      { $unwind: "$category" },
+      {
+        $group: {
+          _id: "$category._id",
+          name: { $first: "$category.name" },
+    
+          revenue: {
+            $sum: {
+              $multiply: [
+                "$orderItems.priceAtPurchase",
+                "$orderItems.quantity",
+              ],
+            },
+          },
+          soldQty: { $sum: "$orderItems.quantity" },
+          orders: { $addToSet: "$_id" },
+        },
+      },    
+      {
+        $addFields: {
+          ordersCount: { $size: "$orders" },
+        },
+      },    
+      {
+        $project: {
+          _id: 0,
+          categoryId: "$_id",
+          name: 1,
+          revenue: 1,
+          soldQty: 1,
+          ordersCount: 1,
+        },
+      },
+    
+      { $sort: { revenue: -1 } },
+    ]);   
+
     if (!result) throw new Error("Failed to get Top Products");
 
     return {

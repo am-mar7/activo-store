@@ -137,6 +137,14 @@ interface WorstProduct extends Omit<TopProduct , "revenue"> {
   wishlistCount: number;
 }
 
+type CategoryPerformance = {
+  categoryId: string;
+  name: string;
+  revenue: number;
+  soldQty: number;
+  ordersCount: number;
+};
+
 type UploadedImageData = {
   success: boolean;
   fileId: string;
