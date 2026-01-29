@@ -2,6 +2,7 @@
 
 import {
   ActionResponse,
+  AdminAlert,
   AnalyticsChartsType,
   AnalyticsPoint,
   CategoryPerformance,
@@ -114,6 +115,14 @@ function formatChartData(
   });
 }
 
+function buildPaidOrdersMatch(from: Date, to: Date) {
+  return {
+    status: "delivered",
+    "payment.status": "completed",
+    createdAt: { $gte: from, $lte: to },
+  };
+}
+
 export async function getKPIs(
   params: KPIParams
 ): Promise<ActionResponse<KPIType>> {
@@ -144,11 +153,7 @@ export async function getKPIs(
     if (!isAdmin) throw new Error("Unauthorized access");
 
     const fetchOrders = async (start: Date, end: Date) =>
-      Order.find({
-        createdAt: { $gte: start, $lte: end },
-        "payment.status": "completed",
-        status: { $ne: "cancelled" },
-      }).lean();
+      Order.find(buildPaidOrdersMatch(start, end)).lean();
 
     const [currentOrders, previousOrders] = await Promise.all([
       fetchOrders(fromDate, toDate),
@@ -281,11 +286,7 @@ export async function getAnalyticsCharts(
 
     const timeUnit = resolveTimeUnit(fromDate, toDate);
 
-    const orderMatch = {
-      createdAt: { $gte: fromDate, $lte: toDate },
-      "payment.status": "completed",
-      status: { $ne: "cancelled" },
-    };
+    const orderMatch = buildPaidOrdersMatch(fromDate, toDate);
 
     const [revenueOverTime, ordersOverTime, userGrowth] = await Promise.all([
       Order.aggregate([
@@ -378,11 +379,7 @@ export async function getTopProducts(
   try {
     const result = await Order.aggregate([
       {
-        $match: {
-          createdAt: { $gte: fromDate, $lte: toDate },
-          "payment.status": "completed",
-          status: { $ne: "cancelled" },
-        },
+        $match: buildPaidOrdersMatch(fromDate, toDate),
       },
       { $unwind: "$orderItems" },
       {
@@ -555,20 +552,16 @@ export async function getCategoriesPerfromance(
 
   const { from, to, preset } = validated.params!;
   const { fromDate, toDate } = resolveDateRange(from, to, preset);
-  
+
   try {
+    const isAdmin = validated.session?.user.role === "admin";
+    if (!isAdmin) throw new Error("Unauthorized access");
+
     const result = await Order.aggregate([
       {
-        $match: {
-          status: "delivered",
-          "payment.status": "completed",
-          createdAt: {
-            $gte: fromDate,
-            $lte: toDate,
-          },
-        },
-      },    
-      { $unwind: "$orderItems" },    
+        $match: buildPaidOrdersMatch(fromDate, toDate),
+      },
+      { $unwind: "$orderItems" },
       {
         $lookup: {
           from: "products",
@@ -591,7 +584,7 @@ export async function getCategoriesPerfromance(
         $group: {
           _id: "$category._id",
           name: { $first: "$category.name" },
-    
+
           revenue: {
             $sum: {
               $multiply: [
@@ -603,12 +596,12 @@ export async function getCategoriesPerfromance(
           soldQty: { $sum: "$orderItems.quantity" },
           orders: { $addToSet: "$_id" },
         },
-      },    
+      },
       {
         $addFields: {
           ordersCount: { $size: "$orders" },
         },
-      },    
+      },
       {
         $project: {
           _id: 0,
@@ -619,15 +612,106 @@ export async function getCategoriesPerfromance(
           ordersCount: 1,
         },
       },
-    
+
       { $sort: { revenue: -1 } },
-    ]);   
+    ]);
 
     if (!result) throw new Error("Failed to get Top Products");
 
     return {
       success: true,
       data: JSON.parse(JSON.stringify(result)),
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}
+
+export async function getAdminAlerts(
+  params: KPIParams
+): Promise<ActionResponse<AdminAlert[]>> {
+  const validated = await actionHandler({
+    params,
+    schema: kpiSchema,
+    authorizetionProccess: true,
+  });
+
+  if (validated instanceof Error)
+    return handleError(validated) as ErrorResponse;
+
+  try {
+    const isAdmin = validated.session?.user.role === "admin";
+    if (!isAdmin) throw new Error("Unauthorized access");
+
+    const alerts: AdminAlert[] = [];
+
+    const [kpis, worst] = await Promise.all([
+      getKPIs(params),
+      getWorstProducts(),
+    ]);
+    if (!kpis.success || !kpis.data || !worst.data)
+      throw new Error("Failed to load ALerts");
+
+    if (kpis.data.revenue.changePercent <= -20) {
+      alerts.push({
+        id: "revenue-drop",
+        type: "REVENUE_DROP",
+        severity: "critical",
+        title: "Revenue Drop Detected",
+        description: `Revenue dropped by ${Math.abs(
+          kpis?.data?.revenue?.changePercent
+        )}% compared to the previous period.`,
+        meta: {
+          current: kpis?.data.revenue.total,
+          previous: kpis?.data.revenue.previous,
+        },
+      });
+    }
+
+    if (kpis.data.revenue.changePercent <= -20) {
+      alerts.push({
+        id: "revenue-drop",
+        type: "REVENUE_DROP",
+        severity: "critical",
+        title: "Revenue Drop Detected",
+        description: `Revenue dropped by ${Math.abs(
+          kpis.data.revenue.changePercent
+        )}% compared to the previous period.`,
+        meta: {
+          current: kpis.data.revenue.total,
+          previous: kpis.data.revenue.previous,
+        },
+      });
+    }
+
+    if (kpis.data.aov.changePercent <= -15) {
+      alerts.push({
+        id: "aov-drop",
+        type: "AOV_DROP",
+        severity: "info",
+        title: "Average Order Value Decrease",
+        description: `AOV decreased by ${Math.abs(
+          kpis.data.aov.changePercent
+        )}%.`,
+      });
+    }
+
+    if (worst.success && worst.data?.length > 0) {
+      alerts.push({
+        id: "worst-products",
+        type: "WORST_PRODUCTS",
+        severity: "warning",
+        title: "Products with High Interest but Low Sales",
+        description: `${worst.data.length} products have high wishlist counts but very low sales.`,
+        meta: {
+          products: worst.data,
+        },
+      });
+    }
+
+    return {
+      success: true,
+      data: JSON.parse(JSON.stringify(alerts)),
     };
   } catch (error) {
     return handleError(error) as ErrorResponse;

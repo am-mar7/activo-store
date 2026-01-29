@@ -31,13 +31,13 @@ remaining in plateform (5 days)
     buy now button logic (in product details)
     global search (UI and logic)
     forget password
-    email verfication for creating accouts
+    email verfication for creating accouts (optional)
     order details with ability to update the order(very optional)
     filtering 
     pagination 
 
 remaining in dashboard (3-4 days)
 
-    analytical view (over view page) working on
+    analytical view (over view page) done
     reviews (just view , maybe delete comment)
     (optonal) settings page (shipping cost , upload hero image , upload image for size guide , make banner offer) day 2 

@@ -137,6 +137,21 @@ interface WorstProduct extends Omit<TopProduct , "revenue"> {
   wishlistCount: number;
 }
 
+export type AdminAlert = {
+  id: string;
+  type:
+    | "REVENUE_DROP"
+    | "ORDERS_DROP"
+    | "AOV_DROP"
+    | "WORST_PRODUCTS"
+    | "CATEGORY_PERFORMANCE";
+  severity: "info" | "warning" | "critical";
+  title: string;
+  description: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  meta?: Record<string, any>;
+};
+
 type CategoryPerformance = {
   categoryId: string;
   name: string;
