@@ -283,3 +283,92 @@ export const kpiSchema = z.object({
   to: z.union([z.string(), z.date()]).optional(),
   preset: z.enum(["day", "week", "month"]).optional(),
 });
+
+const nonNegativeNumber = z.number().min(0, "Value must be non-negative");
+
+export const shippingSchema = z.object({
+  baseCost: nonNegativeNumber,
+  freeShippingMinOrder: nonNegativeNumber.optional(),
+  perCity: z
+    .array(
+      z.object({
+        city: z.string().min(1),
+        cost: nonNegativeNumber,
+      })
+    )
+    .optional(),
+});
+
+export const heroSectionSchema = z
+  .object({
+    enabled: z.boolean(),
+    title: z.string().min(1).optional(),
+    subtitle: z.string().min(1).optional(),
+    image: z
+      .instanceof(File)
+      .refine((file) => file.type.startsWith("image/"), {
+        message: "File must be an image",
+      })
+      .optional(),
+
+    cta: z
+      .object({
+        text: z.string().optional(),
+        href: z.string().optional(),
+      })
+      .optional(),
+  })
+  .refine(
+    (data) => {
+      const cta = data.cta;
+      if (!cta) return true;
+
+      const hasText = cta.text && cta.text.trim().length > 0;
+      const hasHref = cta.href && cta.href.trim().length > 0;
+
+      return (hasText && hasHref) || (!hasText && !hasHref);
+    },
+    {
+      message: "Both CTA text and link must be filled, or leave both empty",
+      path: ["cta"], // Error appears on the cta field
+    }
+  );
+
+export const topBannerSchema = z
+  .object({
+    enabled: z.boolean(),
+
+    text: z.string().min(1).optional(),
+    backgroundColor: z.string().optional(),
+    textColor: z.string().optional(),
+    link: z.string().url().optional(),
+
+    startsAt: z.date().optional(),
+    endsAt: z.date().optional(),
+  })
+  .refine(
+    (data) => !data.startsAt || !data.endsAt || data.startsAt <= data.endsAt,
+    {
+      message: "startsAt must be before endsAt",
+      path: ["endsAt"],
+    }
+  );
+
+export const checkoutSchema = z.object({
+  allowCOD: z.boolean(),
+  allowOnlinePayment: z.boolean(),
+  minOrderAmount: nonNegativeNumber.optional(),
+});
+
+export const maintenanceSchema = z.object({
+  enabled: z.boolean(),
+  message: z.string().min(1).optional(),
+});
+
+export const appSettingsSchema = z.object({
+  shipping: shippingSchema.optional(),
+  heroSection: heroSectionSchema.optional(),
+  topBanner: topBannerSchema.optional(),
+  checkout: checkoutSchema.optional(),
+  maintenance: maintenanceSchema.optional(),
+});

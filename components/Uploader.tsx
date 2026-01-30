@@ -184,7 +184,7 @@ export default function Uploader({
 
       {/* Preview Grid */}
       {(existingImageUrls?.length || 0) + images.length > 0 && (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+        <div className={maxFiles === 1 ? "max-w-md mx-auto" : "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4"}>
           {existingImageUrls?.map((url, index) => (
             <ImagePreview
               key={index}

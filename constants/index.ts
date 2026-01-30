@@ -6,6 +6,7 @@ import {
   ShoppingBag,
   Tags,
   Star,
+  Settings,
 } from "lucide-react";
 import { DASHBOARDROUTES } from "./routes";
 
@@ -44,6 +45,11 @@ export const DashboardLinks = [
     icon: Star,
     route: DASHBOARDROUTES.REVIEWS,
     label: "reviews",
+  },
+  {
+    icon: Settings,
+    route: DASHBOARDROUTES.SETTINGS,
+    label: "Settings",
   },
 ];
 
