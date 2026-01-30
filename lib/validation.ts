@@ -287,16 +287,7 @@ export const kpiSchema = z.object({
 const nonNegativeNumber = z.number().min(0, "Value must be non-negative");
 
 export const shippingSchema = z.object({
-  baseCost: nonNegativeNumber,
-  freeShippingMinOrder: nonNegativeNumber.optional(),
-  perCity: z
-    .array(
-      z.object({
-        city: z.string().min(1),
-        cost: nonNegativeNumber,
-      })
-    )
-    .optional(),
+  cost: nonNegativeNumber,
 });
 
 export const heroSectionSchema = z
@@ -357,7 +348,6 @@ export const topBannerSchema = z
 export const checkoutSchema = z.object({
   allowCOD: z.boolean(),
   allowOnlinePayment: z.boolean(),
-  minOrderAmount: nonNegativeNumber.optional(),
 });
 
 export const maintenanceSchema = z.object({

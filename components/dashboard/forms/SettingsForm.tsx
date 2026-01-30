@@ -19,7 +19,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import { X, Plus } from "lucide-react";
 import z from "zod";
 import { updateSettings } from "@/lib/server actions/settings.action";
 import { toast } from "sonner";
@@ -38,15 +37,12 @@ export default function SettingsForm({
   defaultValues,
   existingHeroImage,
 }: SettingsFormProps) {
-  console.log(defaultValues);  
+  console.log(defaultValues);
   const [heroImageFile, setHeroImageFile] = useState<File[]>([]);
   const [existingImage, setExistingImage] = useState<string[]>(
     existingHeroImage ? [existingHeroImage] : []
   );
   const [error, setError] = useState<string | null>(null);
-  const [perCityShipping, setPerCityShipping] = useState<
-    { city: string; cost: number }[]
-  >(defaultValues.shipping?.perCity || []);
 
   const form = useForm<SettingsFormValues>({
     resolver: zodResolver(schema),
@@ -58,16 +54,11 @@ export default function SettingsForm({
   const handleSubmit = async function (data: SettingsFormValues) {
     setError(null);
 
-    // Prepare submission data
     const submissionData: any = {
       ...data,
-      shipping: {
-        ...data.shipping,
-        perCity: perCityShipping,
-      },
+      shipping: data.shipping,
     };
 
-    // Add hero image if uploaded
     if (heroImageFile.length > 0) {
       submissionData.heroSection = {
         ...data.heroSection,
@@ -86,28 +77,6 @@ export default function SettingsForm({
     }
   };
 
-  const addCity = () => {
-    setPerCityShipping([...perCityShipping, { city: "", cost: 0 }]);
-  };
-
-  const removeCity = (index: number) => {
-    setPerCityShipping(perCityShipping.filter((_, i) => i !== index));
-  };
-
-  const updateCity = (
-    index: number,
-    field: "city" | "cost",
-    value: string | number
-  ) => {
-    const updated = [...perCityShipping];
-    if (field === "city") {
-      updated[index].city = value as string;
-    } else {
-      updated[index].cost = value as number;
-    }
-    setPerCityShipping(updated);
-  };
-
   return (
     <FormProvider {...form}>
       <form
@@ -119,18 +88,20 @@ export default function SettingsForm({
 
           <div className="space-y-4">
             <FormField
-              name="shipping.baseCost"
+              name="shipping.cost"
               control={form.control}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Base Shipping Cost</FormLabel>
+                  <FormLabel>Shipping Cost</FormLabel>
                   <FormControl>
                     <Input
                       type="number"
                       step="0.01"
                       placeholder="0.00"
                       {...field}
-                      onChange={(e) => field.onChange(parseFloat(e.target.value))}
+                      onChange={(e) =>
+                        field.onChange(parseFloat(e.target.value))
+                      }
                       className="bg-slate-50"
                     />
                   </FormControl>
@@ -141,80 +112,6 @@ export default function SettingsForm({
                 </FormItem>
               )}
             />
-
-            <FormField
-              name="shipping.freeShippingMinOrder"
-              control={form.control}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Free Shipping Minimum Order</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      step="0.01"
-                      placeholder="0.00"
-                      {...field}
-                      value={field.value ?? ""}
-                      onChange={(e) =>
-                        field.onChange(
-                          e.target.value ? parseFloat(e.target.value) : undefined
-                        )
-                      }
-                      className="bg-slate-50"
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    Minimum order amount for free shipping (optional)
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Per-City Shipping */}
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <FormLabel>Per-City Shipping Costs</FormLabel>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={addCity}
-                >
-                  <Plus className="w-4 h-4 mr-1" />
-                  Add City
-                </Button>
-              </div>
-
-              {perCityShipping.map((city, index) => (
-                <div key={index} className="flex gap-2 items-start">
-                  <Input
-                    placeholder="City name"
-                    value={city.city}
-                    onChange={(e) => updateCity(index, "city", e.target.value)}
-                    className="bg-slate-50"
-                  />
-                  <Input
-                    type="number"
-                    step="0.01"
-                    placeholder="Cost"
-                    value={city.cost}
-                    onChange={(e) =>
-                      updateCity(index, "cost", parseFloat(e.target.value))
-                    }
-                    className="bg-slate-50 w-32"
-                  />
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => removeCity(index)}
-                  >
-                    <X className="w-4 h-4" />
-                  </Button>
-                </div>
-              ))}
-            </div>
           </div>
         </div>
 
@@ -228,7 +125,9 @@ export default function SettingsForm({
               render={({ field }) => (
                 <FormItem className="flex items-center justify-between rounded-lg border p-4">
                   <div className="space-y-0.5">
-                    <FormLabel className="text-base">Enable Hero Section</FormLabel>
+                    <FormLabel className="text-base">
+                      Enable Hero Section
+                    </FormLabel>
                     <FormDescription>
                       Show hero banner on homepage
                     </FormDescription>
@@ -237,6 +136,7 @@ export default function SettingsForm({
                     <Switch
                       checked={field.value}
                       onCheckedChange={field.onChange}
+                      className="bg-neutral-300"
                     />
                   </FormControl>
                 </FormItem>
@@ -299,7 +199,7 @@ export default function SettingsForm({
             {/* CTA Button */}
             <div className="space-y-4 border-t pt-4">
               <FormLabel>Call-to-Action Button</FormLabel>
-              
+
               <FormField
                 name="heroSection.cta.text"
                 control={form.control}
@@ -352,7 +252,9 @@ export default function SettingsForm({
               render={({ field }) => (
                 <FormItem className="flex items-center justify-between rounded-lg border p-4">
                   <div className="space-y-0.5">
-                    <FormLabel className="text-base">Enable Top Banner</FormLabel>
+                    <FormLabel className="text-base">
+                      Enable Top Banner
+                    </FormLabel>
                     <FormDescription>
                       Show announcement banner at top of site
                     </FormDescription>
@@ -361,6 +263,7 @@ export default function SettingsForm({
                     <Switch
                       checked={field.value}
                       onCheckedChange={field.onChange}
+                      className="bg-neutral-300"
                     />
                   </FormControl>
                 </FormItem>
@@ -463,7 +366,9 @@ export default function SettingsForm({
                         }
                         onChange={(e) =>
                           field.onChange(
-                            e.target.value ? new Date(e.target.value) : undefined
+                            e.target.value
+                              ? new Date(e.target.value)
+                              : undefined
                           )
                         }
                         className="bg-slate-50"
@@ -491,7 +396,9 @@ export default function SettingsForm({
                         }
                         onChange={(e) =>
                           field.onChange(
-                            e.target.value ? new Date(e.target.value) : undefined
+                            e.target.value
+                              ? new Date(e.target.value)
+                              : undefined
                           )
                         }
                         className="bg-slate-50"
@@ -516,15 +423,16 @@ export default function SettingsForm({
               render={({ field }) => (
                 <FormItem className="flex items-center justify-between rounded-lg border p-4">
                   <div className="space-y-0.5">
-                    <FormLabel className="text-base">Allow Cash on Delivery</FormLabel>
-                    <FormDescription>
-                      Enable COD payment method
-                    </FormDescription>
+                    <FormLabel className="text-base">
+                      Allow Cash on Delivery
+                    </FormLabel>
+                    <FormDescription>Enable COD payment method</FormDescription>
                   </div>
                   <FormControl>
                     <Switch
                       checked={field.value}
                       onCheckedChange={field.onChange}
+                      className="bg-neutral-300"
                     />
                   </FormControl>
                 </FormItem>
@@ -537,7 +445,9 @@ export default function SettingsForm({
               render={({ field }) => (
                 <FormItem className="flex items-center justify-between rounded-lg border p-4">
                   <div className="space-y-0.5">
-                    <FormLabel className="text-base">Allow Online Payment</FormLabel>
+                    <FormLabel className="text-base">
+                      Allow Online Payment
+                    </FormLabel>
                     <FormDescription>
                       Enable online payment methods
                     </FormDescription>
@@ -546,37 +456,9 @@ export default function SettingsForm({
                     <Switch
                       checked={field.value}
                       onCheckedChange={field.onChange}
+                      className="bg-neutral-300"
                     />
                   </FormControl>
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              name="checkout.minOrderAmount"
-              control={form.control}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Minimum Order Amount (Optional)</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      step="0.01"
-                      placeholder="0.00"
-                      {...field}
-                      value={field.value ?? ""}
-                      onChange={(e) =>
-                        field.onChange(
-                          e.target.value ? parseFloat(e.target.value) : undefined
-                        )
-                      }
-                      className="bg-slate-50"
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    Minimum order value required for checkout
-                  </FormDescription>
-                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -594,7 +476,9 @@ export default function SettingsForm({
               render={({ field }) => (
                 <FormItem className="flex items-center justify-between rounded-lg border p-4 border-orange-200 bg-orange-50">
                   <div className="space-y-0.5">
-                    <FormLabel className="text-base">Enable Maintenance Mode</FormLabel>
+                    <FormLabel className="text-base">
+                      Enable Maintenance Mode
+                    </FormLabel>
                     <FormDescription>
                       Site will be unavailable to customers
                     </FormDescription>
@@ -603,6 +487,7 @@ export default function SettingsForm({
                     <Switch
                       checked={field.value}
                       onCheckedChange={field.onChange}
+                      className="bg-neutral-300"
                     />
                   </FormControl>
                 </FormItem>

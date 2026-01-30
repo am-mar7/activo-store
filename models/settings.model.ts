@@ -1,12 +1,7 @@
 import mongoose, { models, Document } from "mongoose";
 
 export interface IShippingSettings {
-  baseCost: number;
-  freeShippingMinOrder?: number;
-  perCity?: {
-    city: string;
-    cost: number;
-  }[];
+  cost: number;
 }
 
 export interface IHeroSection {
@@ -33,7 +28,6 @@ export interface ITopBanner {
 export interface ICheckoutSettings {
   allowCOD: boolean;
   allowOnlinePayment: boolean;
-  minOrderAmount?: number;
 }
 
 export interface IMaintenanceSettings {
@@ -54,14 +48,7 @@ export interface IAppSettingsDoc extends IAppSettings, Document {}
 const AppSettingsSchema = new mongoose.Schema<IAppSettings>(
   {
     shipping: {
-      baseCost: { type: Number, required: true, default: 0 },
-      freeShippingMinOrder: { type: Number },
-      perCity: [
-        {
-          city: { type: String, required: true },
-          cost: { type: Number, required: true },
-        },
-      ],
+      cost: { type: Number, required: true, default: 0 },
     },
     heroSection: {
       enabled: { type: Boolean, default: true },
@@ -89,7 +76,6 @@ const AppSettingsSchema = new mongoose.Schema<IAppSettings>(
     checkout: {
       allowCOD: { type: Boolean, default: true },
       allowOnlinePayment: { type: Boolean, default: false },
-      minOrderAmount: { type: Number },
     },
     maintenance: {
       enabled: { type: Boolean, default: false },

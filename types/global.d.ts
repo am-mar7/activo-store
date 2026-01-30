@@ -133,7 +133,7 @@ interface TopProduct {
   revenue: number;
 }
 
-interface WorstProduct extends Omit<TopProduct , "revenue"> {
+interface WorstProduct extends Omit<TopProduct, "revenue"> {
   wishlistCount: number;
 }
 
@@ -390,14 +390,9 @@ interface KPIParams {
   preset?: "day" | "week" | "month";
 }
 
-interface SettingsParams{
+interface SettingsParams {
   shipping: {
-    baseCost: number;
-    freeShippingMinOrder?: number;
-    perCity?: {
-      city: string;
-      cost: number;
-    }[];
+    cost: number;
   };
   heroSection: {
     enabled: boolean;
@@ -421,7 +416,6 @@ interface SettingsParams{
   checkout: {
     allowCOD: boolean;
     allowOnlinePayment: boolean;
-    minOrderAmount?: number;
   };
   maintenance: {
     enabled: boolean;
@@ -429,7 +423,7 @@ interface SettingsParams{
   };
 }
 
-interface SettingsType extends Omit<SettingsParams, 'heroSection'> {
+interface SettingsType extends Omit<SettingsParams, "heroSection"> {
   heroSection: {
     enabled: boolean;
     title?: string;
