@@ -35,7 +35,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { addressFormSchema } from "@/lib/validation";
 import { getPromoCodeByCode } from "@/lib/server actions/promocode.action";
 import { getFriendlyErrorMessage } from "@/lib/error-messages";
-
+import { useSettingsStore } from '@/stores/useSettingsStore';
 interface Props {
   subTotal: number;
   items: cartItem[];
@@ -50,7 +50,9 @@ export default function CheckoutForm({ subTotal, className, items }: Props) {
   const [promoCode, setPromoCode] = useState<string>();
   const [promoQuery, setPromoQuery] = useState<string>("");
   const [promoError, setPromoError] = useState<string>();
-  const shippingCost = 0;
+
+  const shipping = useSettingsStore(state => state.getShipping());
+  const shippingCost = shipping?.baseCost || 0;
 
   const checkPromo = async() => {
     setPromoLoading(true);
@@ -83,7 +85,7 @@ export default function CheckoutForm({ subTotal, className, items }: Props) {
           <div className="flex-between text-neutral-500 body-regular">
             <span>Shipping</span>
             <span className="text-green-600">
-              {shippingCost === 0 ? "Free" : shippingCost}
+              {shippingCost === 0 ? "Free" : shippingCost + " EGP"}
             </span>
           </div>
 
@@ -202,6 +204,10 @@ const Checkout: React.FC<CheckoutProps> = ({
   const session = useSession();
   const userId = session.data?.user.id;
   
+  const checkout = useSettingsStore(state => state.getCheckout());
+  const allowCOD = checkout?.allowCOD;
+  const allowOnlinePayment = checkout?.allowOnlinePayment;
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -469,14 +475,14 @@ const Checkout: React.FC<CheckoutProps> = ({
           onValueChange={(value) => setMethod(value as "COD" | "visa")}
         >
           <div className="flex items-center space-x-3 p-2 border-2 rounded-lg">
-            <RadioGroupItem value="COD" id="cod" />
+            <RadioGroupItem value="COD" id="cod" disabled={allowCOD} />
             <Label htmlFor="cod" className="cursor-pointer small-medium">
               Cash on Delivery
             </Label>
           </div>
 
           <div className="flex items-center space-x-3 p-2 border-2 rounded-lg opacity-50">
-            <RadioGroupItem value="visa" id="visa" disabled />
+            <RadioGroupItem value="visa" id="visa" disabled={!allowOnlinePayment} />
             <Label htmlFor="visa" className="cursor-not-allowed small-medium">
               Credit/Debit Card (Coming Soon)
             </Label>

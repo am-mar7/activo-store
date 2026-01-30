@@ -9,6 +9,10 @@ import { getCartState } from "@/lib/server actions/cart.action";
 import { CartInitializer } from "@/components/Initializers/CartInitializer";
 import { CartItemStore } from "@/stores/useCartStore";
 import { SessionProvider } from "next-auth/react";
+import { getSettings } from "@/lib/server actions/settings.action";
+import { SettingsInitializer } from "@/components/Initializers/SettingsInitilizer";
+import TryAgain from "@/components/TryAgain";
+import { getFriendlyErrorMessage } from "@/lib/error-messages";
 
 const Inter = localFont({
   src: "../public/fonts/interVF.ttf",
@@ -30,7 +34,10 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const session = await auth();
+  const [session, { success, error, data }] = await Promise.all([
+    auth(),
+    getSettings(),
+  ]);
   const userId = session?.user.id;
   let wishlistIds: string[] = [];
   let cartItems: CartItemStore[] = [];
@@ -45,6 +52,9 @@ export default async function RootLayout({
     if (data) wishlistIds = data;
   }
 
+  if (!success || error || !data)
+    return <TryAgain message={getFriendlyErrorMessage(error)} />;
+  
   return (
     <html lang="en">
       <body
@@ -53,6 +63,7 @@ export default async function RootLayout({
         <SessionProvider session={session}>
           <CartInitializer cartItems={cartItems} />
           <WishlistInitializer wishlistIds={wishlistIds} />
+          <SettingsInitializer settings={data} />
           <Toaster position="top-right" richColors />
           <main>{children}</main>
         </SessionProvider>
