@@ -1,6 +1,7 @@
 import { auth } from "@/auth";
 import { OrderCard } from "@/components/cards/OrderCard";
 import DataRenderer from "@/components/DataRenderer";
+import Pagination from "@/components/Pagination";
 import ROUTES from "@/constants/routes";
 import { getOrders } from "@/lib/server actions/order.action";
 import { RouteParams } from "@/types/global";
@@ -13,15 +14,15 @@ export default async function Profile({ searchParams }: RouteParams) {
   ]);
 
   const userId = session?.user.id;
-  if(!userId)return redirect(ROUTES.SIGN_IN);
+  if (!userId) return redirect(ROUTES.SIGN_IN);
 
   const { success, data, error } = await getOrders({
     page: Number(page) || 1,
-    pageSize: Number(pageSize) || 10,
+    pageSize: Number(pageSize) || 3,
     filter: String(filter),
     userId,
   });
-  const { orders } = data || { isNext: false, orders: [] };
+  const { items: orders, isNext, total } = data || {};
 
   return (
     <div className="mb-5 bg-linear-to-br from-neutral-100 to-neutral-200 py-8 px-4 sm:px-6 lg:px-8">
@@ -45,6 +46,14 @@ export default async function Profile({ searchParams }: RouteParams) {
             {orders?.map((order, index) => (
               <OrderCard index={index} key={order._id} order={order} />
             ))}
+            <div className="mt-4">
+              <Pagination
+                isNext={isNext}
+                total={total || 0}
+                pageSize={Number(pageSize) || 3}
+                page={Number(page) || 1}
+              />
+            </div>
           </div>
         )}
       />

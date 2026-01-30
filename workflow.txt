@@ -27,17 +27,14 @@
 
 remaining in plateform (5 days)
 
-    comment section (in product details)
+    comment section (in product details) // delayed
     buy now button logic (in product details)
-    global search (UI and logic)
-    forget password
+    global search (UI and logic) // working on
+    forget password // working on 
     email verfication for creating accouts (optional)
-    order details with ability to update the order(very optional)
+    order details with ability to update the order(very optional) // cancelled 
     filtering 
-    pagination 
+    pagination // working on
 
 remaining in dashboard (3-4 days)
-
-    analytical view (over view page) done
-    reviews (just view , maybe delete comment)
-    (optonal) settings page (shipping cost , upload hero image , upload image for size guide , make banner offer) day 2 
+    reviews (just view , maybe delete comment) // maybe delayed

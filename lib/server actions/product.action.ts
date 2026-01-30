@@ -16,6 +16,7 @@ import {
   EditProductParams,
   getCategoriedProductsParams,
   getProductsByCategoryIdParams,
+  PaginatedActionResponse,
 } from "@/types/global";
 import actionHandler from "../handlers/action";
 import handleError from "../handlers/error";
@@ -276,7 +277,7 @@ export async function getBestSellers(): Promise<ActionResponse<ProductType[]>> {
 
 export async function getCategoriedProducts(
   params: getCategoriedProductsParams
-): Promise<ActionResponse<{ products: ProductType[]; isNext: boolean }>> {
+): Promise<PaginatedActionResponse<ProductType>> {
   const validated = await actionHandler({
     params,
     schema: getCategoriedProductsSchema,
@@ -305,7 +306,11 @@ export async function getCategoriedProducts(
 
     return {
       success: true,
-      data: { products: JSON.parse(JSON.stringify(products)), isNext },
+      data: {
+        items: JSON.parse(JSON.stringify(products)),
+        isNext,
+        total: count,
+      },
     };
   } catch (error) {
     return handleError(error) as ErrorResponse;
@@ -314,7 +319,7 @@ export async function getCategoriedProducts(
 
 export async function getProductsByCollections(
   params: getCategoriedProductsParams
-): Promise<ActionResponse<{ products: ProductType[]; isNext: boolean }>> {
+): Promise<PaginatedActionResponse<ProductType>> {
   const validated = await actionHandler({
     params,
     schema: getCategoriedProductsSchema,
@@ -329,8 +334,10 @@ export async function getProductsByCollections(
     let collectionFilter: QueryFilter<typeof Product>;
 
     if (slug === "all") {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      collectionFilter = {collection: { $in: ["winter", "summer", "both"] },} as any;
+      collectionFilter = {
+        collection: { $in: ["winter", "summer", "both"] },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any;
     } else if (slug === "summer") {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       collectionFilter = { collection: { $in: ["summer", "both"] } } as any;
@@ -356,7 +363,11 @@ export async function getProductsByCollections(
 
     return {
       success: true,
-      data: { products: JSON.parse(JSON.stringify(products)), isNext },
+      data: {
+        items: JSON.parse(JSON.stringify(products)),
+        isNext,
+        total: count,
+      },
     };
   } catch (error) {
     return handleError(error) as ErrorResponse;
@@ -373,10 +384,9 @@ export async function getProductsByCategoryId(
   if (validated instanceof Error)
     return handleError(validated) as ErrorResponse;
 
-  const { id , page = 1, pageSize = 50 } = validated.params!;
+  const { id, page = 1, pageSize = 50 } = validated.params!;
   const skip = (page - 1) * pageSize;
   try {
-
     const [products, count] = await Promise.all([
       Product.find({ isActive: true, category: id })
         .skip(skip)

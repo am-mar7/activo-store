@@ -77,8 +77,8 @@ export default function Pagination({
   const endResult = Math.min(page * pageSize, total);
 
   return (
-    <div className="w-full flex items-center justify-between px-6 py-4 bg-white dark:bg-dark-200 rounded-lg border border-gray-200 dark:border-dark-400">
-      <div className="text-sm text-gray-600 dark:text-light-400 hidden lg:block">
+    <div className="w-full flex items-center justify-center lg:justify-between px-6 py-4 bg-white dark:bg-dark-200 rounded-lg border border-gray-200 dark:border-dark-400">
+      <div className="text-sm text-gray-600 hidden lg:block">
         Viewing {startResult}-{endResult} of {total} results
       </div>
 

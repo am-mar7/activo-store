@@ -168,7 +168,7 @@ export async function upatePaymentStatus(
 
 export async function getOrders(
   params: getUserOrdersParams
-): Promise<ActionResponse<{ isNext: boolean; orders: OrderType[] }>> {
+): Promise<PaginatedActionResponse<OrderType>> {
   const validated = await actionHandler({
     params,
     schema: getUserOrdersSchema,
@@ -177,7 +177,7 @@ export async function getOrders(
   if (validated instanceof Error)
     return handleError(validated) as ErrorResponse;
 
-  const { page = 1, pageSize = 10, filter, userId } = validated.params!;
+  const { page = 1, pageSize = 3, filter, userId } = validated.params!;
   const skip = (page - 1) * pageSize;
 
   try {
@@ -200,7 +200,7 @@ export async function getOrders(
     const isNext = count > orders.length + skip;
     return {
       success: true,
-      data: { isNext, orders: JSON.parse(JSON.stringify(orders)) },
+      data: { isNext, items: JSON.parse(JSON.stringify(orders)), total: count },
     };
   } catch (error) {
     return handleError(error) as ErrorResponse;
