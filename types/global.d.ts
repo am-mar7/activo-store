@@ -435,3 +435,28 @@ interface SettingsType extends Omit<SettingsParams, "heroSection"> {
     };
   };
 }
+
+export interface SearchProductResult {
+  _id: Types.ObjectId;
+  title: string;
+  description: string;
+  newPrice: number;
+  oldPrice?: number;
+  images: string[];
+  variants: {
+    sku: string;
+    color?: string;
+    size?: string;
+    stock: number;
+    image?: string;
+  }[];
+  collection: "winter" | "summer" | "both";
+  averageRating: number;
+  totalReviews: number;
+  sold: number;
+  categoryDetails: {
+    _id: Types.ObjectId;
+    name: string;
+    slug: string;
+  };
+}

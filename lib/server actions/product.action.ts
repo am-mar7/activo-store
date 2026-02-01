@@ -17,12 +17,13 @@ import {
   getCategoriedProductsParams,
   getProductsByCategoryIdParams,
   PaginatedActionResponse,
+  SearchProductResult,
 } from "@/types/global";
 import actionHandler from "../handlers/action";
 import handleError from "../handlers/error";
 import { Cart, Category, Product, Wishlist } from "@/models";
 import { getCurrentSeason, handleUpload } from "../utils";
-import { QueryFilter } from "mongoose";
+import { PipelineStage, QueryFilter } from "mongoose";
 import { dbConnect } from "../mongoose";
 import { revalidatePath } from "next/cache";
 import { DASHBOARDROUTES } from "@/constants/routes";
@@ -401,6 +402,72 @@ export async function getProductsByCategoryId(
       success: true,
       data: { products: JSON.parse(JSON.stringify(products)), isNext },
     };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}
+
+export async function GlobalSearch(
+  query: string
+): Promise<ActionResponse<SearchProductResult[]>> {
+  try {
+    await dbConnect();
+    const pipeline: PipelineStage[] = [
+      {
+        $match: {
+          isActive: true,
+        },
+      },
+      {
+        $lookup: {
+          from: "categories",
+          localField: "category",
+          foreignField: "_id",
+          as: "categoryDetails",
+        },
+      },
+      {
+        $match: {
+          $or: [
+            { title: { $regex: query, $options: "i" } },
+            { "categoryDetails.name": { $regex: query, $options: "i" } },
+          ],
+        },
+      },
+      {
+        $sort: {
+          sold: -1,
+          createdAt: -1,
+        },
+      },
+      {
+        $limit: 10,
+      },
+      {
+        $project: {
+          _id: 1,
+          title: 1,
+          description: 1,
+          newPrice: 1,
+          oldPrice: 1,
+          images: 1,
+          variants: 1,
+          collection: 1,
+          averageRating: 1,
+          totalReviews: 1,
+          sold: 1,
+          categoryDetails: {
+            _id: 1,
+            name: 1,
+            slug: 1,
+          },
+        },
+      },
+    ];
+
+    const results = await Product.aggregate(pipeline);
+
+    return { success: true, data: JSON.parse(JSON.stringify(results)) };
   } catch (error) {
     return handleError(error) as ErrorResponse;
   }
