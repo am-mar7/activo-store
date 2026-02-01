@@ -29,10 +29,8 @@ remaining in plateform (5 days)
 
     comment section (in product details) // delayed
     buy now button logic (in product details)
-    global search (UI and logic) // done
     forget password // working on 
     email verfication for creating accouts (optional) // working on
-    filtering // cancelled
 
 remaining in dashboard (3-4 days)
     reviews (just view , maybe delete comment) // maybe delayed

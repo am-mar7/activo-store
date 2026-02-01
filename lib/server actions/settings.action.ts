@@ -79,10 +79,6 @@ export const getSettings = cache(
   async (): Promise<ActionResponse<SettingsType>> => {
     try {
       await dbConnect();
-      const session = await auth();
-
-      const isAdmin = session?.user.role === "admin";
-      if (!isAdmin) throw new UnauthorizedError("Admin access required.");
 
       let settings = await AppSettings.findOne();
 

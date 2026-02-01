@@ -1,43 +1,5 @@
+import { SettingsType } from "@/types/global";
 import { create } from "zustand";
-
-export interface SettingsType {
-  shipping: {
-    baseCost: number;
-    freeShippingMinOrder?: number;
-    perCity?: {
-      city: string;
-      cost: number;
-    }[];
-  };
-  heroSection: {
-    enabled: boolean;
-    title?: string;
-    subtitle?: string;
-    image?: string;
-    cta?: {
-      text: string;
-      href: string;
-    };
-  };
-  topBanner: {
-    enabled: boolean;
-    text?: string;
-    backgroundColor?: string;
-    textColor?: string;
-    link?: string;
-    startsAt?: Date;
-    endsAt?: Date;
-  };
-  checkout: {
-    allowCOD: boolean;
-    allowOnlinePayment: boolean;
-    minOrderAmount?: number;
-  };
-  maintenance: {
-    enabled: boolean;
-    message?: string;
-  };
-}
 
 interface SettingsStore {
   settings: SettingsType | null;
