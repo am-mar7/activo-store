@@ -2,14 +2,26 @@
 export function getFriendlyErrorMessage(error: any): string {
   const errorMessage = error?.message || String(error);
 
-  if (errorMessage.includes("Cannot")) {
-    return errorMessage;
+  // 1️⃣ Regex patterns for preserving manual/friendly errors
+  const friendlyPatterns: RegExp[] = [
+    /^(This .+ already exists)$/i,
+    /^User not found$/i,
+    /^Unauthorized access$/i,
+    /^Failed to (get|create|update|load|place|cancel) .+$/i,
+    /^Wrong email or password please Try again$/i,
+    /^Reset token is invalid or expired$/i,
+    /^All image uploads failed\. Please try again\.$/i,
+    /^Product creation failed$/i,
+    /^Category not found$/i,
+    /^Order not found$/i,
+  ];
+
+  if (friendlyPatterns.some((pattern) => pattern.test(errorMessage))) {
+    return errorMessage; // preserve the friendly manual message
   }
-  // MongoDB Duplicate Key Error (E11000)
-  if (
-    errorMessage.includes("E11000") ||
-    errorMessage.includes("duplicate key")
-  ) {
+
+  // 2️⃣ MongoDB Duplicate Key Error (E11000)
+  if (errorMessage.includes("E11000") || errorMessage.includes("duplicate key")) {
     const fieldMatch = errorMessage.match(/index: (\w+)_/);
     const valueMatch = errorMessage.match(/dup key: { .*?: "(.+?)" }/);
 
@@ -31,17 +43,16 @@ export function getFriendlyErrorMessage(error: any): string {
       : `This ${friendlyField} is already in use. Please choose a different one.`;
   }
 
-  // MongoDB Validation Errors
+  // 3️⃣ MongoDB validation errors
   if (errorMessage.includes("validation failed")) {
     return "Please check your input. Some required fields are missing or invalid.";
   }
 
-  // Cast Errors (invalid ObjectId, etc.)
   if (errorMessage.includes("Cast to ObjectId failed")) {
     return "Invalid ID format. Please try again.";
   }
 
-  // Unauthorized
+  // 4️⃣ Unauthorized / Not Found / Network / Timeout errors
   if (
     errorMessage.toLowerCase().includes("unauthorized") ||
     errorMessage.toLowerCase().includes("not authorized")
@@ -49,12 +60,10 @@ export function getFriendlyErrorMessage(error: any): string {
     return "You don't have permission to perform this action.";
   }
 
-  // Not Found
   if (errorMessage.toLowerCase().includes("not found")) {
     return "The requested item could not be found. It may have been deleted.";
   }
 
-  // Network/Connection Errors
   if (
     errorMessage.toLowerCase().includes("network") ||
     errorMessage.toLowerCase().includes("connection")
@@ -62,12 +71,11 @@ export function getFriendlyErrorMessage(error: any): string {
     return "Network error. Please check your internet connection and try again.";
   }
 
-  // Timeout Errors
   if (errorMessage.toLowerCase().includes("timeout")) {
     return "The request took too long. Please try again.";
   }
 
-  // File Upload Errors
+  // 5️⃣ File upload errors
   if (
     errorMessage.toLowerCase().includes("file") &&
     errorMessage.toLowerCase().includes("size")
@@ -82,7 +90,7 @@ export function getFriendlyErrorMessage(error: any): string {
     return "Invalid file type. Please upload a supported format.";
   }
 
-  // Required Field Errors
+  // 6️⃣ Required field errors
   if (
     errorMessage.includes("required") ||
     errorMessage.includes("is required")
@@ -92,7 +100,7 @@ export function getFriendlyErrorMessage(error: any): string {
     return `The ${field} field is required. Please fill it in.`;
   }
 
-  // Min/Max Length Errors
+  // 7️⃣ Min/Max length errors
   if (
     errorMessage.includes("shorter than the minimum") ||
     errorMessage.includes("minimum allowed length")
@@ -107,26 +115,6 @@ export function getFriendlyErrorMessage(error: any): string {
     return "Some fields are too long. Please shorten your input.";
   }
 
-  // Default friendly messages based on context
-  const contextMessages: Record<string, string> = {
-    category:
-      "An error occurred while processing the category. Please try again.",
-    product:
-      "An error occurred while processing the product. Please try again.",
-    user: "An error occurred while processing the user information. Please try again.",
-    order: "An error occurred while processing the order. Please try again.",
-    payment:
-      "Payment processing failed. Please try again or use a different payment method.",
-  };
-
-  // Try to detect context from error message
-  const lowerMessage = errorMessage.toLowerCase();
-  for (const [context, message] of Object.entries(contextMessages)) {
-    if (lowerMessage.includes(context)) {
-      return message;
-    }
-  }
-
-  // Generic fallback
+  // 8️⃣ Default fallback
   return "Something went wrong. Please try again or contact support if the problem persists.";
 }
