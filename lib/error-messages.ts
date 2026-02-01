@@ -4,20 +4,20 @@ export function getFriendlyErrorMessage(error: any): string {
 
   // 1️⃣ Regex patterns for preserving manual/friendly errors
   const friendlyPatterns: RegExp[] = [
-    /^(This .+ already exists)$/i,
-    /^User not found$/i,
-    /^Unauthorized access$/i,
-    /^Failed to (get|create|update|load|place|cancel) .+$/i,
+    /^(This .+ already exists)$/i,                           // e.g., "This address already exists"
     /^Wrong email or password please Try again$/i,
     /^Reset token is invalid or expired$/i,
     /^All image uploads failed\. Please try again\.$/i,
     /^Product creation failed$/i,
     /^Category not found$/i,
     /^Order not found$/i,
+    /^Failed to (get|create|update|load|place|cancel) .+$/i, // e.g., "Failed to get Top Products"
+    /.*\b(user|account|cart|product|order|category|payment|alert)\b.*/i, // preserve anything containing these keywords
   ];
 
+  // If any pattern matches, preserve the message as-is
   if (friendlyPatterns.some((pattern) => pattern.test(errorMessage))) {
-    return errorMessage; // preserve the friendly manual message
+    return errorMessage;
   }
 
   // 2️⃣ MongoDB Duplicate Key Error (E11000)
