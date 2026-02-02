@@ -263,10 +263,12 @@ export async function getBestSellers(): Promise<ActionResponse<ProductType[]>> {
     await dbConnect();
 
     const products = await Product.find({ isActive: true, collection })
-      .sort({ createdAt: -1 })
+      .sort({ sold: -1 }) // Sort by most sold (descending)
       .limit(10)
       .lean();
+      
     if (!products) throw new Error("Failed to get products");
+    
     return {
       success: true,
       data: JSON.parse(JSON.stringify(products)),

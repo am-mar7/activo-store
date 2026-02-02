@@ -21,13 +21,14 @@ import {
   upsertOrderSchema,
 } from "../validation";
 import handleError from "../handlers/error";
-import { Cart, Order } from "@/models";
+import { Cart, Order, Product } from "@/models";
 import { revalidatePath } from "next/cache";
 import ROUTES, { DASHBOARDROUTES } from "@/constants/routes";
 import mongoose, { Types } from "mongoose";
 import { UnauthorizedError } from "../http-errors";
 import { dbConnect } from "../mongoose";
 import { auth } from "@/auth";
+import { IOrderDoc } from "@/models/order.model";
 
 export async function PlaceOrder(
   params: upsertOrderParams
@@ -107,6 +108,8 @@ export async function UpdateOrderStatus(
         "You are not authorized to update this order"
       );
 
+    const oldStatus = order.status;
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const updateData: any = { status };
 
@@ -122,9 +125,31 @@ export async function UpdateOrderStatus(
       { _id: orderId },
       updateData,
       { new: true }
-    );
+    ) as IOrderDoc;
 
     if (!updatedOrder) throw new Error("Failed to update order");
+
+    if (status === "delivered" && oldStatus !== "delivered") {
+      const bulkOps = updatedOrder.orderItems.map((item) => ({
+        updateOne: {
+          filter: { _id: item.product },
+          update: { $inc: { sold: item.quantity } },
+        },
+      }));
+
+      await Product.bulkWrite(bulkOps);
+    }
+
+    if (status === "cancelled" && oldStatus === "delivered") {
+      const bulkOps = updatedOrder.orderItems.map((item) => ({
+        updateOne: {
+          filter: { _id: item.product },
+          update: { $inc: { sold: -item.quantity } },
+        },
+      }));
+
+      await Product.bulkWrite(bulkOps);
+    }
 
     revalidatePath(ROUTES.PROFILE);
     revalidatePath(DASHBOARDROUTES.ORDERS);
