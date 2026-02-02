@@ -4,7 +4,7 @@ export function getFriendlyErrorMessage(error: any): string {
 
   // 1️⃣ Regex patterns for preserving manual/friendly errors
   const friendlyPatterns: RegExp[] = [
-    /^(This .+ already exists)$/i,                           // e.g., "This address already exists"
+    /^(This .+ already exists)$/i, // e.g., "This address already exists"
     /^Wrong email or password please Try again$/i,
     /^Reset token is invalid or expired$/i,
     /^All image uploads failed\. Please try again\.$/i,
@@ -12,7 +12,7 @@ export function getFriendlyErrorMessage(error: any): string {
     /^Category not found$/i,
     /^Order not found$/i,
     /^Failed to (get|create|update|load|place|cancel) .+$/i, // e.g., "Failed to get Top Products"
-    /.*\b(user|account|cart|product|order|category|payment|alert)\b.*/i, // preserve anything containing these keywords
+    /.*\b(user|account|cart|product|order|category|payment|alert|token|password|image|address)\b.*/i, // preserve anything containing these keywords
   ];
 
   // If any pattern matches, preserve the message as-is
@@ -21,7 +21,10 @@ export function getFriendlyErrorMessage(error: any): string {
   }
 
   // 2️⃣ MongoDB Duplicate Key Error (E11000)
-  if (errorMessage.includes("E11000") || errorMessage.includes("duplicate key")) {
+  if (
+    errorMessage.includes("E11000") ||
+    errorMessage.includes("duplicate key")
+  ) {
     const fieldMatch = errorMessage.match(/index: (\w+)_/);
     const valueMatch = errorMessage.match(/dup key: { .*?: "(.+?)" }/);
 
@@ -55,7 +58,8 @@ export function getFriendlyErrorMessage(error: any): string {
   // 4️⃣ Unauthorized / Not Found / Network / Timeout errors
   if (
     errorMessage.toLowerCase().includes("unauthorized") ||
-    errorMessage.toLowerCase().includes("not authorized")
+    errorMessage.toLowerCase().includes("unauthorized") ||
+    errorMessage.toLowerCase().includes("authorized")
   ) {
     return "You don't have permission to perform this action.";
   }

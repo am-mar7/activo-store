@@ -7,14 +7,20 @@ import {
   Tags,
   Star,
   Settings,
+  Store,
 } from "lucide-react";
-import { DASHBOARDROUTES } from "./routes";
+import ROUTES, { DASHBOARDROUTES } from "./routes";
 
 export const DashboardLinks = [
   {
     icon: LayoutDashboard,
     route: DASHBOARDROUTES.HOME,
     label: "Overview",
+  },
+  {
+    icon: Store,
+    route: ROUTES.HOME,
+    label: "Store view"
   },
   {
     icon: ShoppingBag,
