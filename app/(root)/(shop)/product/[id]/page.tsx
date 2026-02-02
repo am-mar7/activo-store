@@ -40,7 +40,13 @@ export default async function ProductDetails({ params }: RouteParams) {
           <h1 className="h3-semibold text-slate-900">{title}</h1>
           <p className="text-slate-600 body-medium">{description}</p>
           <SizeGuide className="my-3" image="/images/size-guide.png" />
-          <AddToCartForm variants={variants} _id={id} />
+          <AddToCartForm
+            variants={variants}
+            _id={id}
+            images={images}
+            newPrice={newPrice}
+            title={title}
+          />
         </div>
       </div>
       <Suspense fallback={<Loading />}>
