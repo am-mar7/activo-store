@@ -15,13 +15,18 @@ export const AddressSchema = new mongoose.Schema<IAddress>({
   details: { type: String, required: true },
 });
 
-AddressSchema.index({ city: 1, phone: 1, details: 1 }, { unique: true });
+AddressSchema.index(
+  { city: 1, phone: 1, details: 1 },
+  { unique: true, sparse: true }
+);
 
 export interface IUser {
   name: string;
   email: string;
   image?: string;
   role: "user" | "admin";
+  resetToken?: string;
+  resetTokenExpiry?: Date;
   addresses: IAddress[];
 }
 export interface IUserDoc extends IUser, Document {}
@@ -31,6 +36,8 @@ const UserSchema = new mongoose.Schema<IUser>(
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     image: { type: String },
+    resetToken: { type: String },
+    resetTokenExpiry: { type: Date },
     role: {
       type: String,
       enum: ["user", "admin"],

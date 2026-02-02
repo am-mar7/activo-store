@@ -1,7 +1,17 @@
 "use server";
-
+import {
+  ForgotPasswordSchema,
+  ResetPasswordSchema,
+  sendEmailSchema,
+} from "./../validation";
 import mongoose from "mongoose";
-import { ActionResponse, AuthCredentials, ErrorResponse } from "@/types/global";
+import {
+  ActionResponse,
+  AuthCredentials,
+  ErrorResponse,
+  ResetPasswordParams,
+  sendEmailParams,
+} from "@/types/global";
 import handleError from "../handlers/error";
 import { SignInSchema, SignUpSchema } from "../validation";
 import User, { IUserDoc } from "@/models/user.model";
@@ -12,6 +22,10 @@ import { NotFoundError } from "../http-errors";
 import actionHandler from "../handlers/action";
 import { signOut } from "@/auth";
 import ROUTES from "@/constants/routes";
+import crypto from "crypto";
+import { Resend } from "resend";
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function Logout(redirection = ROUTES.HOME) {
   await signOut({ redirectTo: redirection });
@@ -95,5 +109,124 @@ export async function credentialsSignIn(params: AuthCredentials) {
     return { success: true };
   } catch (error) {
     return handleError(error);
+  }
+}
+
+export async function sendEmail(
+  params: sendEmailParams
+): Promise<ActionResponse> {
+  const validated = await actionHandler({
+    params,
+    schema: sendEmailSchema,
+  });
+  if (validated instanceof Error)
+    return handleError(validated) as ErrorResponse;
+
+  const { to, subject, message } = validated.params!;
+  try {
+    await resend.emails.send({
+      from: "Activo <onboarding@resend.dev>",
+      to,
+      subject,
+      html: message,
+    });
+    return { success: true };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}
+
+export async function sendPasswordResetEmail(email: string) {
+  const validated = await actionHandler({
+    params: { email },
+    schema: ForgotPasswordSchema,
+  });
+
+  if (validated instanceof Error)
+    return handleError(validated) as ErrorResponse;
+
+  const { email: validEmail } = validated.params!;
+
+  try {
+    const [user, account] = await Promise.all([
+      User.findOne({ email: validEmail }),
+      Account.findOne({
+        providerAccountId: validEmail,
+        provider: "credentials",
+      }),
+    ]);
+
+    if (!user) throw new NotFoundError("User");
+    if (!account)
+      throw new Error(
+        "This account was created using Google. You cannot change the password directly. Please sign in using your social login."
+      );
+
+    const resetToken = crypto.randomBytes(32).toString("hex");
+    const hashedToken = crypto
+      .createHash("sha256")
+      .update(resetToken)
+      .digest("hex");
+    const resetTokenExpiry = new Date(Date.now() + 3600000);
+    await User.findByIdAndUpdate(user._id, {
+      resetToken: hashedToken,
+      resetTokenExpiry,
+    });
+
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+    const resetUrl = `${baseUrl}${ROUTES.RESET_PASSWORD}?token=${resetToken}`;
+    const emailHTML = `
+      <p>Click the link below to reset your password:</p>
+      <p>Please don't share this link with any one</p>
+      <a href='${resetUrl}'>Reset Password</a>
+    `;
+
+    const { success, error } = await sendEmail({
+      to: validEmail,
+      subject: "Reset Your Activo Password",
+      message: emailHTML,
+    });
+
+    return { success, error };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}
+
+export async function resetPassword(
+  params: ResetPasswordParams
+): Promise<ActionResponse> {
+  const validated = await actionHandler({
+    params,
+    schema: ResetPasswordSchema,
+  });
+  if (validated instanceof Error)
+    return handleError(validated) as ErrorResponse;
+
+  const { token, password } = validated.params!;
+  const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+
+  try {
+    const user = (await User.findOne({
+      resetToken: hashedToken,
+      resetTokenExpiry: { $gt: new Date() },
+    })) as IUserDoc;
+
+    if (!user) throw new NotFoundError("Reset token is invalid or expired");
+
+    const hashedPassword = await bcrypt.hash(password, 12);
+
+    user.resetToken = "";
+    user.resetTokenExpiry = undefined;
+
+    await Account.findOneAndUpdate(
+      { userId: user._id },
+      { password: hashedPassword }
+    );
+    await user.save();
+
+    return { success: true };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
   }
 }

@@ -248,6 +248,11 @@ interface AuthCredentials {
   password: string;
 }
 
+interface ResetPasswordParams {
+  token: string;
+  password: string;
+}
+
 interface RouteParams {
   params: Promise<Record<string, string>>;
   searchParams: Promise<Record<string, string>>;
@@ -436,7 +441,7 @@ interface SettingsType extends Omit<SettingsParams, "heroSection"> {
   };
 }
 
-export interface SearchProductResult {
+interface SearchProductResult {
   _id: Types.ObjectId;
   title: string;
   description: string;
@@ -459,4 +464,11 @@ export interface SearchProductResult {
     name: string;
     slug: string;
   };
+}
+
+
+interface sendEmailParams {
+  to: string;
+  subject: string;
+  message: string;
 }

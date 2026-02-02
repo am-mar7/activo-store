@@ -15,25 +15,26 @@ export const UserSchema = z.object({
   image: z.string().url("Invalid image URL").optional(),
 });
 
+const passwordScehma = z
+  .string()
+  .min(6, { message: "Password must be at least 6 characters long." })
+  .max(100, { message: "Password cannot exceed 100 characters." })
+  .regex(/[A-Z]/, {
+    message: "Password must contain at least one uppercase letter.",
+  })
+  .regex(/[a-z]/, {
+    message: "Password must contain at least one lowercase letter.",
+  })
+  .regex(/[0-9]/, { message: "Password must contain at least one number." })
+  .regex(/[^a-zA-Z0-9]/, {
+    message: "Password must contain at least one special character.",
+  });
+
 export const AccountSchema = z.object({
   userId: z.string(),
   name: z.string().min(1, "Name is required"),
   image: z.string().url("Invalid image URL").optional(),
-  password: z
-    .string()
-    .min(6, { message: "Password must be at least 6 characters long." })
-    .max(100, { message: "Password cannot exceed 100 characters." })
-    .regex(/[A-Z]/, {
-      message: "Password must contain at least one uppercase letter.",
-    })
-    .regex(/[a-z]/, {
-      message: "Password must contain at least one lowercase letter.",
-    })
-    .regex(/[0-9]/, { message: "Password must contain at least one number." })
-    .regex(/[^a-zA-Z0-9]/, {
-      message: "Password must contain at least one special character.",
-    })
-    .optional(),
+  password: passwordScehma.optional(),
   provider: z.enum(["credentials", "google"]),
   providerAccountId: z.string().min(1, "Provider account ID is required"),
 });
@@ -64,20 +65,7 @@ export const SignUpSchema = z.object({
     .min(1, { message: "Email is required." })
     .email({ message: "Please provide a valid email address." }),
 
-  password: z
-    .string()
-    .min(6, { message: "Password must be at least 6 characters long." })
-    .max(100, { message: "Password cannot exceed 100 characters." })
-    .regex(/[A-Z]/, {
-      message: "Password must contain at least one uppercase letter.",
-    })
-    .regex(/[a-z]/, {
-      message: "Password must contain at least one lowercase letter.",
-    })
-    .regex(/[0-9]/, { message: "Password must contain at least one number." })
-    .regex(/[^a-zA-Z0-9]/, {
-      message: "Password must contain at least one special character.",
-    }),
+  password: passwordScehma,
 });
 
 export const SignInWithOAuthSchema = z.object({
@@ -88,6 +76,15 @@ export const SignInWithOAuthSchema = z.object({
     email: z.string().email("Invalid email address"),
     image: z.string().url("Invalid image URL").optional(),
   }),
+});
+
+export const ForgotPasswordSchema = z.object({
+  email: z.string().email("Please enter a valid email address"),
+});
+
+export const ResetPasswordSchema = z.object({
+  token: z.string().min(1, "token is required"),
+  password: passwordScehma,
 });
 
 export const ProductSchema = z
@@ -361,4 +358,10 @@ export const appSettingsSchema = z.object({
   topBanner: topBannerSchema.optional(),
   checkout: checkoutSchema.optional(),
   maintenance: maintenanceSchema.optional(),
+});
+
+export const sendEmailSchema = z.object({
+  to: z.string().min(1, "email receiver is required"),
+  subject: z.string().min(1, "subject is required"),
+  message: z.string().min(1, "message is required"),
 });
