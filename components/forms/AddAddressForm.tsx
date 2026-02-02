@@ -1,27 +1,18 @@
 "use client";
+
 import { addressFormSchema } from "@/lib/validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import z from "zod";
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-  Form,
-} from "../ui/form";
-import { Textarea } from "../ui/textarea";
-import { Home, Loader2, MapPin, Phone, Plus } from "lucide-react";
-import { Input } from "../ui/input";
+import { Form } from "../ui/form";
+import { Loader2, Plus } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useTransition } from "react";
 import { addAddress } from "@/lib/server actions/addresses.action";
 import { toast } from "sonner";
 import { getFriendlyErrorMessage } from "@/lib/error-messages";
-import { Checkbox } from "../ui/checkbox";
-import { Label } from "../ui/label";
 import { cn } from "@/lib/utils";
+import AddressFormFields from "../address-control/AddressFormFields";
 
 type AddressFormValues = z.infer<typeof addressFormSchema>;
 
@@ -29,6 +20,7 @@ interface Props {
   toggleBtn?: boolean;
   className?: string;
 }
+
 export default function AddAddressForm({
   toggleBtn = false,
   className,
@@ -46,6 +38,7 @@ export default function AddAddressForm({
   const [showForm, setShowForm] = useState(!toggleBtn);
   const [loading, start] = useTransition();
   const [isDefault, setIsDefault] = useState<boolean>(false);
+
   const handleSubmit = async () => {
     start(async () => {
       const { success, error } = await addAddress({
@@ -54,8 +47,10 @@ export default function AddAddressForm({
       });
       if (!success) toast.error(getFriendlyErrorMessage(error));
       else {
+        toast.success("Address added successfully");
         form.reset();
         setShowForm(false);
+        setIsDefault(false);
       }
     });
   };
@@ -69,6 +64,7 @@ export default function AddAddressForm({
         {!showForm && <Plus className="w-5 h-5" />}
         {showForm ? "Discard" : "Add Address"}
       </button>
+
       <AnimatePresence initial={!toggleBtn}>
         {showForm && (
           <motion.div
@@ -79,84 +75,13 @@ export default function AddAddressForm({
             className="w-full"
           >
             <Form {...form}>
-              <div className="space-y-4">
-                <FormField
-                  control={form.control}
-                  name="city"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="flex items-center gap-2 text-sm font-medium text-slate-700">
-                        <MapPin className="w-4 h-4" />
-                        City <span className="text-red-500">*</span>
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="Cairo"
-                          {...field}
-                          className="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-sm focus:border-primary-600 focus:ring-2 focus:ring-primary-200 outline-none transition-all"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+              <AddressFormFields
+                form={form}
+                showDefaultCheckbox={true}
+                isDefault={isDefault}
+                onDefaultChange={setIsDefault}
+              />
 
-                <FormField
-                  control={form.control}
-                  name="phone"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="flex items-center gap-2 text-sm font-medium text-slate-700">
-                        <Phone className="w-4 h-4" />
-                        Phone Number <span className="text-red-500">*</span>
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          type="tel"
-                          placeholder="+20 123 456 7890"
-                          {...field}
-                          className="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-sm focus:border-primary-600 focus:ring-2 focus:ring-primary-200 outline-none transition-all"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="details"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="flex items-center gap-2 text-sm font-medium text-slate-700">
-                        <Home className="w-4 h-4" />
-                        Detailed Address <span className="text-red-500">*</span>
-                      </FormLabel>
-                      <FormControl>
-                        <Textarea
-                          rows={3}
-                          placeholder="Street address, building number, apartment, floor, landmarks..."
-                          {...field}
-                          className="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-sm focus:border-primary-600 focus:ring-2 focus:ring-primary-200 outline-none transition-all resize-none"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <div className="flex items-center gap-3 my-3">
-                  <Checkbox
-                    className="bg-neutral-200! border-neutral-400! "
-                    id="isDefault"
-                    checked={isDefault}
-                    onCheckedChange={(checked) =>
-                      setIsDefault(checked as boolean)
-                    }
-                  />
-                  <Label htmlFor="terms">Set this as default address</Label>
-                </div>
-              </div>
               <button
                 onClick={handleSubmit}
                 disabled={loading}

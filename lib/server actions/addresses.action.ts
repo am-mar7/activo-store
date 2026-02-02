@@ -55,6 +55,7 @@ export async function addAddress(
     await user.save();
 
     revalidatePath(ROUTES.ADDRESSES);
+    revalidatePath(ROUTES.CART);
     return { success: true };
   } catch (error) {
     return handleError(error) as ErrorResponse;
