@@ -50,7 +50,7 @@ export async function addProductToWishlist(
   const session = await auth();
   const userId = session?.user.id;
   try {
-    if (!userId) throw new UnauthorizedError();
+    if (!userId) throw new Error("You have to be logged in first");
     await dbConnect();
 
     await Wishlist.insertOne({ product, userId });

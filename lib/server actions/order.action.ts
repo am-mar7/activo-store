@@ -38,7 +38,11 @@ export async function PlaceOrder(
     schema: upsertOrderSchema,
     authorizetionProccess: true,
   });
-  if (validated instanceof Error)
+  if (validated instanceof UnauthorizedError)
+    return handleError(
+      new Error("You have to be logged in first")
+    ) as ErrorResponse;
+  else if (validated instanceof Error)
     return handleError(validated) as ErrorResponse;
 
   const userId = validated.session?.user.id;
@@ -121,11 +125,11 @@ export async function UpdateOrderStatus(
       }
     }
 
-    const updatedOrder = await Order.findOneAndUpdate(
+    const updatedOrder = (await Order.findOneAndUpdate(
       { _id: orderId },
       updateData,
       { new: true }
-    ) as IOrderDoc;
+    )) as IOrderDoc;
 
     if (!updatedOrder) throw new Error("Failed to update order");
 

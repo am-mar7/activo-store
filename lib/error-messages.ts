@@ -12,7 +12,7 @@ export function getFriendlyErrorMessage(error: any): string {
     /^Category not found$/i,
     /^Order not found$/i,
     /^Failed to (get|create|update|load|place|cancel) .+$/i, // e.g., "Failed to get Top Products"
-    /.*\b(user|account|cart|product|order|category|payment|alert|token|password|image|address)\b.*/i, // preserve anything containing these keywords
+    /.*\b(user|account|cart|product|order|category|payment|alert|token|password|image|address|logged in)\b.*/i, // preserve anything containing these keywords
   ];
 
   // If any pattern matches, preserve the message as-is

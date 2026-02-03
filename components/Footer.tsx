@@ -91,8 +91,8 @@ export default function Footer() {
         <p className="text-neutral-300 text-sm text-center w-full mb-2">
           © {new Date().getFullYear()} ACTIVO. All rights reserved.
         </p>
-        <p className="text-neutral-400 text-xs text-center w-full mb-5">
-          Developed by Engineer Ammar Alaa •{" "}
+        <p className="text-neutral-400 flex flex-col sm:flex-row gap-2 text-xs text-center w-full mb-5">
+          <span>Developed by Engineer Ammar Alaa •{" "}</span>
           <a
             href="mailto:ammar.omar@a2sv.org"
             className="hover:text-white transition-colors duration-200 underline"

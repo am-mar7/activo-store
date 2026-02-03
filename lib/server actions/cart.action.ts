@@ -83,15 +83,17 @@ export async function upsertCartItem(
     schema: UpsertCartItemSchema,
     authorizetionProccess: true,
   });
-  if (validated instanceof Error)
+  if (validated instanceof UnauthorizedError)
+    return handleError(
+      new Error("You have to be logged in first")
+    ) as ErrorResponse;
+  else if (validated instanceof Error)
     return handleError(validated) as ErrorResponse;
 
   const { sku, product, quantity, type } = validated.params!;
   const userId = validated.session?.user.id;
 
   try {
-    if (!userId) throw new UnauthorizedError();
-
     const newCartItem = { product, quantity, variantSku: sku };
 
     const updateOperation =

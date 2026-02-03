@@ -14,6 +14,7 @@ import {
 import LogoutBtn from "@/components/buttons/LogoutBtn";
 import Link from "next/link";
 import ROUTES from "@/constants/routes";
+import { useSession } from "next-auth/react";
 
 interface Category {
   _id: string;
@@ -33,7 +34,8 @@ export default function MobileNavigation({
   invert = false,
 }: Props) {
   const [activeSubmenu, setActiveSubmenu] = useState<SubMenuType>(null);
-
+  const session = useSession();
+  const isAdmin = session.data?.user.role === "admin";
   const handleBack = () => {
     setActiveSubmenu(null);
   };
@@ -91,14 +93,16 @@ export default function MobileNavigation({
                 <ChevronRight size={20} />
               </button>
 
-              <SheetClose asChild>
-                <Link
-                  className="block text-slate-700 hover:text-slate-900 text-lg font-medium transition-colors"
-                  href={ROUTES.DASHBOARD}
-                >
-                  Admin panel
-                </Link>
-              </SheetClose>
+              {isAdmin && (
+                <SheetClose asChild>
+                  <Link
+                    className="block text-slate-700 hover:text-slate-900 text-lg font-medium transition-colors"
+                    href={ROUTES.DASHBOARD}
+                  >
+                    Admin panel
+                  </Link>
+                </SheetClose>
+              )}
             </nav>
           </div>
 

@@ -135,7 +135,7 @@ export default async function Navbar({ className, isHome = false }: Props) {
       </div>
       <div className="flex-center">
         <SearchToggler
-          className={`mr-1 sm:mr-3 ${
+          className={`mr-1.5 sm:mr-3 ${
             isHome ? "text-slate-100" : "text-slate-900"
           }`}
         />

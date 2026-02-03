@@ -11,9 +11,9 @@ export default function RootLayout({
     <>
       <main className="min-h-dvh flex-center p-5">
         <section className="px-6 py-8 rounded-2xl shadow-lg w-full sm:max-w-140 bg-neutral-100">
-          <div className="flex-between max-h-18 overflow-hidden">
+          <div className="flex-between overflow-hidden">
             <div className="w-full">
-              <h2 className="h2-bold">Join Activo</h2>
+              <h2 className="h2-bold hidden sm:block">Join Activo</h2>
               <h4 className="text-light-400 body-regular">
                 Your perfect fit is just a sign-in away
               </h4>
