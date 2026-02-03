@@ -38,7 +38,7 @@ export function OrderCard({ order, index }: OrderCardProps) {
   const itemsSubtotal = items.reduce((sum, item) => {
     return sum + (item.subTotal || item.priceAtPurchase * item.quantity);
   }, 0);
-  const discountAmount = promoCode?.percentage || 0;
+  const discountAmount = promoCode?.discount || 0;
   console.log("index", index, order);
 
   const getStatusStyle = (status: string) => {

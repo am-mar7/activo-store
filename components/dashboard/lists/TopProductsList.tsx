@@ -253,27 +253,3 @@ export default function TopProductsList({ data }: TopProductsTableProps) {
     </div>
   );
 }
-
-// Usage in your page.tsx
-/*
-import TopProductsTable from "@/components/TopProductsTable";
-
-async function TopProducts({ to, from, preset }: PageProps) {
-  const { success, error, data } = await getTopProducts({
-    from,
-    to,
-    preset,
-  });
-
-  if (!success || error || !data) {
-    return <TryAgain message={getFriendlyErrorMessage(error)} />;
-  }
-
-  return <TopProductsTable data={data} />;
-}
-
-// In your main component
-<Suspense fallback={<Loading />}>
-  <TopProducts to={to} from={from} preset={validPreset} />
-</Suspense>
-*/

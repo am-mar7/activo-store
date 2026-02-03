@@ -79,7 +79,7 @@ export default function MobileNavigation({
                 onClick={() => setActiveSubmenu("categories")}
                 className="w-full flex items-center justify-between text-slate-700 hover:text-slate-900 text-lg font-medium transition-colors"
               >
-                <span>shop by category</span>
+                shop by category
                 <ChevronRight size={20} />
               </button>
 

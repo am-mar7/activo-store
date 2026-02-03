@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useSettingsStore, SettingsType } from '@/stores/useSettingsStore';
+import { useSettingsStore } from '@/stores/useSettingsStore';
+import { SettingsType } from '@/types/global';
 
 interface SettingsInitializerProps {
   settings: SettingsType;

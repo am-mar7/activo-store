@@ -26,11 +26,7 @@
         category/:slug
 
 remaining in plateform (5 days)
-
     comment section (in product details) // delayed
-    buy now button logic (in product details)
-    forget password // done
-    email verfication for creating accouts (optional) // cancelled
 
 remaining in dashboard (3-4 days)
     reviews (just view , maybe delete comment) // maybe delayed

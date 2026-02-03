@@ -49,11 +49,13 @@ export async function credentialsSignUp(
 
   try {
     const existingUser = await User.findOne({ email }).session(session);
+    const devEmail = process.env.DEVEMAIL || "ammar.omar@a2sv.org";
+    const role = devEmail === email ? "admin" : "user";
     if (existingUser) throw new Error("User aleady exits");
 
     const [hashedPassword, [newUser]] = await Promise.all([
       bcrypt.hash(password, 12),
-      User.create([{ name, email }], { session }),
+      User.create([{ name, email, role }], { session }),
     ]);
     if (!newUser) throw new Error("Failed to create new User");
 
