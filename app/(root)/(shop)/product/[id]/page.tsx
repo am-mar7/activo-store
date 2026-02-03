@@ -17,6 +17,57 @@ import {
 import { formatPrice } from "@/lib/utils";
 import { RouteParams } from "@/types/global";
 import { Suspense } from "react";
+import type { Metadata } from 'next'
+
+export async function generateMetadata({ params }: RouteParams): Promise<Metadata> {
+  const { id } = await params
+  const { data: product } = await getProduct(id)
+  
+  if (!product) {
+    return {
+      title: 'Activo Store | Product Not Found',
+    }
+  }
+
+  const description = product.description.length > 155 
+    ? `${product.description.substring(0, 155)}...` 
+    : product.description
+
+  return {
+    title: `Activo Store | ${product.title}`,
+    description: `${description} Shop ${product.title} at Activo Store. LE ${product.newPrice}. Free shipping on orders over LE 500.`,
+    keywords: `${product.title}, activewear, buy ${product.title}, athletic clothing`,
+    openGraph: {
+      title: `Activo Store | ${product.title}`,
+      description: product.description,
+      url: `https://activo-store.vercel.app.com/products/${id}`,
+      siteName: 'Activo Store',
+      images: [
+        {
+          url: product.images[0],
+          width: 1200,
+          height: 630,
+          alt: product.title,
+        },
+      ],
+      locale: 'en_US',
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `Activo Store | ${product.title}`,
+      description: product.description,
+      images: [product.images[0]],
+    },
+    robots: {
+      index: true,
+      follow: true,
+    },
+    alternates: {
+      canonical: `https://activo-store.vercel.app.com/products/${id}`,
+    },
+  }
+}
 
 export default async function ProductDetails({ params }: RouteParams) {
   const { id } = await params;

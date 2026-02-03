@@ -1,6 +1,15 @@
 import Navbar from "@/components/dashboard/navigation/Navbar";
 import Sidebar from "@/components/dashboard/navigation/Sidebar";
 import React from "react";
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Activo Store | Dashboard',
+  robots: {
+    index: false,
+    follow: false,
+  },
+}
 
 interface Props {
   children: React.ReactNode;

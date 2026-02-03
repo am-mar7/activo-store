@@ -4,6 +4,60 @@ import DataRenderer from "@/components/DataRenderer";
 import Pagination from "@/components/Pagination";
 import { getCategoriedProducts } from "@/lib/server actions/product.action";
 import { RouteParams } from "@/types/global";
+import type { Metadata } from "next";
+import { getCategoryBySlug } from "@/lib/server actions/category.action";
+
+export async function generateMetadata({
+  params,
+}: RouteParams): Promise<Metadata> {
+  const { slug } = await params;
+  const { data: category } = await getCategoryBySlug(slug);
+
+  if (!category) {
+    return {
+      title: "Activo Store | Category Not Found",
+    };
+  }
+
+  return {
+    title: `Activo Store | ${category.name}`,
+    description: `Shop ${
+      category.name
+    } at Activo Store. Browse our collection of high-quality ${category.name.toLowerCase()} with free shipping on orders over $50.`,
+    keywords: `${
+      category.name
+    }, ${category.name.toLowerCase()} clothing, activewear, athletic wear`,
+    openGraph: {
+      title: `Activo Store | ${category.name}`,
+      description: `Shop ${category.name} at Activo Store.`,
+      url: `https://activo-store.vercel.app.com/categories/${slug}`,
+      siteName: "Activo Store",
+      images: [
+        {
+          url: category.image,
+          width: 1200,
+          height: 630,
+          alt: `${category.name} - Activo Store`,
+        },
+      ],
+      locale: "en_US",
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `Activo Store | ${category.name}`,
+      description: `Shop ${category.name} at Activo Store.`,
+      images: [category.image],
+    },
+    robots: {
+      index: true,
+      follow: true,
+    },
+    alternates: {
+      canonical: `https://activo-store.vercel.app.com/categories/${slug}`,
+    },
+  };
+}
 
 export default async function CategoriedProducts({
   params,

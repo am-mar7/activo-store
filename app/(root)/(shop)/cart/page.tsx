@@ -7,6 +7,19 @@ import { getFriendlyErrorMessage } from "@/lib/error-messages";
 import { getCartItems } from "@/lib/server actions/cart.action";
 import { AlertCircle, PackageOpen } from "lucide-react";
 import { redirect } from "next/navigation";
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Activo Store | Cart',
+  description: 'Review your shopping cart and proceed to secure checkout. Free shipping on orders over $50.',
+  robots: {
+    index: false, 
+    follow: true,
+  },
+  alternates: {
+    canonical: 'https://activo-store.vercel.app.com/cart',
+  },
+}
 
 export default async function Cart() {
   const session = await auth();

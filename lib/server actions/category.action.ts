@@ -199,7 +199,26 @@ export async function getCategory(
   }
 }
 
-export async function editCategory(params: EditCategoryParams):Promise<ActionResponse> {
+export async function getCategoryBySlug(
+  slug: string
+): Promise<ActionResponse<CategoryType>> {
+  try {
+    await dbConnect();
+    const category = await Category.findOne({ slug }).lean();
+    if (!category) throw new Error("Category not found");
+
+    return {
+      success: true,
+      data: JSON.parse(JSON.stringify(category)),
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}
+
+export async function editCategory(
+  params: EditCategoryParams
+): Promise<ActionResponse> {
   const validated = await actionHandler({
     params,
     schema: EditCategorySchema.partial(),

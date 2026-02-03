@@ -3,6 +3,16 @@
 import { useEffect } from "react";
 import { AlertCircle, RefreshCw } from "lucide-react";
 import { getFriendlyErrorMessage } from "@/lib/error-messages";
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Activo Store | Error',
+  description: 'An error occurred. Please try again or contact support if the problem persists.',
+  robots: {
+    index: false,
+    follow: false,
+  },
+}
 
 export default function Error({
   error,

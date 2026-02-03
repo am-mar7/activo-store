@@ -303,16 +303,16 @@ async function AdminAlerts({ to, from, preset }: PageProps) {
           </div>
         ) : (
           <div className="space-y-3">
-            {criticalAlerts.map((alert) => (
-              <AlertCard key={alert.id} alert={alert} />
+            {criticalAlerts.map((alert, idx) => (
+              <AlertCard key={idx} alert={alert} />
             ))}
 
-            {warningAlerts.map((alert) => (
-              <AlertCard key={alert.id} alert={alert} />
+            {warningAlerts.map((alert, idx) => (
+              <AlertCard key={idx} alert={alert} />
             ))}
 
-            {infoAlerts.map((alert) => (
-              <AlertCard key={alert.id} alert={alert} />
+            {infoAlerts.map((alert, idx) => (
+              <AlertCard key={idx} alert={alert} />
             ))}
           </div>
         )}

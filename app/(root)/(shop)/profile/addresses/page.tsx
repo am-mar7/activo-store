@@ -3,6 +3,19 @@ import { MapPin, Phone, Home, Star } from "lucide-react";
 import DataRenderer from "@/components/DataRenderer";
 import SetDefaultAddressBtn from "@/components/buttons/SetDefaultAddressBtn";
 import AddAddressForm from "@/components/forms/AddAddressForm";
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Activo Store | Addresses',
+  description: 'Manage your delivery addresses. Add, edit, or set default shipping addresses for your Activo Store orders.',
+  robots: {
+    index: false,
+    follow: true,
+  },
+  alternates: {
+    canonical: 'https://activo-store.vercel.app.com/addresses',
+  },
+}
 
 export default async function AddressesPage() {
   const { success, data, error } = await getAddresses();

@@ -6,6 +6,19 @@ import ROUTES from "@/constants/routes";
 import { getOrders } from "@/lib/server actions/order.action";
 import { RouteParams } from "@/types/global";
 import { redirect } from "next/navigation";
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Activo Store | Profile',
+  description: 'View and manage your orders. Track your order status and review your purchase history at Activo Store.',
+  robots: {
+    index: false,
+    follow: true,
+  },
+  alternates: {
+    canonical: 'https://activo-store.vercel.app.com/profile',
+  },
+}
 
 export default async function Profile({ searchParams }: RouteParams) {
   const [{ filter, page, pageSize }, session] = await Promise.all([

@@ -1,4 +1,17 @@
 import ForgetPasswordForm from "@/components/forms/ForgetPasswordForm";
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Activo Store | Forgot Password',
+  description: 'Reset your Activo Store account password. Enter your email to receive password reset instructions.',
+  robots: {
+    index: false,
+    follow: false,
+  },
+  alternates: {
+    canonical: 'https://activo-store.vercel.app.com/forgot-password',
+  },
+}
 
 export default function ForgotPassword() {
   return (

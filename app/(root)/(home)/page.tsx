@@ -13,6 +13,49 @@ import {
   CarouselItem,
 } from "@/components/ui/carousel";
 import Footer from "@/components/Footer";
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Activo Store - | Home',
+  description: 'Discover Activo Store\'s collection of premium activewear and lifestyle clothing. Shop best-selling athletic wear, casual styles, and trending fashion. Free shipping on orders over $50.',
+  keywords: 'activewear, athletic clothing, lifestyle apparel, gym wear, sports clothing, casual wear, Activo Store',
+  openGraph: {
+    title: 'Activo Store - Premium Active & Lifestyle Clothing',
+    description: 'Shop premium activewear and lifestyle clothing at Activo Store. Discover our best-selling collections.',
+    url: 'https://activostore.com',
+    siteName: 'Activo Store',
+    images: [
+      {
+        url: 'https://activostore.com/og-image.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'Activo Store - Premium Activewear',
+      },
+    ],
+    locale: 'en_US',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Activo Store - Premium Active & Lifestyle Clothing',
+    description: 'Shop premium activewear and lifestyle clothing at Activo Store.',
+    images: ['https://activostore.com/twitter-image.jpg'],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  alternates: {
+    canonical: 'https://activostore.com',
+  },
+}
 
 export default function Home() {
   return (

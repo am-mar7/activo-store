@@ -4,6 +4,19 @@ import DataRenderer from "@/components/DataRenderer";
 import ROUTES from "@/constants/routes";
 import { getWishlist } from "@/lib/server actions/wishlist.action";
 import { redirect } from "next/navigation";
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Activo Store | Wishlist',
+  description: 'View and manage your saved items. Keep track of your favorite products at Activo Store.',
+  robots: {
+    index: false,
+    follow: true,
+  },
+  alternates: {
+    canonical: 'https://activo-store.vercel.app.com/wishlist',
+  },
+}
 
 export default async function Wishlist() {
   const session = await auth();

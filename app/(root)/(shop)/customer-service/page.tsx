@@ -7,11 +7,47 @@ import {
   Shield,
   FileText,
 } from "lucide-react";
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Activo Store | Customer Service',
+  description: 'Get help with your Activo Store order. Contact us 24/7 for shipping info, returns & exchanges, privacy policy, and terms & conditions. We\'re here to help.',
+  keywords: 'customer service, contact us, shipping, returns, exchanges, privacy policy, terms and conditions',
+  openGraph: {
+    title: 'Activo Store | Customer Service',
+    description: 'Get help with your order. Available 24/7 for shipping, returns, and customer support.',
+    url: 'https://activo-store.vercel.app.com/customer-service',
+    siteName: 'Activo Store',
+    images: [
+      {
+        url: 'https://activo-store.vercel.app.com/og-customer-service.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'Activo Store Customer Service',
+      },
+    ],
+    locale: 'en_US',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Activo Store | Customer Service',
+    description: 'Get help with your order. Available 24/7 for shipping, returns, and customer support.',
+    images: ['https://activo-store.vercel.app.com/twitter-customer-service.jpg'],
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+  alternates: {
+    canonical: 'https://activo-store.vercel.app.com/customer-service',
+  },
+}
+
 
 export default function CustomerServicePage() {
   return (
     <div className="flex-center">
-      {" "}
       <div className="min-h-screen bg-muted max-w-7xl">
         {/* Hero Section */}
         <div className="bg-primary-gradient2 text-white py-16">
@@ -299,22 +335,6 @@ export default function CustomerServicePage() {
               </div>
             </div>
           </section>
-
-          {/* <div className="bg-primary-gradient text-white rounded-xl shadow-lg p-8 text-center">
-          <h3 className="h3-bold mb-4">Need More Help?</h3>
-          <p className="mb-6 base-regular">Our customer service team is ready to assist you</p>
-          <div className="flex flex-wrap justify-center gap-4">
-            <a href="#contact" className="bg-white text-primary-600 px-6 py-3 rounded-lg base-semibold hover:bg-primary-50 transition-colors duration-200">
-              Contact Us
-            </a>
-            <a href="#shipping" className="bg-white/20 backdrop-blur-sm text-white px-6 py-3 rounded-lg base-semibold hover:bg-white/30 transition-colors duration-200 border border-white/30">
-              Shipping Info
-            </a>
-            <a href="#returns" className="bg-white/20 backdrop-blur-sm text-white px-6 py-3 rounded-lg base-semibold hover:bg-white/30 transition-colors duration-200 border border-white/30">
-              Returns
-            </a>
-          </div>
-        </div> */}
         </div>
       </div>
     </div>
