@@ -12,6 +12,7 @@ const ROUTES = {
   FORGOT_PASSWORD: "/forgot-password",
   RESET_PASSWORD: "/reset-password",
   DASHBOARD: "/dashboard",
+  CUSTOMERSERVICES: "/customer-service",
 };
 
 export const DASHBOARDROUTES = {
@@ -30,6 +31,6 @@ export const DASHBOARDROUTES = {
   ORDERDETAILS: (id: string) => `/dashboard/orders/${id}`,
   ADDPROMOCODE: "promocodes/add",
   EDITPROMOCODE: (id: string) => `/dashboard/promocodes/edit/${id}`,
-  SETTINGS: "/dashboard/settings",
+  SETTINGS: "/dashboard/settings",  
 };
 export default ROUTES;

@@ -1,16 +1,6 @@
-import { Instagram, Facebook } from "lucide-react";
-
-// TikTok icon component using lucide-react style
-const TikTokIcon = ({ className }: { className?: string }) => (
-  <svg
-    className={className}
-    fill="currentColor"
-    viewBox="0 0 24 24"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z" />
-  </svg>
-);
+import ROUTES from "@/constants/routes";
+import { Instagram, Facebook, Music } from "lucide-react";
+import Link from "next/link";
 
 export default function Footer() {
   return (
@@ -41,7 +31,7 @@ export default function Footer() {
                 className="bg-gray-800 hover:bg-gray-700 p-3 rounded-full transition-colors duration-200"
                 aria-label="TikTok"
               >
-                <TikTokIcon className="w-5 h-5" />
+                <Music className="w-5 h-5" />
               </a>
               <a
                 href="https://www.facebook.com/share/1GDTwDiwiB/"
@@ -60,46 +50,55 @@ export default function Footer() {
             <h3 className="text-white font-semibold mb-4">Customer Service</h3>
             <ul className="space-y-2">
               <li>
-                <a
-                  href="/shipping"
+                <Link
+                  href={ROUTES.CUSTOMERSERVICES+"#shipping"}
                   className="hover:text-white transition-colors duration-200"
                 >
                   Shipping Info
-                </a>
+                </Link>
               </li>
               <li>
-                <a
-                  href="/returns"
+                <Link
+                  href={ROUTES.CUSTOMERSERVICES+"#returns"}
                   className="hover:text-white transition-colors duration-200"
                 >
                   Returns & Exchanges
-                </a>
+                </Link>
               </li>
               <li>
-                <a
-                  href="/privacy"
+                <Link
+                  href={ROUTES.CUSTOMERSERVICES+"#privacy"}
                   className="hover:text-white transition-colors duration-200"
                 >
                   Privacy Policy
-                </a>
+                </Link>
               </li>
               <li>
-                <a
-                  href="/terms"
+                <Link
+                  href={ROUTES.CUSTOMERSERVICES+"#terms"}
                   className="hover:text-white transition-colors duration-200"
                 >
                   Terms & Conditions
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
         </div>
       </div>
-      {/* Copyright */}
+      {/* Copyright & Developer Credit */}
       <div className="flex-center flex-col">
         <div className="w-8/10 border-t border-gray-700 pt-6"></div>
-        <p className="text-neutral-300 text-sm text-center w-full mb-5">
+        <p className="text-neutral-300 text-sm text-center w-full mb-2">
           © {new Date().getFullYear()} ACTIVO. All rights reserved.
+        </p>
+        <p className="text-neutral-400 text-xs text-center w-full mb-5">
+          Developed by Engineer Ammar Alaa •{" "}
+          <a
+            href="mailto:ammar.omar@a2sv.org"
+            className="hover:text-white transition-colors duration-200 underline"
+          >
+            ammar.omar@a2sv.org
+          </a>
         </p>
       </div>
     </footer>

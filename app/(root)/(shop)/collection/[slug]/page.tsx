@@ -1,7 +1,6 @@
 import NotFound from "@/app/not-found";
 import ProductCard from "@/components/cards/ProductCard";
 import DataRenderer from "@/components/DataRenderer";
-import Filters from "@/components/Filters";
 import Pagination from "@/components/Pagination";
 import { getProductsByCollections } from "@/lib/server actions/product.action";
 import { RouteParams } from "@/types/global";
@@ -33,7 +32,6 @@ export default async function Collections({
           {" "}
           {slug === "all" ? "All Products" : `${slug} Collection`}{" "}
         </h2>
-        <Filters />
         <DataRenderer
           success={success}
           error={error}

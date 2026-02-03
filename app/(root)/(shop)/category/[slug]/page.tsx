@@ -1,7 +1,6 @@
 import NotFound from "@/app/not-found";
 import ProductCard from "@/components/cards/ProductCard";
 import DataRenderer from "@/components/DataRenderer";
-import Filters from "@/components/Filters";
 import Pagination from "@/components/Pagination";
 import { getCategoriedProducts } from "@/lib/server actions/product.action";
 import { RouteParams } from "@/types/global";
@@ -30,7 +29,6 @@ export default async function CategoriedProducts({
     <div className="flex-center flex-col">
       <div className="max-w-7xl px-5 w-full">
         <h2 className="h2-semibold"> {slug} </h2>
-        <Filters />
         <DataRenderer
           success={success}
           error={error}
