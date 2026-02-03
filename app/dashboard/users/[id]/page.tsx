@@ -35,7 +35,7 @@ export default async function page({ params, searchParams }: RouteParams) {
   const tryAgainOrder = !orderData || orderError || !orderSuccess;
 
   const { name, email, image, role, addresses } = userData || {};
-  const { orders, isNext } = orderData || {};
+  const { items: orders, isNext, total } = orderData || {};
   return (
     <div className="space-y-6 max-w-7xl">
       <div>
@@ -127,7 +127,7 @@ export default async function page({ params, searchParams }: RouteParams) {
               <OrdersList showCustomer={false} orders={orders} />
               <div className="mt-1.5">
                 {orders.length ? (
-                  <Pagination page={page} isNext={isNext} />
+                  <Pagination page={page} isNext={isNext} total={total} />
                 ) : null}
               </div>
             </div>
