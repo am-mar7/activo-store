@@ -54,7 +54,7 @@ export default async function RootLayout({
 
         <Navbar className="relative z-20" isHome={true} />
 
-        <div className="relative z-20 flex flex-col justify-center h-full px-6 md:px-20 lg:px-32">
+        <div className="relative z-10 flex flex-col justify-center h-full px-6 md:px-20 lg:px-32">
           <h1 className="text-4xl md:text-6xl 2xl:text-7xl font-extrabold text-white drop-shadow-xl animate-fadeInUp">
             {title || "Best of 2025"}
           </h1>
