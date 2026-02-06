@@ -10,7 +10,7 @@ export default async function PromoCode({ searchParams }: RouteParams) {
   const { page, pageSize, filter, query } = await searchParams;
   const { success, error, data } = await getPromoCodes({
     page: Number(page) || 1,
-    pageSize: Number(pageSize) || 10,
+    pageSize: Number(pageSize) || 25,
     filter,
     query,
   });
@@ -37,11 +37,19 @@ export default async function PromoCode({ searchParams }: RouteParams) {
       </div>
       {!tryAgain && promos && (
         <div className="bg-white">
-          <h3 className="h3-semibold text-slate-800 mt-4 mb-1 px-1"> Promo Codes</h3>
+          <h3 className="h3-semibold text-slate-800 mt-4 mb-1 px-1">
+            {" "}
+            Promo Codes
+          </h3>
           <PromoCodesList promoCodes={promos} />
           <div className="mt-1.5">
             {promos.length ? (
-              <Pagination page={page} total={total} isNext={isNext} />
+              <Pagination
+                pageSize={Number(pageSize) || 25}
+                page={page}
+                total={total}
+                isNext={isNext}
+              />
             ) : null}
           </div>
         </div>

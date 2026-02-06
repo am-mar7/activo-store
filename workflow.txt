@@ -30,3 +30,4 @@ remaining in plateform (5 days)
 
 remaining in dashboard (3-4 days)
     reviews (just view , maybe delete comment) // maybe delayed
+    fix table bug if data is longer than 10 the table shows only ten

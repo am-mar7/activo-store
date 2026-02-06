@@ -11,7 +11,7 @@ export default async function Users({ searchParams }: RouteParams) {
     page: Number(page) || 1,
     query,
     filter,
-    pageSize: Number(pageSize) | 25,
+    pageSize: Number(pageSize) || 25,
   });
 
   const { items: users, isNext, total } = data || {};
@@ -27,14 +27,16 @@ export default async function Users({ searchParams }: RouteParams) {
       </div>
       {!tryAgain && users && (
         <div className="bg-white">
-          <h3 className="h3-semibold text-slate-800 mt-4 mb-1.5 px-1">
-            {" "}
-            Users
-          </h3>
+          <h3 className="h3-semibold text-slate-800 mt-4 mb-1.5 px-1">Users</h3>
           <UsersList users={users} />
           <div className="mt-1.5">
             {users.length ? (
-              <Pagination page={page} total={total} isNext={isNext} />
+              <Pagination
+                pageSize={Number(pageSize) || 25}
+                page={page}
+                total={total}
+                isNext={isNext}
+              />
             ) : null}
           </div>
         </div>

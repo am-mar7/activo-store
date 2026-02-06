@@ -4,7 +4,6 @@ import { getFriendlyErrorMessage } from "@/lib/error-messages";
 import { getOrders } from "@/lib/server actions/order.action";
 import { getUserById } from "@/lib/server actions/user.action";
 import { RouteParams } from "@/types/global";
-import React from "react";
 import { AddressesList } from "@/components/dashboard/lists/AddressesList";
 import { Badge } from "@/components/ui/badge";
 import { MapPin, Mail, Shield } from "lucide-react";
@@ -127,7 +126,12 @@ export default async function page({ params, searchParams }: RouteParams) {
               <OrdersList showCustomer={false} orders={orders} />
               <div className="mt-1.5">
                 {orders.length ? (
-                  <Pagination page={page} isNext={isNext} total={total} />
+                  <Pagination
+                    pageSize={Number(pageSize) || 10}
+                    page={page}
+                    isNext={isNext}
+                    total={total}
+                  />
                 ) : null}
               </div>
             </div>
