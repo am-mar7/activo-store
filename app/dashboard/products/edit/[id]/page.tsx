@@ -1,10 +1,20 @@
+import Loading from "@/app/loading";
 import ProductFrom from "@/components/dashboard/forms/ProductFrom";
 import { getCategories } from "@/lib/server actions/category.action";
 import { getProduct } from "@/lib/server actions/product.action";
 import { RouteParams } from "@/types/global";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 
-export default async function EditProduct({ params }: RouteParams) {
+export default function EditProduct({ params, searchParams }: RouteParams) {
+  return (
+    <Suspense fallback={<Loading />}>
+      <EditProductContent params={params} searchParams={searchParams} />{" "}
+    </Suspense>
+  );
+}
+
+async function EditProductContent({ params }: RouteParams) {
   const { id } = await params;
   const [{ data }, { data: product }] = await Promise.all([
     getCategories({}),
@@ -29,7 +39,7 @@ export default async function EditProduct({ params }: RouteParams) {
           category,
           newPrice,
           collection,
-          oldPrice,          
+          oldPrice,
         }}
         id={product._id}
         oldImages={product.images}

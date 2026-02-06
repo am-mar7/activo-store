@@ -1,3 +1,4 @@
+import Loading from "@/app/loading";
 import DataCard from "@/components/dashboard/cards/DataCard";
 import DataRenderer from "@/components/DataRenderer";
 import LocalSearch from "@/components/searchbars/LocalSearch";
@@ -6,8 +7,17 @@ import { getProducts } from "@/lib/server actions/product.action";
 import { RouteParams } from "@/types/global";
 import { Plus } from "lucide-react";
 import Link from "next/link";
+import { Suspense } from "react";
 
-export default async function Products({ searchParams }: RouteParams) {
+export default function Products({ searchParams, params }: RouteParams) {
+  return (
+    <Suspense fallback={<Loading />}>
+      <ProductsContent params={params} searchParams={searchParams} />
+    </Suspense>
+  );
+}
+
+async function ProductsContent({ searchParams }: RouteParams) {
   const { page, query, filter, pageSize } = await searchParams;
   const { data, success, error } = await getProducts({
     page: Number(page) || 1,

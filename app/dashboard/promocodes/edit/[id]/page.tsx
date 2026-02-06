@@ -1,11 +1,21 @@
+import Loading from "@/app/loading";
 import PromoCodeForm from "@/components/dashboard/forms/PromoCodeForm";
 import TryAgain from "@/components/TryAgain";
 import { getFriendlyErrorMessage } from "@/lib/error-messages";
 import { getPromoCode } from "@/lib/server actions/promocode.action";
 import { RouteParams } from "@/types/global";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 
-export default async function EditPromoCode({ params }: RouteParams) {
+export default function EditPromoCode({ params, searchParams }: RouteParams) {
+  return (
+    <Suspense fallback={<Loading />}>
+      <EditPromoCodeContent params={params} searchParams={searchParams} />
+    </Suspense>
+  );
+}
+
+async function EditPromoCodeContent({ params }: RouteParams) {
   const { id } = await params;
   const { success, error, data } = await getPromoCode(id);
 

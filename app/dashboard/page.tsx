@@ -34,7 +34,15 @@ type PageProps = {
   preset?: "day" | "week" | "month";
 };
 
-export default async function Overview({ searchParams }: RouteParams) {
+export default function Overview({ searchParams, params }: RouteParams) {
+  return (
+    <Suspense fallback={<Loading />}>
+      <OverviewContent params={params} searchParams={searchParams} />
+    </Suspense>
+  );
+}
+
+async function OverviewContent({ searchParams }: RouteParams) {
   const { from, to, preset } = await searchParams;
 
   const validPreset =

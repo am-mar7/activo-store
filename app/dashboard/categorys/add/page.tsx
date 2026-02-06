@@ -1,7 +1,17 @@
+import Loading from "@/app/loading";
 import CategoryForm from "@/components/dashboard/forms/CategoryForm";
 import { getCategories } from "@/lib/server actions/category.action";
+import { Suspense } from "react";
 
-export default async function AddCategory() {
+export default function AddCategory() {
+  return (
+    <Suspense fallback={<Loading />}>
+      <AddCategoryContent />
+    </Suspense>
+  );
+}
+
+async function AddCategoryContent() {
   const { data } = await getCategories({});
   const { categories } = data || {};
   const categoriesList = categories || [];

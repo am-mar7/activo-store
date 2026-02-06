@@ -1,11 +1,21 @@
+import Loading from "@/app/loading";
 import { UsersList } from "@/components/dashboard/lists/UserList";
 import Pagination from "@/components/Pagination";
 import LocalSearch from "@/components/searchbars/LocalSearch";
 import { DASHBOARDROUTES } from "@/constants/routes";
 import { getUsers } from "@/lib/server actions/user.action";
 import { RouteParams } from "@/types/global";
+import { Suspense } from "react";
 
-export default async function Users({ searchParams }: RouteParams) {
+export default function Users({ searchParams, params }: RouteParams) {
+  return (
+    <Suspense fallback={<Loading />}>
+      <UsersContent params={params} searchParams={searchParams} />
+    </Suspense>
+  );
+}
+
+async function UsersContent({ searchParams }: RouteParams) {
   const { page, query, filter, pageSize } = await searchParams;
   const { data, success, error } = await getUsers({
     page: Number(page) || 1,

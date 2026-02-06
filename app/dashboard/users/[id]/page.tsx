@@ -9,8 +9,18 @@ import { Badge } from "@/components/ui/badge";
 import { MapPin, Mail, Shield } from "lucide-react";
 import { OrdersList } from "@/components/dashboard/lists/OrdersList";
 import Pagination from "@/components/Pagination";
+import { Suspense } from "react";
+import Loading from "@/app/loading";
 
-export default async function page({ params, searchParams }: RouteParams) {
+export default function UserDetials({ params, searchParams }: RouteParams) {
+  return (
+    <Suspense fallback={<Loading />}>
+      <UserDetialsContent params={params} searchParams={searchParams} />
+    </Suspense>
+  );
+}
+
+async function UserDetialsContent({ params, searchParams }: RouteParams) {
   const [{ id }, { page, pageSize, filter, query }] = await Promise.all([
     params,
     searchParams,

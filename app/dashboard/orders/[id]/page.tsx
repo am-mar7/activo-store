@@ -2,7 +2,7 @@ import TryAgain from "@/components/TryAgain";
 import { getFriendlyErrorMessage } from "@/lib/error-messages";
 import { getOrder } from "@/lib/server actions/order.action";
 import { RouteParams } from "@/types/global";
-import React from "react";
+import React, { Suspense } from "react";
 import { Badge } from "@/components/ui/badge";
 import {
   MapPin,
@@ -20,8 +20,17 @@ import Image from "next/image";
 import Link from "next/link";
 import ROUTES, { DASHBOARDROUTES } from "@/constants/routes";
 import { StatusSelect } from "@/components/buttons/StatusSelect";
+import Loading from "@/app/loading";
 
-export default async function page({ params }: RouteParams) {
+export default function OrderDetails({ params, searchParams }: RouteParams) {
+  return (
+    <Suspense fallback={<Loading />}>
+      <OrderDetailsContent params={params} searchParams={searchParams} />
+    </Suspense>
+  );
+}
+
+async function OrderDetailsContent({ params }: RouteParams) {
   const { id } = await params;
   const { success, error, data: order } = await getOrder(id);
   const tryAgain = !success || error || !order;

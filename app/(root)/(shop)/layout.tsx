@@ -1,3 +1,4 @@
+import Loading from "@/app/loading";
 import Footer from "@/components/Footer";
 import Maintenance from "@/components/Maintanenance";
 import { Breadcrumbs } from "@/components/navigation/BreadCrumb";
@@ -7,8 +8,21 @@ import TopBanner from "@/components/TopBanner";
 import TryAgain from "@/components/TryAgain";
 import { getFriendlyErrorMessage } from "@/lib/error-messages";
 import { getSettings } from "@/lib/server actions/settings.action";
+import { Suspense } from "react";
 
-export default async function RootLayout({
+export default function ShopLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <Suspense fallback={<Loading />}>
+      {ShopLayoutContent({ children })}
+    </Suspense>
+  );
+}
+
+async function ShopLayoutContent({
   children,
 }: {
   children: React.ReactNode;

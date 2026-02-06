@@ -4,21 +4,32 @@ import DataRenderer from "@/components/DataRenderer";
 import ROUTES from "@/constants/routes";
 import { getWishlist } from "@/lib/server actions/wishlist.action";
 import { redirect } from "next/navigation";
-import type { Metadata } from 'next'
+import type { Metadata } from "next";
+import { Suspense } from "react";
+import Loading from "@/app/loading";
 
 export const metadata: Metadata = {
-  title: 'Activo Store | Wishlist',
-  description: 'View and manage your saved items. Keep track of your favorite products at Activo Store.',
+  title: "Activo Store | Wishlist",
+  description:
+    "View and manage your saved items. Keep track of your favorite products at Activo Store.",
   robots: {
     index: false,
     follow: true,
   },
   alternates: {
-    canonical: 'https://activo-store.vercel.app.com/wishlist',
+    canonical: "https://activo-store.vercel.app.com/wishlist",
   },
+};
+
+export default function Wishlist() {
+  return (
+    <Suspense fallback={<Loading />}>
+      <WishlistContent />
+    </Suspense>
+  );
 }
 
-export default async function Wishlist() {
+async function WishlistContent() {
   const session = await auth();
   const userId = session?.user.id;
   if (!userId) return redirect(ROUTES.SIGN_IN);

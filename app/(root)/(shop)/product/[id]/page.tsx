@@ -17,21 +17,24 @@ import {
 import { formatPrice } from "@/lib/utils";
 import { RouteParams } from "@/types/global";
 import { Suspense } from "react";
-import type { Metadata } from 'next'
+import type { Metadata } from "next";
 
-export async function generateMetadata({ params }: RouteParams): Promise<Metadata> {
-  const { id } = await params
-  const { data: product } = await getProduct(id)
-  
+export async function generateMetadata({
+  params,
+}: RouteParams): Promise<Metadata> {
+  const { id } = await params;
+  const { data: product } = await getProduct(id);
+
   if (!product) {
     return {
-      title: 'Activo Store | Product Not Found',
-    }
+      title: "Activo Store | Product Not Found",
+    };
   }
 
-  const description = product.description.length > 155 
-    ? `${product.description.substring(0, 155)}...` 
-    : product.description
+  const description =
+    product.description.length > 155
+      ? `${product.description.substring(0, 155)}...`
+      : product.description;
 
   return {
     title: `Activo Store | ${product.title}`,
@@ -41,7 +44,7 @@ export async function generateMetadata({ params }: RouteParams): Promise<Metadat
       title: `Activo Store | ${product.title}`,
       description: product.description,
       url: `https://activo-store.vercel.app.com/products/${id}`,
-      siteName: 'Activo Store',
+      siteName: "Activo Store",
       images: [
         {
           url: product.images[0],
@@ -50,11 +53,11 @@ export async function generateMetadata({ params }: RouteParams): Promise<Metadat
           alt: product.title,
         },
       ],
-      locale: 'en_US',
-      type: 'website',
+      locale: "en_US",
+      type: "website",
     },
     twitter: {
-      card: 'summary_large_image',
+      card: "summary_large_image",
       title: `Activo Store | ${product.title}`,
       description: product.description,
       images: [product.images[0]],
@@ -66,10 +69,21 @@ export async function generateMetadata({ params }: RouteParams): Promise<Metadat
     alternates: {
       canonical: `https://activo-store.vercel.app.com/products/${id}`,
     },
-  }
+  };
 }
 
-export default async function ProductDetails({ params }: RouteParams) {
+export default function ProductDetails({
+  params,
+  searchParams,
+}: RouteParams) {
+  return (
+    <Suspense fallback={<Loading />}>
+      <ProductDetailsContent params={params} searchParams={searchParams} />
+    </Suspense>
+  );
+}
+
+async function ProductDetailsContent({ params }: RouteParams) {
   const { id } = await params;
   const { success, data: product } = await getProduct(id);
   if (!success || !product) return NotFound();

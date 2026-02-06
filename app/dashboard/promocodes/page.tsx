@@ -1,3 +1,4 @@
+import Loading from "@/app/loading";
 import { PromoCodesList } from "@/components/dashboard/lists/PromoCodesList";
 import Pagination from "@/components/Pagination";
 import LocalSearch from "@/components/searchbars/LocalSearch";
@@ -6,7 +7,17 @@ import { getPromoCodes } from "@/lib/server actions/promocode.action";
 import { RouteParams } from "@/types/global";
 import { Plus } from "lucide-react";
 import Link from "next/link";
-export default async function PromoCode({ searchParams }: RouteParams) {
+import { Suspense } from "react";
+
+export default function PromoCodes({ searchParams, params }: RouteParams) {
+  return (
+    <Suspense fallback={<Loading />}>
+      <PromoCodesContent params={params} searchParams={searchParams} />
+    </Suspense>
+  );
+}
+
+async function PromoCodesContent({ searchParams }: RouteParams) {
   const { page, pageSize, filter, query } = await searchParams;
   const { success, error, data } = await getPromoCodes({
     page: Number(page) || 1,

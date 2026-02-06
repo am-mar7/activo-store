@@ -6,6 +6,8 @@ import { getCategoriedProducts } from "@/lib/server actions/product.action";
 import { RouteParams } from "@/types/global";
 import type { Metadata } from "next";
 import { getCategoryBySlug } from "@/lib/server actions/category.action";
+import { Suspense } from "react";
+import Loading from "@/app/loading";
 
 export async function generateMetadata({
   params,
@@ -59,7 +61,18 @@ export async function generateMetadata({
   };
 }
 
-export default async function CategoriedProducts({
+export default function CategoriedProducts({
+  params,
+  searchParams,
+}: RouteParams) {
+  return (
+    <Suspense fallback={<Loading />}>
+      <CategoriedProductsContent searchParams={searchParams} params={params} />
+    </Suspense>
+  );
+}
+
+async function CategoriedProductsContent({
   params,
   searchParams,
 }: RouteParams) {

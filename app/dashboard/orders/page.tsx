@@ -1,12 +1,21 @@
+import Loading from "@/app/loading";
 import { OrdersList } from "@/components/dashboard/lists/OrdersList";
 import Pagination from "@/components/Pagination";
 import LocalSearch from "@/components/searchbars/LocalSearch";
 import { DASHBOARDROUTES } from "@/constants/routes";
-
 import { getAllOrders } from "@/lib/server actions/order.action";
 import { RouteParams } from "@/types/global";
+import { Suspense } from "react";
 
-export default async function Orders({ searchParams }: RouteParams) {
+export default function Orders({ searchParams, params }: RouteParams) {
+  return (
+    <Suspense fallback={<Loading />}>
+      <OrdersContent params={params} searchParams={searchParams} />
+    </Suspense>
+  );
+}
+
+async function OrdersContent({ searchParams }: RouteParams) {
   const { page, filter, pageSize, query } = await searchParams;
   const { success, error, data } = await getAllOrders({
     page: Number(page) || 1,

@@ -1,3 +1,4 @@
+import Loading from "@/app/loading";
 import DataCard from "@/components/dashboard/cards/DataCard";
 import DataRenderer from "@/components/DataRenderer";
 import LocalSearch from "@/components/searchbars/LocalSearch";
@@ -6,9 +7,18 @@ import { getCategories } from "@/lib/server actions/category.action";
 import { RouteParams } from "@/types/global";
 import { Plus } from "lucide-react";
 import Link from "next/link";
+import { Suspense } from "react";
 
-export default async function Category({ searchParams }: RouteParams) {
-  const { page, query , filter , pageSize } = await searchParams;
+export default function Category({ searchParams, params }: RouteParams) {
+  return (
+    <Suspense fallback={<Loading />}>
+      <CategoryContent params={params} searchParams={searchParams} />
+    </Suspense>
+  );
+}
+
+async function CategoryContent({ searchParams }: RouteParams) {
+  const { page, query, filter, pageSize } = await searchParams;
   const { data, success, error } = await getCategories({
     page: Number(page) || 1,
     query,

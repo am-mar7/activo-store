@@ -13,6 +13,7 @@ import { getSettings } from "@/lib/server actions/settings.action";
 import { SettingsInitializer } from "@/components/Initializers/SettingsInitilizer";
 import TryAgain from "@/components/TryAgain";
 import { getFriendlyErrorMessage } from "@/lib/error-messages";
+import { Suspense } from "react";
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://activo-store.vercel.app.com'),
@@ -60,7 +61,15 @@ const SpaceGrotesk = localFont({
   variable: "--font-space-grotesk",
 });
 
-export default async function RootLayout({
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return <Suspense> {layoutContent({ children })} </Suspense>
+}
+
+async function layoutContent({
   children,
 }: Readonly<{
   children: React.ReactNode;

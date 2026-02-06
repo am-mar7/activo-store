@@ -13,7 +13,19 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 
-export default async function ProfileLayout({
+export default function ProfileLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <Suspense fallback={<Loading />}>
+      {ProfileLayoutContent({ children })}
+    </Suspense>
+  );
+}
+
+async function ProfileLayoutContent({
   children,
 }: {
   children: React.ReactNode;
@@ -34,7 +46,7 @@ export default async function ProfileLayout({
 
   const wishlistCount = wishlistIds?.length || 0;
   const addressCount = user.addresses?.length || 0;
-  
+
   const navLinks = [
     {
       href: ROUTES.PROFILE,
@@ -87,7 +99,7 @@ export default async function ProfileLayout({
                   Account Menu
                 </h2>
               </div>
-              
+
               <nav className="p-2 space-y-1">
                 {navLinks.map((link) => {
                   const Icon = link.icon;
@@ -110,7 +122,7 @@ export default async function ProfileLayout({
                           </div>
                         </div>
                       </div>
-                      
+
                       {link.count !== undefined && link.count > 0 && (
                         <div className="px-2.5 py-1 rounded-full bg-primary text-white text-xs font-semibold">
                           {link.count}

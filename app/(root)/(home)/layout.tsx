@@ -7,12 +7,22 @@ import Link from "next/link";
 import Image from "next/image";
 import TopBanner from "@/components/TopBanner";
 import Maintenance from "@/components/Maintanenance";
+import { Suspense } from "react";
+import Loading from "@/app/loading";
 
-export default async function RootLayout({
+export default function HomeLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  return (
+    <Suspense fallback={<Loading />}>
+      {HomeLayoutContent({ children })}
+    </Suspense>
+  );
+}
+
+async function HomeLayoutContent({ children }: { children: React.ReactNode }) {
   const { success, error, data } = await getSettings();
   if (!success || error || !data)
     return <TryAgain message={getFriendlyErrorMessage(error)} />;
@@ -24,7 +34,7 @@ export default async function RootLayout({
 
   if (maintenance?.enabled)
     return <Maintenance message={maintenance?.message} />;
-  
+
   const now = new Date();
   let isBannerActive = enabled;
 
