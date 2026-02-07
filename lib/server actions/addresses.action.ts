@@ -14,7 +14,7 @@ import { revalidatePath } from "next/cache";
 import ROUTES from "@/constants/routes";
 import { dbConnect } from "../mongoose";
 import { auth } from "@/auth";
-import { UnauthorizedError } from "../http-errors";
+import { NotFoundError, UnauthorizedError } from "../http-errors";
 
 export async function addAddress(
   params: addAddressParams
@@ -24,36 +24,22 @@ export async function addAddress(
     schema: addAddressSchema,
     authorizetionProccess: true,
   });
-
   if (validated instanceof Error)
     return handleError(validated) as ErrorResponse;
-
-  let { isDefault = false } = validated.params!;
+  const { isDefault = false } = validated.params!;
   const userId = validated.session?.user.id;
-
-  const { city, phone, details } = validated.params!;
   try {
-    const user = (await User.findById(userId)) as IUserDoc;
-
-    const isDuplicate = user.addresses.some(
-      (addr) =>
-        addr.city === city && addr.phone === phone && addr.details === details
-    );
-
-    if (isDuplicate) {
-      throw new Error("This address already exists");
+    if (isDefault) {
+      await User.updateOne(
+        { _id: userId },
+        { $set: { "addresses.$[].isDefault": false } }
+      );
     }
 
-    const addresses = isDefault
-      ? user.addresses.map((address) => ({ ...address, isDefault: false }))
-      : user.addresses;
-
-    if (addAddress.length === 0) isDefault = true;
-    addresses.push({ ...validated.params!, isDefault });
-
-    user.addresses = addresses;
-    await user.save();
-
+    await User.updateOne(
+      { _id: userId },
+      { $push: { addresses: { ...validated.params!, isDefault } } }
+    );
     revalidatePath(ROUTES.ADDRESSES);
     revalidatePath(ROUTES.CART);
     return { success: true };
@@ -71,17 +57,21 @@ export async function setAddressAsDefault(
     const userId = session?.user.id;
     if (!userId) throw new UnauthorizedError();
 
-    const user = (await User.findById(userId)) as IUserDoc;
-    if (!user) throw new Error("User not found");
+    await User.updateOne(
+      { _id: userId },
+      { $set: { "addresses.$[].isDefault": false } }
+    );
 
-    user.addresses = user.addresses.map((address) => ({
-      ...address,
-      isDefault: address._id?.toString() === addressId,
-    }));
-    await user.save();
+    await User.updateOne(
+      { _id: userId, "addresses._id": addressId },
+      { $set: { "addresses.$.isDefault": true } }
+    );
+
     revalidatePath(ROUTES.ADDRESSES);
     return { success: true };
   } catch (error) {
+    console.log("ERROR", error);
+
     return handleError(error) as ErrorResponse;
   }
 }
@@ -92,9 +82,12 @@ export async function getAddresses(): Promise<ActionResponse<IAddress[]>> {
     const session = await auth();
     const userId = session?.user.id;
     if (!userId) throw new UnauthorizedError();
-    const user = (await User.findById(userId)) as IUserDoc;
+    const user = await User.findById(userId)
+      .select("addresses")
+      .lean<IUserDoc>();
+    if (!user) throw new NotFoundError("User");
 
-    return { success: true, data: JSON.parse(JSON.stringify(user.addresses)) };
+    return { success: true, data: user.addresses };
   } catch (error) {
     return handleError(error) as ErrorResponse;
   }

@@ -136,22 +136,38 @@ export async function UpdateOrderStatus(
     if (status === "delivered" && oldStatus !== "delivered") {
       const bulkOps = updatedOrder.orderItems.map((item) => ({
         updateOne: {
-          filter: { _id: item.product },
-          update: { $inc: { sold: item.quantity } },
+          filter: { 
+            _id: item.product,
+            "variants.sku": item.variantSku // Assuming orderItem has sku field
+          },
+          update: { 
+            $inc: { 
+              sold: item.quantity,
+              "variants.$.stock": -item.quantity // Decrease variant stock
+            } 
+          },
         },
       }));
-
+    
       await Product.bulkWrite(bulkOps);
     }
-
+    
     if (status === "cancelled" && oldStatus === "delivered") {
       const bulkOps = updatedOrder.orderItems.map((item) => ({
         updateOne: {
-          filter: { _id: item.product },
-          update: { $inc: { sold: -item.quantity } },
+          filter: { 
+            _id: item.product,
+            "variants.sku": item.variantSku
+          },
+          update: { 
+            $inc: { 
+              sold: -item.quantity,
+              "variants.$.stock": item.quantity 
+            } 
+          },
         },
       }));
-
+    
       await Product.bulkWrite(bulkOps);
     }
 
@@ -176,15 +192,17 @@ export async function upatePaymentStatus(
   if (validated instanceof Error)
     return handleError(validated) as ErrorResponse;
 
-  const userId = validated.session?.user.id;
+  const isAdmin = validated.session?.user.role === "admin";
   const { orderId, status } = validated.params!;
   try {
+    if (!isAdmin)
+      throw new UnauthorizedError("only admins can update payment status");
     const order = await Order.findOneAndUpdate(
-      { _id: orderId, userId },
+      { _id: orderId },
       { "payment.status": status },
       { new: true }
     );
-    if (!order) throw new Error("Failed to cancel order");
+    if (!order) throw new Error("Failed to update payment status");
 
     revalidatePath(ROUTES.PROFILE);
     revalidatePath(DASHBOARDROUTES.ORDERS);

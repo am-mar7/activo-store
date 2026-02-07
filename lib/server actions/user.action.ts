@@ -136,6 +136,7 @@ export async function ChangeRole(
     await user.save();
 
     revalidatePath(DASHBOARDROUTES.USERS);
+    revalidatePath("/" , "layout");
     revalidatePath(DASHBOARDROUTES.USERDETAILS(userId));
     return { success: true, data: null };
   } catch (error) {

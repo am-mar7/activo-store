@@ -57,7 +57,7 @@ export async function getCartItems(
   try {
     await dbConnect();
 
-    const cart = await Cart.findOne({ userId }).populate("cartItems.product");
+    const cart = await Cart.findOne({ userId }).populate("cartItems.product").lean();
 
     if (!cart) {
       return {
@@ -84,9 +84,7 @@ export async function upsertCartItem(
     authorizetionProccess: true,
   });
   if (validated instanceof UnauthorizedError)
-    return handleError(
-      new Error("You have to be logged in first")
-    ) as ErrorResponse;
+    return handleError(new Error("You have to be logged in first")) as ErrorResponse;
   else if (validated instanceof Error)
     return handleError(validated) as ErrorResponse;
 
@@ -94,44 +92,36 @@ export async function upsertCartItem(
   const userId = validated.session?.user.id;
 
   try {
-    const newCartItem = { product, quantity, variantSku: sku };
-
-    const updateOperation =
+    // 1️⃣ Single atomic update
+    const updateResult = await Cart.updateOne(
+      { userId, "cartItems.product": product, "cartItems.variantSku": sku },
       type === "add"
         ? { $inc: { "cartItems.$.quantity": quantity } }
-        : { $set: { "cartItems.$.quantity": quantity } };
-
-    let cart = await Cart.findOneAndUpdate(
-      {
-        userId,
-        "cartItems.product": product,
-        "cartItems.variantSku": sku,
-      },
-      updateOperation,
-      { new: true }
+        : { $set: { "cartItems.$.quantity": quantity } }
     );
 
-    if (!cart) {
-      cart = await Cart.findOneAndUpdate(
+    // 2️⃣ If no matching item, push new
+    if (updateResult.matchedCount === 0) {
+      await Cart.updateOne(
         { userId },
         {
           $setOnInsert: { userId },
-          $push: { cartItems: newCartItem },
+          $push: { cartItems: { product, variantSku: sku, quantity } },
         },
-        { upsert: true, new: true }
+        { upsert: true }
       );
     }
-
-    if (!cart) throw new Error("Failed to create cart");
 
     revalidatePath(ROUTES.CART);
     revalidatePath(ROUTES.PRODUCT(product));
     revalidatePath("/", "layout");
+
     return { success: true };
   } catch (error) {
     return handleError(error) as ErrorResponse;
   }
 }
+
 
 export async function removeFromCart(
   params: removeFromCartParams
@@ -148,20 +138,12 @@ export async function removeFromCart(
   const userId = validated.session?.user.id;
 
   try {
-    const cart = (await Cart.findOne({ userId })) as ICartDoc;
-    if (!cart) throw new NotFoundError("Cart");
-    const updatedCartItems = cart.cartItems.filter(
-      (item) => item.product.toString() !== product && item.variantSku !== sku
+    const result = await Cart.updateOne(
+      { userId },
+      { $pull: { cartItems: { product, variantSku: sku } } }
     );
-    const updatedCart = await Cart.findOneAndUpdate(
-      {
-        userId,
-        "cartItems.product": product,
-        "cartItems.variantSku": sku,
-      },
-      { cartItems: updatedCartItems }
-    );
-    if (!updatedCart) throw new NotFoundError("Item");
+
+    if (result.modifiedCount === 0) throw new NotFoundError("Item");
 
     revalidatePath(ROUTES.CART);
     revalidatePath(ROUTES.PRODUCT(product));
@@ -172,3 +154,4 @@ export async function removeFromCart(
     return handleError(error) as ErrorResponse;
   }
 }
+

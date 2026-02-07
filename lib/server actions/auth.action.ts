@@ -48,10 +48,8 @@ export async function credentialsSignUp(
   session.startTransaction();
 
   try {
-    const existingUser = await User.findOne({ email }).session(session);
     const devEmail = process.env.DEVEMAIL || "ammar.omar@a2sv.org";
     const role = devEmail === email ? "admin" : "user";
-    if (existingUser) throw new Error("User aleady exits");
 
     const [hashedPassword, [newUser]] = await Promise.all([
       bcrypt.hash(password, 12),
@@ -93,14 +91,14 @@ export async function credentialsSignIn(params: AuthCredentials) {
 
   const { email, password } = validated.params!;
   try {
-    const user = (await User.findOne({ email })) as IUserDoc;
+    const user = await User.findOne({ email }).lean<IUserDoc>();
     if (!user) throw new NotFoundError("User");
 
-    const account = (await Account.findOne({
+    const account = await Account.findOne({
       userId: user._id,
       provider: "credentials",
       providerAccountId: email,
-    })) as IAccountDoc;
+    }).lean<IAccountDoc>();
     if (!account) throw new NotFoundError("Account");
 
     const isValidPassword = await bcrypt.compare(password, account.password!);

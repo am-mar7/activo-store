@@ -1,7 +1,9 @@
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function getFriendlyErrorMessage(error: any): string {
   const errorMessage = error?.message || String(error);
-
+  console.log("ERROR PURE HERE " , error);
+  console.log("ERRORMESSAGE HERE " , errorMessage);
+  
   // 1️⃣ Regex patterns for preserving manual/friendly errors
   const friendlyPatterns: RegExp[] = [
     /^(This .+ already exists)$/i, // e.g., "This address already exists"
@@ -12,7 +14,7 @@ export function getFriendlyErrorMessage(error: any): string {
     /^Category not found$/i,
     /^Order not found$/i,
     /^Failed to (get|create|update|load|place|cancel) .+$/i, // e.g., "Failed to get Top Products"
-    /.*\b(user|account|cart|product|order|category|payment|alert|token|password|image|address|logged in)\b.*/i, // preserve anything containing these keywords
+    /.*\b(user|account|cart|product|order|category|payment|alert|token|password|image|address|logged in|role)\b.*/i, // preserve anything containing these keywords
   ];
 
   // If any pattern matches, preserve the message as-is
@@ -70,7 +72,8 @@ export function getFriendlyErrorMessage(error: any): string {
 
   if (
     errorMessage.toLowerCase().includes("network") ||
-    errorMessage.toLowerCase().includes("connection")
+    errorMessage.toLowerCase().includes("connection")||
+    errorMessage.toLowerCase().includes("mongoserverselectionerror")
   ) {
     return "Network error. Please check your internet connection and try again.";
   }

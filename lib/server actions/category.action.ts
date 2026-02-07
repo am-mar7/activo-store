@@ -22,6 +22,7 @@ import { auth } from "@/auth";
 import { dbConnect } from "../mongoose";
 import { revalidatePath } from "next/cache";
 import { DASHBOARDROUTES } from "@/constants/routes";
+import { cache } from "react";
 
 export async function addCatergory(
   params: CategoryParams
@@ -53,19 +54,23 @@ export async function addCatergory(
       parentId,
     });
     if (!category) throw new Error("Failed to create category");
+
+    revalidatePath(DASHBOARDROUTES.CATEGORYS);
+    revalidatePath("/" , "layout");
     return { success: true, data: JSON.parse(JSON.stringify(category)) };
   } catch (error) {
     return handleError(error) as ErrorResponse;
   }
 }
 
-export async function getCategories(
+export const getCategories = cache(async function getCategories(
   params: PaginatedSearchParams
 ): Promise<ActionResponse<{ categories: CategoryType[]; isNext: boolean }>> {
   const validated = await actionHandler({
     params,
     schema: PaginatedSearchParamsSchema,
   });
+
   if (validated instanceof Error)
     return handleError(validated) as ErrorResponse;
 
@@ -75,6 +80,7 @@ export async function getCategories(
     isActive: true,
     slug: { $ne: "uncategorized" },
   };
+
   if (query) {
     const sanitized = query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     filterQuery.name = { $regex: sanitized, $options: "i" };
@@ -118,7 +124,7 @@ export async function getCategories(
   } catch (error) {
     return handleError(error) as ErrorResponse;
   }
-}
+});
 
 export async function deleteCategory(id: string): Promise<ActionResponse> {
   const session = await auth();
@@ -174,7 +180,7 @@ export async function deleteCategory(id: string): Promise<ActionResponse> {
     ]);
 
     revalidatePath(DASHBOARDROUTES.CATEGORYS);
-    revalidatePath("/");
+    revalidatePath("/" , "layout");
 
     return { success: true };
   } catch (error) {
@@ -248,6 +254,8 @@ export async function editCategory(
     if (parentId !== category.parentId) category.parentId = parentId;
 
     await category.save();
+    revalidatePath(DASHBOARDROUTES.CATEGORYS);
+    revalidatePath("/" , "layout");
     return { success: true };
   } catch (error) {
     return handleError(error) as ErrorResponse;
