@@ -22,7 +22,6 @@ import { auth } from "@/auth";
 import { dbConnect } from "../mongoose";
 import { revalidatePath } from "next/cache";
 import { DASHBOARDROUTES } from "@/constants/routes";
-import { cache } from "react";
 
 export async function addCatergory(
   params: CategoryParams
@@ -63,7 +62,7 @@ export async function addCatergory(
   }
 }
 
-export const getCategories = cache(async function getCategories(
+export async function getCategories(
   params: PaginatedSearchParams
 ): Promise<ActionResponse<{ categories: CategoryType[]; isNext: boolean }>> {
   const validated = await actionHandler({
@@ -124,7 +123,7 @@ export const getCategories = cache(async function getCategories(
   } catch (error) {
     return handleError(error) as ErrorResponse;
   }
-});
+};
 
 export async function deleteCategory(id: string): Promise<ActionResponse> {
   const session = await auth();

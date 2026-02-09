@@ -143,7 +143,7 @@ export default function CustomerServicePage() {
                       Delivery Time
                     </h3>
                     <p className="text-muted-foreground body-regular">
-                      1 PM to 10 PM business days
+                      3 - 4 business days
                     </p>
                   </div>
                 </div>
@@ -156,18 +156,6 @@ export default function CustomerServicePage() {
                     </h3>
                     <p className="text-muted-foreground body-regular">
                       All orders are confirmed before shipping
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start space-x-3 p-4 bg-muted rounded-lg">
-                  <div className="w-2 h-2 bg-primary-600 rounded-full mt-2"></div>
-                  <div>
-                    <h3 className="base-semibold text-foreground">
-                      Shipping Fees
-                    </h3>
-                    <p className="text-muted-foreground body-regular">
-                      May vary depending on the location
                     </p>
                   </div>
                 </div>
