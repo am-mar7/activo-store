@@ -1,6 +1,6 @@
 const config = {
   env: {
-    apiEndPoint: process.env.NEXT_PUBLIC_API_END_POINT!,
+    apiEndPoint: process.env.NEXT_PUBLIC_API_URL!,
     mongoDB: {
       url: process.env.MONGODB_URI!,
     },

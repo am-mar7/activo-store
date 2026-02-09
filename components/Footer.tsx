@@ -1,5 +1,6 @@
 import ROUTES from "@/constants/routes";
-import { Instagram, Facebook, Music } from "lucide-react";
+import { FaTiktok , FaFacebook , FaInstagram} from 'react-icons/fa';
+
 import Link from "next/link";
 
 export default function Footer() {
@@ -22,7 +23,7 @@ export default function Footer() {
                 className="bg-gray-800 hover:bg-gray-700 p-3 rounded-full transition-colors duration-200"
                 aria-label="Instagram"
               >
-                <Instagram className="w-5 h-5" />
+                <FaInstagram size={24} />
               </a>
               <a
                 href="https://www.tiktok.com/@activo_store1"
@@ -31,7 +32,7 @@ export default function Footer() {
                 className="bg-gray-800 hover:bg-gray-700 p-3 rounded-full transition-colors duration-200"
                 aria-label="TikTok"
               >
-                <Music className="w-5 h-5" />
+                <FaTiktok size={24} />
               </a>
               <a
                 href="https://www.facebook.com/share/1GDTwDiwiB/"
@@ -40,7 +41,7 @@ export default function Footer() {
                 className="bg-gray-800 hover:bg-gray-700 p-3 rounded-full transition-colors duration-200"
                 aria-label="Facebook"
               >
-                <Facebook className="w-5 h-5" />
+                <FaFacebook size={24}/>
               </a>
             </div>
           </div>
@@ -51,7 +52,7 @@ export default function Footer() {
             <ul className="space-y-2">
               <li>
                 <Link
-                  href={ROUTES.CUSTOMERSERVICES+"#shipping"}
+                  href={ROUTES.CUSTOMERSERVICES + "#shipping"}
                   className="hover:text-white transition-colors duration-200"
                 >
                   Shipping Info
@@ -59,7 +60,7 @@ export default function Footer() {
               </li>
               <li>
                 <Link
-                  href={ROUTES.CUSTOMERSERVICES+"#returns"}
+                  href={ROUTES.CUSTOMERSERVICES + "#returns"}
                   className="hover:text-white transition-colors duration-200"
                 >
                   Returns & Exchanges
@@ -67,7 +68,7 @@ export default function Footer() {
               </li>
               <li>
                 <Link
-                  href={ROUTES.CUSTOMERSERVICES+"#privacy"}
+                  href={ROUTES.CUSTOMERSERVICES + "#privacy"}
                   className="hover:text-white transition-colors duration-200"
                 >
                   Privacy Policy
@@ -75,7 +76,7 @@ export default function Footer() {
               </li>
               <li>
                 <Link
-                  href={ROUTES.CUSTOMERSERVICES+"#terms"}
+                  href={ROUTES.CUSTOMERSERVICES + "#terms"}
                   className="hover:text-white transition-colors duration-200"
                 >
                   Terms & Conditions
@@ -91,13 +92,15 @@ export default function Footer() {
         <p className="text-neutral-300 text-sm text-center w-full mb-2">
           © {new Date().getFullYear()} ACTIVO. All rights reserved.
         </p>
-        <p className="text-neutral-400 flex flex-col sm:flex-row gap-2 text-xs text-center w-full mb-5">
-          <span>Developed by Engineer Ammar Alaa •{" "}</span>
+        <p className="text-neutral-400 flex-center flex-col sm:flex-row gap-2 text-xs text-center w-full mb-5">
+          <span>Developed by Engineer Ammar Alaa • </span>
           <a
-            href="mailto:ammar.omar@a2sv.org"
-            className="hover:text-white transition-colors duration-200 underline"
+            href="https://wa.me/201023134890"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-white flex-center transition-colors duration-200 underline"
           >
-            ammar.omar@a2sv.org
+            WhatsApp
           </a>
         </p>
       </div>
