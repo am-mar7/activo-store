@@ -27,8 +27,18 @@ async function EditProductContent({ params }: RouteParams) {
     _id: cat._id,
   }));
   if (!product) return notFound();
-  const { title, description, category, newPrice, oldPrice, collection } =
-    product;
+  const {
+    _id,
+    title,
+    description,
+    category,
+    newPrice,
+    oldPrice,
+    collection,
+    variants,
+    images,
+    sizeGuide,
+  } = product;
   return (
     <>
       <ProductFrom
@@ -41,10 +51,11 @@ async function EditProductContent({ params }: RouteParams) {
           collection,
           oldPrice,
         }}
-        id={product._id}
-        oldImages={product.images}
+        id={_id}
+        oldImages={images}
         categories={categoriesSelectList}
-        oldVariants={product.variants}
+        oldVariants={variants}
+        oldSizeGuide={sizeGuide}
       />
     </>
   );

@@ -66,6 +66,7 @@ type ProductType = {
   averageRating: number;
   totalReviews: number;
   images: string[];
+  sizeGuide?: string;
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -265,6 +266,7 @@ interface ProductParams {
   oldPrice?: number;
   newPrice: number;
   images: File[];
+  sizeGuide?: File;
   variants: IVariant[];
   collection: "winter" | "summer" | "both";
   isActive?: boolean;
@@ -273,6 +275,7 @@ interface ProductParams {
 interface EditProductParams extends ProductParams {
   id: string;
   oldImages: string[];
+  oldSizeGuide?: string | null ;
 }
 
 interface CategoryParams {
@@ -465,7 +468,6 @@ interface SearchProductResult {
     slug: string;
   };
 }
-
 
 interface sendEmailParams {
   to: string;

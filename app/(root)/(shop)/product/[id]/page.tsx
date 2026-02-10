@@ -72,10 +72,7 @@ export async function generateMetadata({
   };
 }
 
-export default function ProductDetails({
-  params,
-  searchParams,
-}: RouteParams) {
+export default function ProductDetails({ params, searchParams }: RouteParams) {
   return (
     <Suspense fallback={<Loading />}>
       <ProductDetailsContent params={params} searchParams={searchParams} />
@@ -88,8 +85,16 @@ async function ProductDetailsContent({ params }: RouteParams) {
   const { success, data: product } = await getProduct(id);
   if (!success || !product) return NotFound();
 
-  const { title, description, images, oldPrice, newPrice, variants, category } =
-    product;
+  const {
+    title,
+    description,
+    images,
+    oldPrice,
+    newPrice,
+    variants,
+    category,
+    sizeGuide: guide,
+  } = product;
 
   return (
     <div className="flex-center flex-col">
@@ -104,7 +109,7 @@ async function ProductDetailsContent({ params }: RouteParams) {
           </p>
           <h1 className="h3-semibold text-slate-900">{title}</h1>
           <p className="text-slate-600 body-medium">{description}</p>
-          <SizeGuide className="my-3" image="/images/size-guide.png" />
+          {guide && <SizeGuide className="my-3" image={guide} />}
           <AddToCartForm
             variants={variants}
             _id={id}

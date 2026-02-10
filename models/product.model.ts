@@ -31,6 +31,7 @@ export interface IProduct {
   totalReviews: number;
   sold: number;
   images: string[];
+  sizeGuide?: string;
   isActive: boolean;
 }
 
@@ -54,11 +55,15 @@ export const ProductSchema = new Schema<IProduct>(
         message: "Product must have at least one variant",
       },
     },
-    collection: { type: String, enum: ["winter", "summer" , "both"], required: true },
+    collection: {
+      type: String,
+      enum: ["winter", "summer", "both"],
+      required: true,
+    },
     averageRating: { type: Number, default: 0 },
     totalReviews: { type: Number, default: 0 },
     sold: { type: Number, default: 0, required: true },
-    
+
     images: {
       type: [String],
       required: true,
@@ -66,6 +71,12 @@ export const ProductSchema = new Schema<IProduct>(
         validator: (v: string[]) => v.length > 0,
         message: "Product must have at least one image",
       },
+    },
+
+    sizeGuide: {
+      type: String,
+      required: false,
+      default: null,
     },
 
     isActive: { type: Boolean, default: true, index: true },

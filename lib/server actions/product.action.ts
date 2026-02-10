@@ -45,11 +45,13 @@ export async function addProduct(
   }
 
   try {
-    const { images, ...productData } = validated.params!;
+    const { images, sizeGuide, ...productData } = validated.params!;
 
-    const uploadResults = await Promise.allSettled(
-      images.map((image) => handleUpload(image))
-    );
+    const [uploadResults, uploadedSizeGuide] = await Promise.all([
+      Promise.allSettled(images.map((image) => handleUpload(image))),
+      sizeGuide ? handleUpload(sizeGuide) : Promise.resolve(undefined),
+    ]);
+
     console.log("UPLOAD RESULTS", uploadResults);
 
     const imageLinks: string[] = [];
@@ -75,9 +77,15 @@ export async function addProduct(
     }
     console.log("params", productData);
 
+    // ✅ Extract URL from uploadedSizeGuide
+    const sizeGuideUrl = uploadedSizeGuide?.success
+      ? uploadedSizeGuide.data?.url
+      : undefined;
+
     const product = await Product.create({
       ...validated.params!,
       images: imageLinks,
+      sizeGuide: sizeGuideUrl, // ✅ Use the URL string, not the object
     });
 
     if (!product) throw new Error("Product creation failed");
@@ -102,6 +110,76 @@ export async function addProduct(
     }
 
     return handleError(error as Error) as ErrorResponse;
+  }
+}
+
+export async function editProduct(
+  params: EditProductParams
+): Promise<ActionResponse> {
+  const validated = await actionHandler({
+    params,
+    schema: EditProductSchema,
+    authorizetionProccess: true,
+  });
+  if (validated instanceof Error)
+    return handleError(validated) as ErrorResponse;
+
+  if (validated.session?.user.role !== "admin")
+    return handleError(new Error("Unauthorized")) as ErrorResponse;
+
+  const { id, images, oldImages, sizeGuide, oldSizeGuide, ...restData } =
+    validated.params!;
+  try {
+    const product = await Product.findById(id);
+    if (!product) throw new NotFoundError("Product");
+
+    const imageLinks = [...oldImages];
+    if (images.length > 0) {
+      const uploadResults = await Promise.allSettled(
+        images.map((image) => handleUpload(image))
+      );
+
+      const failedUploads: number[] = [];
+
+      uploadResults.forEach((result, index) => {
+        if (result.status === "fulfilled" && result.value.success) {
+          imageLinks.push(result.value.data!.url);
+        } else {
+          failedUploads.push(index);
+          console.error(
+            `Image ${index} upload failed:`,
+            result.status === "rejected" ? result.reason : result.value.error
+          );
+        }
+      });
+
+      if (imageLinks.length === 0) {
+        throw new Error("All image uploads failed. Please try again.");
+      }
+      if (failedUploads.length > 0) {
+        console.warn(`${failedUploads.length} image(s) failed to upload`);
+      }
+    }
+
+    // ✅ Handle size guide properly
+    let guide = oldSizeGuide || null;
+
+    if (sizeGuide) {
+      const uploadResult = await handleUpload(sizeGuide);
+      if (uploadResult.success && uploadResult.data) {
+        guide = uploadResult.data.url; // ✅ Extract just the URL
+      }
+    }
+    console.log("LOOK2", guide);
+
+    await Product.findByIdAndUpdate(
+      id,
+      { ...restData, images: imageLinks, sizeGuide: guide },
+      { new: true }
+    );
+    return { success: true };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
   }
 }
 
@@ -199,64 +277,6 @@ export async function deleteProduct(id: string): Promise<ActionResponse> {
   }
 }
 
-export async function editProduct(
-  params: EditProductParams
-): Promise<ActionResponse> {
-  const validated = await actionHandler({
-    params,
-    schema: EditProductSchema,
-    authorizetionProccess: true,
-  });
-  if (validated instanceof Error)
-    return handleError(validated) as ErrorResponse;
-
-  if (validated.session?.user.role !== "admin")
-    return handleError(new Error("Unauthorized")) as ErrorResponse;
-
-  const { id, images, oldImages, ...restData } = validated.params!;
-  try {
-    const product = await Product.findById(id);
-    if (!product) throw new NotFoundError("Product");
-
-    const imageLinks = [...oldImages];
-    if (images.length > 0) {
-      const uploadResults = await Promise.allSettled(
-        images.map((image) => handleUpload(image))
-      );
-
-      const failedUploads: number[] = [];
-
-      uploadResults.forEach((result, index) => {
-        if (result.status === "fulfilled" && result.value.success) {
-          imageLinks.push(result.value.data!.url);
-        } else {
-          failedUploads.push(index);
-          console.error(
-            `Image ${index} upload failed:`,
-            result.status === "rejected" ? result.reason : result.value.error
-          );
-        }
-      });
-
-      if (imageLinks.length === 0) {
-        throw new Error("All image uploads failed. Please try again.");
-      }
-      if (failedUploads.length > 0) {
-        console.warn(`${failedUploads.length} image(s) failed to upload`);
-      }
-    }
-
-    await Product.findByIdAndUpdate(
-      id,
-      { ...restData, images: imageLinks },
-      { new: true }
-    );
-    return { success: true };
-  } catch (error) {
-    return handleError(error) as ErrorResponse;
-  }
-}
-
 export async function getBestSellers(): Promise<ActionResponse<ProductType[]>> {
   const collection = getCurrentSeason();
   try {
@@ -266,9 +286,9 @@ export async function getBestSellers(): Promise<ActionResponse<ProductType[]>> {
       .sort({ sold: -1 }) // Sort by most sold (descending)
       .limit(10)
       .lean();
-      
+
     if (!products) throw new Error("Failed to get products");
-    
+
     return {
       success: true,
       data: JSON.parse(JSON.stringify(products)),

@@ -49,6 +49,7 @@ type ProductFromType = {
   formType: "ADD" | "EDIT";
   categories: categoryOption[];
   oldImages?: string[];
+  oldSizeGuide?: string;
   id?: string;
   oldVariants?: IVariant[];
 };
@@ -60,11 +61,17 @@ export default function ProductFrom({
   id,
   oldImages,
   oldVariants = [],
+  oldSizeGuide: oldGuide,
 }: ProductFromType) {
   const [files, setFiles] = useState<File[]>([]);
+  const [sizeGuideFile, setSizeGuideFile] = useState<File | undefined>(
+    undefined
+  );
   const [error, setError] = useState<string | null>(null);
   const [variants, setVariant] = useState<IVariant[]>(oldVariants);
   const [imagesError, setImagesError] = useState<string | null>(null);
+  const [guideError, setGuideError] = useState<string | null>(null);
+  const [oldSizeGuide, setOldSizeGuide] = useState(oldGuide);
   const [variantsError, setVariantsError] = useState<string | null>(null);
   const [existingImages, setExistingImages] = useState<string[]>([]);
   const form = useForm<ProductFormValues>({
@@ -89,6 +96,7 @@ export default function ProductFrom({
       const { success, error } = await addProduct({
         ...data,
         images: files,
+        sizeGuide: sizeGuideFile,
         variants,
       });
       if (success) {
@@ -102,6 +110,8 @@ export default function ProductFrom({
         id: id!,
         ...data,
         images: files,
+        sizeGuide: sizeGuideFile,
+        oldSizeGuide: oldSizeGuide,
         oldImages: existingImages,
         variants,
       });
@@ -133,10 +143,16 @@ export default function ProductFrom({
 
   const currentTitle = form.watch("title");
   useEffect(() => {
-    if (formType === "EDIT" && oldImages) {
-      setExistingImages(oldImages);
+    if (formType === "EDIT") {
+      if (oldImages) {
+        setExistingImages(oldImages);
+      }
+      if (oldGuide) {
+        setOldSizeGuide(oldGuide);
+      }
     }
-  }, [oldImages, formType]);
+  }, [oldImages, oldGuide, formType]);
+
   return (
     <div className="space-y-3 max-w-7xl">
       <div className="flex flex-col lg:flex-row gap-8  mx-auto py-5">
@@ -374,6 +390,7 @@ export default function ProductFrom({
           >
             <h3 className="text-lg font-semibold mb-4">Product Images</h3>
             <Uploader
+              id="product-images"
               onImagesChange={(files: File[]) => {
                 setFiles(files);
                 setImagesError(null);
@@ -389,6 +406,28 @@ export default function ProductFrom({
             </p>
             {imagesError && (
               <p className="text-red-600 text-xs mt-4">{imagesError}</p>
+            )}
+          </div>
+          <div
+            className={`bg-white rounded-lg border p-4 mt-2 shadow-sm sticky top-6 ${
+              imagesError ? "border-destructive border-dotted" : ""
+            }`}
+          >
+            <h3 className="text-lg font-semibold mb-4">Size Guide</h3>
+            <Uploader
+              id="size-guide"
+              onImagesChange={(files: File[]) => {
+                setSizeGuideFile(files[0]);
+                setGuideError(null);
+              }}
+              existingImageUrls={oldSizeGuide ? [oldSizeGuide] : []}
+              onExistingImagesChange={(images: string[]) =>
+                setOldSizeGuide(images[0])
+              }
+              maxFiles={1}
+            />
+            {guideError && (
+              <p className="text-red-600 text-xs mt-4">{guideError}</p>
             )}
           </div>
         </div>

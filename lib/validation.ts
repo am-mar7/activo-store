@@ -115,6 +115,12 @@ export const ProductSchema = z
         })
       )
       .min(1, "At least one image is required"),
+    sizeGuide: z
+      .instanceof(File)
+      .refine((file) => file.type.startsWith("image/"), {
+        message: "File must be an image",
+      })
+      .optional(),
     isActive: z.boolean().default(true),
   })
   .refine(

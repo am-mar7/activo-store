@@ -9,6 +9,7 @@ interface Props {
   maxSizePerFile?: number; // in MB
   existingImageUrls?: string[];
   onExistingImagesChange?: (urls: string[]) => void;
+  id?: string;
 }
 
 export default function Uploader({
@@ -17,12 +18,13 @@ export default function Uploader({
   maxSizePerFile = 1,
   existingImageUrls,
   onExistingImagesChange,
+  id = "image-upload",
 }: Props) {
   const [images, setImages] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
   const [error, setError] = useState<string>("");
   console.log(existingImageUrls);
-  
+
   useEffect(() => {
     return () => {
       previews.forEach((url) => URL.revokeObjectURL(url));
@@ -131,7 +133,7 @@ export default function Uploader({
       {/* File Input */}
       <div className="relative">
         <input
-          id="image-upload"
+          id={id}
           type="file"
           accept="image/*"
           multiple
@@ -142,7 +144,7 @@ export default function Uploader({
           className="hidden"
         />
         <label
-          htmlFor="image-upload"
+          htmlFor={id}
           className={`flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer transition-colors
             ${
               images.length >= maxFiles
@@ -184,7 +186,13 @@ export default function Uploader({
 
       {/* Preview Grid */}
       {(existingImageUrls?.length || 0) + images.length > 0 && (
-        <div className={maxFiles === 1 ? "max-w-md mx-auto" : "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4"}>
+        <div
+          className={
+            maxFiles === 1
+              ? "max-w-md mx-auto"
+              : "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4"
+          }
+        >
           {existingImageUrls?.map((url, index) => (
             <ImagePreview
               key={index}
