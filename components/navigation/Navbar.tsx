@@ -28,7 +28,7 @@ export default async function Navbar({ className, isHome = false }: Props) {
   const user = session?.user;
   const { categories } = data || {};
   console.log(session?.user);
-  
+
   const serializedCategories =
     categories?.map((cat) => ({
       _id: cat._id,
@@ -107,26 +107,18 @@ export default async function Navbar({ className, isHome = false }: Props) {
               </NavigationMenuTrigger>
               <NavigationMenuContent className="bg-neutral-50! z-100">
                 <ul className="grid w-50 gap-1">
-                  <li>
-                    <NavigationMenuLink asChild>
-                      <Link
-                        href={ROUTES.COLLECTION("winter")}
-                        className="block select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-slate-100 hover:text-slate-900 focus:bg-slate-100"
-                      >
-                        winter
-                      </Link>
-                    </NavigationMenuLink>
-                  </li>
-                  <li>
-                    <NavigationMenuLink asChild>
-                      <Link
-                        href={ROUTES.COLLECTION("summer")}
-                        className="block select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-slate-100 hover:text-slate-900 focus:bg-slate-100"
-                      >
-                        summer
-                      </Link>
-                    </NavigationMenuLink>
-                  </li>
+                  {["winter", "summer"].map((item, idx) => (
+                    <li key={idx}>
+                      <NavigationMenuLink asChild>
+                        <Link
+                          href={ROUTES.COLLECTION(item)}
+                          className="block select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-slate-100 hover:text-slate-900 focus:bg-slate-100"
+                        >
+                          {item}
+                        </Link>
+                      </NavigationMenuLink>
+                    </li>
+                  ))}
                 </ul>
               </NavigationMenuContent>
             </NavigationMenuItem>
@@ -141,7 +133,9 @@ export default async function Navbar({ className, isHome = false }: Props) {
         />
         {!user ? (
           <Link
-            className={`px-6 py-1 border-2 border-primary text-primary rounded-lg font-medium hover:border-white ${isHome ? "text-slate-50":"text-slate-900"}  transition-all duration-200`}
+            className={`px-6 py-1 border-2 border-primary text-primary rounded-lg font-medium hover:border-white ${
+              isHome ? "text-slate-50" : "text-slate-900"
+            }  transition-all duration-200`}
             href={ROUTES.SIGN_IN}
           >
             Login
@@ -156,7 +150,7 @@ export default async function Navbar({ className, isHome = false }: Props) {
               />
             </Link>
             <Link href={ROUTES.PROFILE} className="flex-center">
-                <UserAvatar isHome={isHome} user={user}/>
+              <UserAvatar isHome={isHome} user={user} />
             </Link>
           </>
         )}

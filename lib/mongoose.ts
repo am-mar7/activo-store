@@ -23,12 +23,14 @@ const opts = {
   bufferCommands: false,
   maxPoolSize: 10,
   minPoolSize: 2,
-  serverSelectionTimeoutMS: 10000,
-  socketTimeoutMS: 45000,
+  serverSelectionTimeoutMS: 30000,
+  socketTimeoutMS: 120000,
+  connectTimeoutMS: 30000,
   family: 4,
   retryWrites: true,
   retryReads: true,
   heartbeatFrequencyMS: 10000,
+  maxIdleTimeMS: 60000,
 } as const;
 
 const connectWithRetry = async (): Promise<typeof mongoose> => {
@@ -53,10 +55,19 @@ export const dbConnect = async (): Promise<typeof mongoose> => {
   }
 
   // Development logging (only set once)
-  if (process.env.NODE_ENV === "development" && !mongoose.connection.listenerCount("connected")) {
-    mongoose.connection.on("connected", () => console.log("✅ Connected to MongoDB"));
-    mongoose.connection.on("error", (err) => console.error("❌ MongoDB error:", err));
-    mongoose.connection.on("disconnected", () => console.warn("⚠️ MongoDB disconnected"));
+  if (
+    process.env.NODE_ENV === "development" &&
+    !mongoose.connection.listenerCount("connected")
+  ) {
+    mongoose.connection.on("connected", () =>
+      console.log("✅ Connected to MongoDB")
+    );
+    mongoose.connection.on("error", (err) =>
+      console.error("❌ MongoDB error:", err)
+    );
+    mongoose.connection.on("disconnected", () =>
+      console.warn("⚠️ MongoDB disconnected")
+    );
   }
 
   // Create and cache the connection promise
