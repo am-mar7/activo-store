@@ -10,7 +10,7 @@ import { upsertCartItem } from "@/lib/server actions/cart.action";
 import { toast } from "sonner";
 import { getFriendlyErrorMessage } from "@/lib/error-messages";
 import BuyNowModal from "@/components/BuyNowModal";
-
+import { colors as COLORS } from "@/constants";
 type Props = Pick<
   ProductType,
   "variants" | "_id" | "title" | "images" | "newPrice"
@@ -154,21 +154,28 @@ export default function AddToCartForm({
         </div>
 
         <div>
-          <p className="my-1 text-slate-500 body-regular">Color</p>
-          <div className="flex gap-2">
-            {colors.map((currColor, idx) => (
-              <button
-                key={idx}
-                onClick={() => handleChangeVariant({ newColor: currColor })}
-                className={`w-6 h-6 rounded-full border-2 transition-all ${
-                  color === currColor
-                    ? "border-slate-900 scale-105"
-                    : "border-slate-300 hover:border-slate-400"
-                }`}
-                style={{ backgroundColor: currColor }}
-                aria-label={`Select ${currColor} color`}
-              />
-            ))}
+          <div>
+            <p className="my-1 text-slate-500 body-regular">Color</p>
+            <div className="flex gap-2">
+              {colors.map((currColor) => {
+                const colorData = COLORS.find((c) => c.value === currColor);
+
+                return (
+                  <button
+                    key={currColor}
+                    onClick={() => handleChangeVariant({ newColor: currColor })}
+                    className={`w-6 h-6 rounded-full border-2 transition-all ${
+                      color === currColor
+                        ? "border-slate-900 scale-105"
+                        : "border-slate-300 hover:border-slate-400"
+                    }`}
+                    style={{ backgroundColor: colorData?.hex }}
+                    aria-label={`Select ${colorData?.label || currColor} color`}
+                    title={colorData?.label}
+                  />
+                );
+              })}
+            </div>
           </div>
         </div>
 
