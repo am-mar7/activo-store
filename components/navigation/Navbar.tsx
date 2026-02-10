@@ -107,7 +107,7 @@ export default async function Navbar({ className, isHome = false }: Props) {
               </NavigationMenuTrigger>
               <NavigationMenuContent className="bg-neutral-50! z-100">
                 <ul className="grid w-50 gap-1">
-                  {["winter", "summer"].map((item, idx) => (
+                  {["winter", "summer" , "test" , "555555"].map((item, idx) => (
                     <li key={idx}>
                       <NavigationMenuLink asChild>
                         <Link
