@@ -48,6 +48,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       },
     }),
   ],
+  pages: {
+    signIn: '/sign-in',
+    error: '/sign-in',   
+  },
   callbacks: {
     session: async ({ session, token }) => {
       if (!session.user) return session;
