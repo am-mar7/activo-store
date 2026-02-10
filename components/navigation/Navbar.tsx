@@ -107,18 +107,22 @@ export default async function Navbar({ className, isHome = false }: Props) {
               </NavigationMenuTrigger>
               <NavigationMenuContent className="bg-neutral-50! z-100">
                 <ul className="grid w-50 gap-1">
-                  {["winter", "summer" , "test" , "555555"].map((item, idx) => (
-                    <li key={idx}>
-                      <NavigationMenuLink asChild>
-                        <Link
-                          href={ROUTES.COLLECTION(item)}
-                          className="block select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-slate-100 hover:text-slate-900 focus:bg-slate-100"
-                        >
-                          {item}
-                        </Link>
-                      </NavigationMenuLink>
-                    </li>
-                  ))}
+                  <NavigationMenuContent className="bg-neutral-50! z-100">
+                    <ul className="grid w-50 gap-1 p-2">
+                      {["Summer", "Winter"].map((item, idx) => (
+                        <li key={idx}>
+                          <NavigationMenuLink asChild>
+                            <Link
+                              href={ROUTES.COLLECTION(item.toLowerCase())}
+                              className="block select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-slate-100 hover:text-slate-900 focus:bg-slate-100"
+                            >
+                              {item}
+                            </Link>
+                          </NavigationMenuLink>
+                        </li>
+                      ))}
+                    </ul>
+                  </NavigationMenuContent>
                 </ul>
               </NavigationMenuContent>
             </NavigationMenuItem>
