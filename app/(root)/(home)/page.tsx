@@ -13,33 +13,37 @@ import {
   CarouselItem,
 } from "@/components/ui/carousel";
 import Footer from "@/components/Footer";
-import type { Metadata } from 'next'
+import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: 'Activo Store - | Home',
-  description: 'Discover Activo Store\'s collection of premium activewear and lifestyle clothing. Shop best-selling athletic wear, casual styles, and trending fashion. Free shipping on orders over $50.',
-  keywords: 'activewear, athletic clothing, lifestyle apparel, gym wear, sports clothing, casual wear, Activo Store',
+  title: "Activo Store - | Home",
+  description:
+    "Discover Activo Store's collection of premium activewear and lifestyle clothing. Shop best-selling athletic wear, casual styles, and trending fashion. Free shipping on orders over $50.",
+  keywords:
+    "activewear, athletic clothing, lifestyle apparel, gym wear, sports clothing, casual wear, Activo Store",
   openGraph: {
-    title: 'Activo Store - Premium Active & Lifestyle Clothing',
-    description: 'Shop premium activewear and lifestyle clothing at Activo Store. Discover our best-selling collections.',
-    url: 'https://activostore.com',
-    siteName: 'Activo Store',
+    title: "Activo Store - Premium Active & Lifestyle Clothing",
+    description:
+      "Shop premium activewear and lifestyle clothing at Activo Store. Discover our best-selling collections.",
+    url: "https://activostore.com",
+    siteName: "Activo Store",
     images: [
       {
-        url: 'https://activostore.com/og-image.jpg',
+        url: "https://activostore.com/og-image.jpg",
         width: 1200,
         height: 630,
-        alt: 'Activo Store - Premium Activewear',
+        alt: "Activo Store - Premium Activewear",
       },
     ],
-    locale: 'en_US',
-    type: 'website',
+    locale: "en_US",
+    type: "website",
   },
   twitter: {
-    card: 'summary_large_image',
-    title: 'Activo Store - Premium Active & Lifestyle Clothing',
-    description: 'Shop premium activewear and lifestyle clothing at Activo Store.',
-    images: ['https://activostore.com/twitter-image.jpg'],
+    card: "summary_large_image",
+    title: "Activo Store - Premium Active & Lifestyle Clothing",
+    description:
+      "Shop premium activewear and lifestyle clothing at Activo Store.",
+    images: ["https://activostore.com/twitter-image.jpg"],
   },
   robots: {
     index: true,
@@ -47,26 +51,24 @@ export const metadata: Metadata = {
     googleBot: {
       index: true,
       follow: true,
-      'max-video-preview': -1,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
     },
   },
   alternates: {
-    canonical: 'https://activostore.com',
+    canonical: "https://activostore.com",
   },
-}
+};
 
 export default function Home() {
   return (
     <div className="relative w-full h-125 md:h-150 lg:h-175">
-      <section className="flex-center flex-col ">
-        <div className="max-w-7xl py-5 w-full">
-          <h1 className="h2-bold text-center mb-5">Our Categories</h1>
-          <Suspense fallback={<Loading />}>
-            <Categories />
-          </Suspense>
-        </div>
+      <section className="my-5 sm:my-10 px-5 sm:px-10 overflow-hidden">
+        <h1 className="h2-bold mb-5">Categories</h1>
+        <Suspense fallback={<Loading />}>
+          <Categories />
+        </Suspense>
       </section>
 
       <section className="my-5 sm:my-10 px-5 sm:px-10 overflow-hidden">
@@ -75,7 +77,7 @@ export default function Home() {
           <BestSellers />
         </Suspense>
       </section>
-      <Footer/>
+      <Footer />
     </div>
   );
 }
@@ -88,32 +90,48 @@ async function Categories() {
   const categories = data.categories;
   return (
     <>
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6 max-2xl:px-5">
-        {categories.map((category) => (
-          <Link
-            href={ROUTES.CATEGORY(category.slug)}
-            key={category._id}
-            className="relative group overflow-hidden rounded-lg aspect-3/4 block"
-          >
-            <Image
-              src={category.image}
-              alt={category.name}
-              fill
-              className="object-cover transition-transform duration-300 group-hover:scale-105"
-            />
+      <div className="relative">
+        {/* Left vignette shadow */}
+        <div className="absolute left-0 top-0 bottom-0 w-16 z-10 pointer-events-none">
+          <div className="absolute inset-0 bg-linear-to-r from-white/95 via-white/60 to-transparent" />
+          <div className="absolute inset-0 bg-linear-to-r from-primary-600/8 via-primary-500/4 to-transparent" />
+          <div className="absolute top-1/2 -translate-y-1/2 left-3 h-16 w-0.5 bg-linear-to-b from-transparent via-primary-500/70 to-transparent rounded-full shadow-lg shadow-primary-500/50" />
+        </div>
 
-            <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-colors" />
+        {/* Right vignette shadow */}
+        <div className="absolute right-0 top-0 bottom-0 w-16 z-10 pointer-events-none">
+          <div className="absolute inset-0 bg-linear-to-l from-white/95 via-white/60 to-transparent" />
+          <div className="absolute inset-0 bg-linear-to-l from-primary-600/8 via-primary-500/4 to-transparent" />
+          <div className="absolute top-1/2 -translate-y-1/2 right-3 h-16 w-0.5 bg-linear-to-b from-transparent via-primary-500/70 to-transparent rounded-full shadow-lg shadow-primary-500/50" />
+        </div>
 
-            <div className="absolute bottom-0 left-0 right-0 p-4">
-              <h2 className="text-white body-bold sm:base-bold font-semibold flex items-center gap-2">
-                {category.name}
-                <span className="text-white group-hover:translate-x-1 transition-transform">
-                  →
-                </span>
-              </h2>
-            </div>
-          </Link>
-        ))}
+        <div className="flex overflow-auto scrollbar-hide w-full gap-6 max-2xl:px-5">
+          {categories.map((category) => (
+            <Link
+              href={ROUTES.CATEGORY(category.slug)}
+              key={category._id}
+              className="relative group overflow-hidden w-35 sm:w-45 lg:w-55 2xl:w-65 shrink-0 rounded-lg aspect-3/4 block"
+            >
+              <Image
+                src={category.image}
+                alt={category.name}
+                fill
+                className="object-cover transition-transform duration-300 group-hover:scale-105"
+              />
+
+              <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-colors" />
+
+              <div className="absolute bottom-0 left-0 right-0 p-4">
+                <h2 className="text-white body-bold sm:base-bold font-semibold flex items-center gap-2">
+                  {category.name}
+                  <span className="text-white group-hover:translate-x-1 transition-transform">
+                    →
+                  </span>
+                </h2>
+              </div>
+            </Link>
+          ))}
+        </div>
       </div>
     </>
   );
