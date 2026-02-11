@@ -142,6 +142,7 @@ export default function ProductFrom({
   };
 
   const currentTitle = form.watch("title");
+
   useEffect(() => {
     if (formType === "EDIT") {
       if (oldImages) {
@@ -155,236 +156,268 @@ export default function ProductFrom({
 
   return (
     <div className="space-y-3 max-w-7xl">
-      <div className="flex flex-col lg:flex-row gap-8  mx-auto py-5">
-        <FormProvider {...form}>
-          <form
-            onSubmit={form.handleSubmit(handleSubmit)}
-            className="flex-1 space-y-6 bg-white rounded-lg border p-6 shadow-sm"
-          >
-            <div className="space-y-1">
-              <h2 className="text-2xl font-semibold tracking-tight">
-                {formType === "ADD" ? "Add New Product" : "Edit Product"}
-              </h2>
-              <p className="text-sm text-muted-foreground">
-                Fill in the product details below
-              </p>
-            </div>
-
-            {/* Title Field */}
-            <FormField
-              name="title"
-              control={form.control}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Product Title</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Enter product title"
-                      {...field}
-                      className="bg-slate-50"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Description Field */}
-            <FormField
-              name="description"
-              control={form.control}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Description</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="Enter product description"
-                      className="bg-slate-50 min-h-25 resize-none"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Price Fields - Side by Side */}
-            <div className="grid lg:grid-cols-2 gap-4">
-              <FormField
-                name="newPrice"
-                control={form.control}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Price</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        step="0.01"
-                        placeholder="0.00"
-                        {...field}
-                        onChange={(e) =>
-                          field.onChange(parseFloat(e.target.value))
-                        }
-                        className="bg-slate-50"
-                      />
-                    </FormControl>
-                    <FormDescription className="text-xs">
-                      set the base price for the product
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                name="oldPrice"
-                control={form.control}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Compare at Price (Optional)</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        step="0.01"
-                        placeholder="0.00"
-                        {...field}
-                        value={field.value ?? ""}
-                        onChange={(e) =>
-                          field.onChange(
-                            e.target.value
-                              ? parseFloat(e.target.value)
-                              : undefined
-                          )
-                        }
-                        className="bg-slate-50"
-                      />
-                    </FormControl>
-                    <FormDescription className="text-xs">
-                      Show a discount by setting a higher compare price
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            {/* Collection Field */}
-            <FormField
-              name="collection"
-              control={form.control}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Collection</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger className="bg-slate-50">
-                        <SelectValue placeholder="Select a collection" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent className="z-2 bg-slate-50">
-                      <SelectItem value="winter">Winter Collection</SelectItem>
-                      <SelectItem value="summer">Summer Collection</SelectItem>
-                      <SelectItem value="both">both</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Categories Field with Tags */}
-            <FormField
-              name="category"
-              control={form.control}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Categories</FormLabel>
-                  <Select
-                    value=""
-                    onValueChange={(value) => {
-                      const currentCategories = field.value || [];
-                      if (!currentCategories.includes(value)) {
-                        field.onChange([...currentCategories, value]);
-                      }
-                    }}
-                  >
-                    <FormControl>
-                      <SelectTrigger className="bg-slate-50">
-                        <SelectValue placeholder="Select categories" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent className="z-2 bg-slate-50">
-                      {categories.map((category) => (
-                        <SelectItem
-                          key={category._id}
-                          value={category._id}
-                          disabled={selectedCategories.includes(category._id)}
-                        >
-                          {category.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormDescription className="text-xs">
-                    Select one or more categories for this product
-                  </FormDescription>
-
-                  {/* Selected Categories Tags */}
-                  {selectedCategories.length > 0 && (
-                    <div className="flex flex-wrap gap-2 mt-3">
-                      {getSelectedCategoryNames().map((category) => (
-                        <Badge
-                          key={category._id}
-                          variant="secondary"
-                          className="px-3 py-1.5 text-sm"
-                        >
-                          {category.name}
-                          <button
-                            type="button"
-                            onClick={() => removeCategory(category._id)}
-                            className="ml-2 hover:text-destructive focus:outline-none"
-                          >
-                            <X className="h-3 w-3" />
-                          </button>
-                        </Badge>
-                      ))}
-                    </div>
-                  )}
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {error && (
-              <div className="px-4 py-3 rounded-lg text-sm text-red-600 bg-red-50 border border-red-200">
-                {error}
-              </div>
-            )}
-
-            <Button
-              type="submit"
-              disabled={form.formState.isSubmitting}
-              className="w-full bg-primary-gradient py-6 text-white font-medium"
+      <div className="flex flex-col lg:flex-row gap-8 py-5">
+        {/* Left Column - Form + Variants */}
+        <div className="w-full lg:w-2/3 space-y-4">
+          <FormProvider {...form}>
+            <form
+              onSubmit={form.handleSubmit(handleSubmit)}
+              className="flex flex-col gap-6 bg-white rounded-lg border p-4 md:p-6 shadow-sm"
             >
-              {form.formState.isSubmitting ? (
-                <span className="flex items-center gap-2">
-                  <span className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  {buttonText === "Add Product" ? "Adding..." : "Updating..."}
-                </span>
-              ) : (
-                buttonText
-              )}
-            </Button>
-          </form>
-        </FormProvider>
+              <div className="space-y-1">
+                <h2 className="text-2xl font-semibold tracking-tight">
+                  {formType === "ADD" ? "Add New Product" : "Edit Product"}
+                </h2>
+                <p className="text-sm text-muted-foreground">
+                  Fill in the product details below
+                </p>
+              </div>
 
-        {/* Image Upload Section */}
-        <div className="flex-1 w-full lg:max-w-md">
+              {/* Title Field */}
+              <FormField
+                name="title"
+                control={form.control}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Product Title</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Enter product title"
+                        {...field}
+                        className="bg-slate-50"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Description Field */}
+              <FormField
+                name="description"
+                control={form.control}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Description</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="Enter product description"
+                        className="bg-slate-50 min-h-25 resize-none"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Price Fields - Side by Side */}
+              <div className="grid sm:grid-cols-2 gap-4">
+                <FormField
+                  name="newPrice"
+                  control={form.control}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Price</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          step="0.01"
+                          placeholder="0.00"
+                          {...field}
+                          onChange={(e) =>
+                            field.onChange(parseFloat(e.target.value))
+                          }
+                          className="bg-slate-50"
+                        />
+                      </FormControl>
+                      <FormDescription className="text-xs">
+                        set the base price for the product
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  name="oldPrice"
+                  control={form.control}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Compare at Price (Optional)</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          step="0.01"
+                          placeholder="0.00"
+                          {...field}
+                          value={field.value ?? ""}
+                          onChange={(e) =>
+                            field.onChange(
+                              e.target.value
+                                ? parseFloat(e.target.value)
+                                : undefined
+                            )
+                          }
+                          className="bg-slate-50"
+                        />
+                      </FormControl>
+                      <FormDescription className="text-xs">
+                        Show a discount by setting a higher compare price
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              {/* Collection Field */}
+              <FormField
+                name="collection"
+                control={form.control}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Collection</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger className="bg-slate-50">
+                          <SelectValue placeholder="Select a collection" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent className="z-2 bg-slate-50">
+                        <SelectItem value="winter">
+                          Winter Collection
+                        </SelectItem>
+                        <SelectItem value="summer">
+                          Summer Collection
+                        </SelectItem>
+                        <SelectItem value="both">both</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Categories Field with Tags */}
+              <FormField
+                name="category"
+                control={form.control}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Categories</FormLabel>
+                    <Select
+                      value=""
+                      onValueChange={(value) => {
+                        const currentCategories = field.value || [];
+                        if (!currentCategories.includes(value)) {
+                          field.onChange([...currentCategories, value]);
+                        }
+                      }}
+                    >
+                      <FormControl>
+                        <SelectTrigger className="bg-slate-50">
+                          <SelectValue placeholder="Select categories" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent className="z-2 bg-slate-50">
+                        {categories.map((category) => (
+                          <SelectItem
+                            key={category._id}
+                            value={category._id}
+                            disabled={selectedCategories.includes(category._id)}
+                          >
+                            {category.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormDescription className="text-xs">
+                      Select one or more categories for this product
+                    </FormDescription>
+
+                    {/* Selected Categories Tags */}
+                    {selectedCategories.length > 0 && (
+                      <div className="flex flex-wrap gap-2 mt-3">
+                        {getSelectedCategoryNames().map((category) => (
+                          <Badge
+                            key={category._id}
+                            variant="secondary"
+                            className="px-3 py-1.5 text-sm"
+                          >
+                            {category.name}
+                            <button
+                              type="button"
+                              onClick={() => removeCategory(category._id)}
+                              className="ml-2 hover:text-destructive focus:outline-none"
+                            >
+                              <X className="h-3 w-3" />
+                            </button>
+                          </Badge>
+                        ))}
+                      </div>
+                    )}
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {error && (
+                <div className="px-4 py-3 rounded-lg text-sm text-red-600 bg-red-50 border border-red-200">
+                  {error}
+                </div>
+              )}
+
+              <div className="mt-auto">
+                <Button
+                  type="submit"
+                  disabled={form.formState.isSubmitting}
+                  className="w-full bg-primary-gradient py-6 text-white font-medium"
+                >
+                  {form.formState.isSubmitting ? (
+                    <span className="flex items-center gap-2">
+                      <span className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      {buttonText === "Add Product"
+                        ? "Adding..."
+                        : "Updating..."}
+                    </span>
+                  ) : (
+                    buttonText
+                  )}
+                </Button>
+              </div>
+            </form>
+          </FormProvider>
+
+          {/* Variant Builder - Below Form on Mobile, keeps same width */}
           <div
-            className={`bg-white rounded-lg border p-6 shadow-sm sticky top-6 ${
+            className={`w-full ${
+              variantsError
+                ? "border border-dotted border-destructive rounded-lg"
+                : ""
+            }`}
+          >
+            <VariantBuilder
+              variants={variants}
+              onVariantsChanged={(variants: IVariant[]) => {
+                setVariant(variants);
+                setVariantsError(null);
+              }}
+              productTitle={currentTitle}
+            />
+            {variantsError && (
+              <p className="text-red-600 text-sm my-2 px-2">{variantsError}</p>
+            )}
+          </div>
+        </div>
+
+        {/* Right Column - Image Upload */}
+        <div className="w-full lg:w-1/3 space-y-4">
+          <div
+            className={`bg-white rounded-lg border p-4 md:p-6 shadow-sm lg:sticky lg:top-6 ${
               imagesError ? "border-destructive border-dotted" : ""
             }`}
           >
@@ -408,9 +441,10 @@ export default function ProductFrom({
               <p className="text-red-600 text-xs mt-4">{imagesError}</p>
             )}
           </div>
+
           <div
-            className={`bg-white rounded-lg border p-4 mt-2 shadow-sm sticky top-6 ${
-              imagesError ? "border-destructive border-dotted" : ""
+            className={`bg-white rounded-lg border p-4 shadow-sm ${
+              guideError ? "border-destructive border-dotted" : ""
             }`}
           >
             <h3 className="text-lg font-semibold mb-4">Size Guide</h3>
@@ -431,23 +465,6 @@ export default function ProductFrom({
             )}
           </div>
         </div>
-      </div>
-      <div
-        className={`w-full ${
-          variantsError ? "border border-dotted border-destructive" : ""
-        }`}
-      >
-        <VariantBuilder
-          variants={variants}
-          onVariantsChanged={(variants: IVariant[]) => {
-            setVariant(variants);
-            setVariantsError(null);
-          }}
-          productTitle={currentTitle}
-        />
-        {variantsError && (
-          <p className="text-red-600 text-sm my-2 px-2">{variantsError}</p>
-        )}
       </div>
     </div>
   );
