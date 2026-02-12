@@ -125,7 +125,7 @@ export async function sendEmail(
   const { to, subject, message } = validated.params!;
   try {
     await resend.emails.send({
-      from: "Activo <onboarding@resend.dev>",
+      from: "Activo <noreply@activostore.com>",
       to,
       subject,
       html: message,
