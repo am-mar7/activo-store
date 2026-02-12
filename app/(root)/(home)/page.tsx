@@ -91,7 +91,7 @@ async function Categories() {
   return (
     <>
       <div className="w-full">
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3 sm:gap-4 lg:gap-6 px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3 sm:gap-4 lg:gap-6">
           {categories.map((category) => (
             <Link
               href={ROUTES.CATEGORY(category.slug)}
