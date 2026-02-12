@@ -21,11 +21,16 @@ if (!global.mongooseCache) {
 const opts = {
   dbName: "Activo",
   bufferCommands: false,
-  maxPoolSize: 5,
-  serverSelectionTimeoutMS: 10000,
-  socketTimeoutMS: 45000,
-  connectTimeoutMS: 10000,
+  maxPoolSize: 10,
+  minPoolSize: 2,
+  serverSelectionTimeoutMS: 30000,
+  socketTimeoutMS: 120000,
+  connectTimeoutMS: 30000,
   family: 4,
+  retryWrites: true,
+  retryReads: true,
+  heartbeatFrequencyMS: 10000,
+  maxIdleTimeMS: 60000,
 } as const;
 
 const connectWithRetry = async (): Promise<typeof mongoose> => {
