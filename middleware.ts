@@ -10,7 +10,7 @@ const publicApiRoutes = [
   "/api/auth",
   "/api/users/email",
   "/api/users/:id",
-  "api/ping"
+  "/api/ping"
 ];
 
 function matchesRoute(pathname: string, routes: string[]): boolean {
