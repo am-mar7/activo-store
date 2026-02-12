@@ -90,41 +90,33 @@ async function Categories() {
   const categories = data.categories;
   return (
     <>
-      <div className="relative">
-        {/* Left vignette shadow */}
-        <div className="absolute left-0 top-0 bottom-0 w-16 z-10 pointer-events-none">
-          <div className="absolute inset-0 bg-linear-to-r from-white/95 via-white/60 to-transparent" />
-          <div className="absolute inset-0 bg-linear-to-r from-primary-600/8 via-primary-500/4 to-transparent" />
-          <div className="absolute top-1/2 -translate-y-1/2 left-3 h-16 w-0.5 bg-linear-to-b from-transparent via-primary-500/70 to-transparent rounded-full shadow-lg shadow-primary-500/50" />
-        </div>
-
-        {/* Right vignette shadow */}
-        <div className="absolute right-0 top-0 bottom-0 w-16 z-10 pointer-events-none">
-          <div className="absolute inset-0 bg-linear-to-l from-white/95 via-white/60 to-transparent" />
-          <div className="absolute inset-0 bg-linear-to-l from-primary-600/8 via-primary-500/4 to-transparent" />
-          <div className="absolute top-1/2 -translate-y-1/2 right-3 h-16 w-0.5 bg-linear-to-b from-transparent via-primary-500/70 to-transparent rounded-full shadow-lg shadow-primary-500/50" />
-        </div>
-
-        <div className="flex overflow-auto scrollbar-hide w-full gap-6 max-2xl:px-5">
+      <div className="w-full">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3 sm:gap-4 lg:gap-6 px-4 sm:px-6 lg:px-8">
           {categories.map((category) => (
             <Link
               href={ROUTES.CATEGORY(category.slug)}
               key={category._id}
-              className="relative group overflow-hidden w-35 sm:w-45 lg:w-55 2xl:w-65 shrink-0 rounded-lg aspect-3/4 block"
+              className="relative group overflow-hidden rounded-lg aspect-3/4 block transition-transform duration-300 hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
             >
               <Image
                 src={category.image}
                 alt={category.name}
                 fill
-                className="object-cover transition-transform duration-300 group-hover:scale-105"
+                sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, (max-width: 1280px) 25vw, (max-width: 1536px) 20vw, 16vw"
+                className="object-cover transition-transform duration-500 ease-out group-hover:scale-110"
               />
 
-              <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-colors" />
+              {/* Gradient overlay */}
+              <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/20 to-transparent group-hover:from-black/80 transition-all duration-300" />
 
-              <div className="absolute bottom-0 left-0 right-0 p-4">
-                <h2 className="text-white body-bold sm:base-bold font-semibold flex items-center gap-2">
-                  {category.name}
-                  <span className="text-white group-hover:translate-x-1 transition-transform">
+              {/* Content */}
+              <div className="absolute inset-x-0 bottom-0 p-3 sm:p-4">
+                <h2 className="text-white text-sm sm:text-base font-semibold leading-tight flex items-center gap-1.5 sm:gap-2">
+                  <span className="line-clamp-2">{category.name}</span>
+                  <span
+                    className="text-white opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300 text-lg shrink-0"
+                    aria-hidden="true"
+                  >
                     →
                   </span>
                 </h2>
