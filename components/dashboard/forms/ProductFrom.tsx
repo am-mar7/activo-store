@@ -423,6 +423,7 @@ export default function ProductFrom({
           >
             <h3 className="text-lg font-semibold mb-4">Product Images</h3>
             <Uploader
+              maxFiles={10}
               id="product-images"
               onImagesChange={(files: File[]) => {
                 setFiles(files);

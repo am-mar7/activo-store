@@ -20,7 +20,7 @@ export const DashboardLinks = [
   {
     icon: Store,
     route: ROUTES.HOME,
-    label: "Store view"
+    label: "Store view",
   },
   {
     icon: ShoppingBag,
@@ -85,4 +85,5 @@ export const colors = [
   { value: "snowwhite", label: "Snow White", hex: "#FFFAFA" },
   { value: "olivegreen", label: "Olive Green", hex: "#556B2F" },
   { value: "grey", label: "Grey", hex: "#6B7280" },
+  { value: "red", label: "Red", hex: "#DC2626" },
 ];

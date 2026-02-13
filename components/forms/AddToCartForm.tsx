@@ -132,7 +132,7 @@ export default function AddToCartForm({
       <div className="space-y-2.5 mb-5">
         <div className="mt-4">
           <p className="my-1 text-slate-500 body-regular">Size</p>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             {sizes.map((currSize, idx) => (
               <Badge
                 key={idx}

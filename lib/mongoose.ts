@@ -2,7 +2,10 @@ import mongoose from "mongoose";
 import "../models";
 
 const MONGODB_URI = process.env.MONGODB_URI as string;
-if (!MONGODB_URI) throw new Error("MONGODB_URI is not defined");
+
+if (!MONGODB_URI) {
+  throw new Error("MONGODB_URI is not defined");
+}
 
 interface CachedConnection {
   conn: typeof mongoose | null;
@@ -10,76 +13,49 @@ interface CachedConnection {
 }
 
 declare global {
-  var mongooseCache: CachedConnection | undefined;
+  var mongooseCache: CachedConnection;
 }
 
-// Initialize cache
 if (!global.mongooseCache) {
-  global.mongooseCache = { conn: null, promise: null };
+  global.mongooseCache = {
+    conn: null,
+    promise: null,
+  };
 }
 
-const opts = {
+const opts: mongoose.ConnectOptions = {
   dbName: "Activo",
   bufferCommands: false,
-  maxPoolSize: 10,
-  minPoolSize: 2,
-  serverSelectionTimeoutMS: 30000,
-  socketTimeoutMS: 120000,
-  connectTimeoutMS: 30000,
+  maxPoolSize: 5,
+  serverSelectionTimeoutMS: 20000,
+  connectTimeoutMS: 20000,
+  socketTimeoutMS: 60000,
   family: 4,
-  retryWrites: true,
-  retryReads: true,
-  heartbeatFrequencyMS: 10000,
-  maxIdleTimeMS: 60000,
-} as const;
-
-const connectWithRetry = async (): Promise<typeof mongoose> => {
-  try {
-    return await mongoose.connect(MONGODB_URI, opts);
-  } catch (err) {
-    console.error("MongoDB connection failed, retrying once...", err);
-    // Retry once
-    return await mongoose.connect(MONGODB_URI, opts);
-  }
 };
 
 export const dbConnect = async (): Promise<typeof mongoose> => {
-  // Return cached connection if available
-  if (global.mongooseCache!.conn) {
-    return global.mongooseCache!.conn;
+  const cache = global.mongooseCache;
+
+  if (mongoose.connection.readyState === 1) {
+    return mongoose;
   }
 
-  // If already connecting, wait for that promise
-  if (global.mongooseCache!.promise) {
-    return global.mongooseCache!.promise;
+  if (mongoose.connection.readyState === 2 && cache.promise) {
+    return cache.promise;
   }
 
-  // Development logging (only set once)
-  if (
-    process.env.NODE_ENV === "development" &&
-    !mongoose.connection.listenerCount("connected")
-  ) {
-    mongoose.connection.on("connected", () =>
-      console.log("✅ Connected to MongoDB")
-    );
-    mongoose.connection.on("error", (err) =>
-      console.error("❌ MongoDB error:", err)
-    );
-    mongoose.connection.on("disconnected", () =>
-      console.warn("⚠️ MongoDB disconnected")
-    );
+  if (!cache.promise) {
+    cache.promise = mongoose
+      .connect(MONGODB_URI, opts)
+      .then((mongooseInstance) => {
+        cache.conn = mongooseInstance;
+        return mongooseInstance;
+      })
+      .catch((error) => {
+        cache.promise = null;
+        throw error;
+      });
   }
 
-  // Create and cache the connection promise
-  global.mongooseCache!.promise = connectWithRetry()
-    .then((conn) => {
-      global.mongooseCache!.conn = conn;
-      return conn;
-    })
-    .catch((err) => {
-      global.mongooseCache!.promise = null; // Clear failed promise
-      throw new Error(`MongoDB connection failed: ${err}`);
-    });
-
-  return global.mongooseCache!.promise;
+  return cache.promise;
 };

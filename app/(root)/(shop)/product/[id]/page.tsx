@@ -108,7 +108,7 @@ async function ProductDetailsContent({ params }: RouteParams) {
             <span>LE {formatPrice(newPrice, "EGP")}</span>
           </p>
           <h1 className="h3-semibold text-slate-900">{title}</h1>
-          <p className="text-slate-600 body-medium">{description}</p>
+          <p className="text-slate-600 body-medium whitespace-pre-line">{description}</p>
           {guide && <SizeGuide className="my-3" image={guide} />}
           <AddToCartForm
             variants={variants}
