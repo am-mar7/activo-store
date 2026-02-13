@@ -35,6 +35,7 @@ export default function VariantBuilder({
   onVariantsChanged,
 }: VariantBuilderProps) {
   const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
+  const [sizeStep, setSizeStep] = useState<string>("1");
   const [selectedColors, setSelectedColors] = useState<string[]>([]);
   const [showStockTable, setShowStockTable] = useState(false);
   const [stockData, setStockData] = useState<
@@ -50,16 +51,30 @@ export default function VariantBuilder({
   const generateShoeSizes = () => {
     const start = parseFloat(startSize);
     const end = parseFloat(endSize);
+    const step = parseFloat(sizeStep);
 
-    if (isNaN(start) || isNaN(end) || start >= end) {
-      toast.error("Invalid range");
+    if (isNaN(start) || isNaN(end) || isNaN(step)) {
+      toast.error("Please enter valid numbers");
+      return;
+    }
+
+    if (start >= end) {
+      toast.error("Start size must be less than end size");
+      return;
+    }
+
+    if (step <= 0) {
+      toast.error("Step must be greater than 0");
       return;
     }
 
     const range: string[] = [];
-    for (let i = start; i <= end; i += 1) range.push(i.toString());
+    for (let i = start; i <= end; i += step) {
+      range.push(i.toFixed(1).replace(/\.0$/, ""));
+    }
 
     setSelectedSizes(range);
+    toast.success(`Generated ${range.length} sizes`);
   };
 
   const toggleSize = (size: string) => {
@@ -233,7 +248,7 @@ export default function VariantBuilder({
         <label className="text-sm font-medium mb-3 block">
           Select Sizes <span className="text-red-500">*</span>
         </label>
-        <div className="items-center gap-2 mb-3">
+        <div className="flex items-center gap-2 mb-3">
           <Input
             type="checkbox"
             id="isShoes"
@@ -245,7 +260,7 @@ export default function VariantBuilder({
             htmlFor="isShoes"
             className="text-sm font-medium cursor-pointer select-none"
           >
-            This product is shoes (uses shoe sizes)
+            This product is shoes or pants (uses shoe/pants sizes)
           </label>
         </div>
         <div className={`flex flex-wrap gap-2 }`}>
@@ -273,42 +288,90 @@ export default function VariantBuilder({
             </Badge>
           ))}
         </div>
-        {selectedSizes.length > 0 && (
+        {selectedSizes.length > 0 && !isShoes && (
           <p className="text-xs text-muted-foreground mt-2">
             {selectedSizes.length} size(s) selected
           </p>
         )}
         {/* Shoe Size Range Inputs */}
         {isShoes && (
-          <div className="space-y-2">
+          <div className="space-y-3 p-4 bg-slate-50 rounded-lg border">
             <label className="text-sm font-medium block">
-              Shoe Size Range <span className="text-red-500">*</span>
+              Shoe/Pants Size Range <span className="text-red-500">*</span>
             </label>
-            <div className="flex gap-2">
-              <Input
-                type="number"
-                step="1"
-                placeholder="35"
-                value={startSize}
-                onChange={(e) => setStartSize(e.target.value)}
-                className="bg-slate-50 w-18"
-              />
-              <Input
-                type="number"
-                step="1"
-                placeholder="45"
-                value={endSize}
-                onChange={(e) => setEndSize(e.target.value)}
-                className="bg-slate-50 w-18"
-              />
-              <Button
-                type="button"
-                onClick={generateShoeSizes}
-                variant="outline"
-              >
-                Generate
-              </Button>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-muted-foreground">
+                  Start Size
+                </label>
+                <Input
+                  type="number"
+                  step="0.5"
+                  placeholder="35"
+                  value={startSize}
+                  onChange={(e) => setStartSize(e.target.value)}
+                  className="bg-white"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-muted-foreground">
+                  End Size
+                </label>
+                <Input
+                  type="number"
+                  step="0.5"
+                  placeholder="45"
+                  value={endSize}
+                  onChange={(e) => setEndSize(e.target.value)}
+                  className="bg-white"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-muted-foreground">
+                  Step
+                </label>
+                <Input
+                  type="number"
+                  step="0.1"
+                  min="0.1"
+                  placeholder="1"
+                  value={sizeStep}
+                  onChange={(e) => setSizeStep(e.target.value)}
+                  className="bg-white"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-muted-foreground opacity-0">
+                  Action
+                </label>
+                <Button
+                  type="button"
+                  onClick={generateShoeSizes}
+                  variant="outline"
+                  className="w-full h-10"
+                >
+                  Generate
+                </Button>
+              </div>
             </div>
+            {selectedSizes.length > 0 && (
+              <div className="space-y-2 pt-2 border-t">
+                <p className="text-xs text-muted-foreground font-medium">
+                  {selectedSizes.length} size(s) generated
+                </p>
+                <div className="flex flex-wrap gap-1.5">
+                  {selectedSizes.map((size) => (
+                    <Badge
+                      key={size}
+                      variant="secondary"
+                      className="text-xs px-2.5 py-0.5 bg-white"
+                    >
+                      {size}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>
