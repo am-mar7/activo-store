@@ -33,7 +33,7 @@ export async function generateMetadata({
     openGraph: {
       title: `Activo Store | ${category.name}`,
       description: `Shop ${category.name} at Activo Store.`,
-      url: `https://activo-store.vercel.app.com/categories/${slug}`,
+      url: `https://activostore.com/categories/${slug}`,
       siteName: "Activo Store",
       images: [
         {
@@ -57,7 +57,7 @@ export async function generateMetadata({
       follow: true,
     },
     alternates: {
-      canonical: `https://activo-store.vercel.app.com/categories/${slug}`,
+      canonical: `https://activostore.com/categories/${slug}`,
     },
   };
 }
@@ -93,6 +93,20 @@ async function CategoriedProductsContent({
   });
   const { items: products, isNext, total } = data || {};
 
+  // Prepare JSON-LD for the category page
+  const categoryJSONLD = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: `${slug.charAt(0).toUpperCase() + slug.slice(1)} Collection`,
+    description: `Browse our ${slug} collection at Activo Store. Premium activewear and lifestyle clothing.`,
+    itemListElement: products?.map((product, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      url: `https://activostore.com/products/${product._id}`,
+      name: product.title,
+    })),
+  };
+
   return (
     <motion.div
       className="flex-center flex-col"
@@ -100,6 +114,10 @@ async function CategoriedProductsContent({
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(categoryJSONLD) }}
+      />
       <div className="max-w-7xl px-5 w-full py-5">
         <motion.div
           initial={{ opacity: 0, y: -30, scale: 0.9 }}
@@ -112,7 +130,13 @@ async function CategoriedProductsContent({
             stiffness: 100,
           }}
         >
-          <h2 className="h2-semibold">{slug}</h2>
+          <h1 className="h2-semibold">{slug}</h1>
+          <p className="mb-4 max-w-3xl whitespace-pre-line small-medium text-muted-foreground">
+            Explore our <strong>{slug}</strong> at Activo Store. Find premium{" "}
+            <strong>{slug}</strong> crafted for comfort, performance, and style.
+            Shop high-quality activewear, athletic clothing, and lifestyle
+            apparel with free shipping on orders over $50.
+          </p>
         </motion.div>
 
         <DataRenderer

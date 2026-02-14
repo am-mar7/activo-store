@@ -16,11 +16,11 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Activo Store | Customer Service',
     description: 'Get help with your order. Available 24/7 for shipping, returns, and customer support.',
-    url: 'https://activo-store.vercel.app.com/customer-service',
+    url: 'https://activostore.com/customer-service',
     siteName: 'Activo Store',
     images: [
       {
-        url: 'https://activo-store.vercel.app.com/og-customer-service.jpg',
+        url: 'https://activo-store.com/public/images/hero.png',
         width: 1200,
         height: 630,
         alt: 'Activo Store Customer Service',
@@ -33,14 +33,14 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Activo Store | Customer Service',
     description: 'Get help with your order. Available 24/7 for shipping, returns, and customer support.',
-    images: ['https://activo-store.vercel.app.com/twitter-customer-service.jpg'],
+    images: ['https://activostore.com/public/images/hero.png'],
   },
   robots: {
     index: true,
     follow: true,
   },
   alternates: {
-    canonical: 'https://activo-store.vercel.app.com/customer-service',
+    canonical: 'https://activostore.com/public/images/hero.png',
   },
 }
 
@@ -49,7 +49,6 @@ export default function CustomerServicePage() {
   return (
     <div className="flex-center">
       <div className="min-h-screen bg-muted max-w-7xl">
-        {/* Hero Section */}
         <div className="bg-primary-gradient2 text-white py-16">
           <div className="mx-auto px-4 sm:px-10 2xl:px-20 lg:px-8">
             <h1 className="h1-bold mb-4">Customer Service</h1>

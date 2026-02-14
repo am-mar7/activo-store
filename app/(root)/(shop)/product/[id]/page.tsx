@@ -38,13 +38,13 @@ export async function generateMetadata({
       : product.description;
 
   return {
-    title: `Activo Store | ${product.title}`,
+    title: `${product.title} - Premium Activewear | Activo Store`,
     description: `${description} Shop ${product.title} at Activo Store. LE ${product.newPrice}. Free shipping on orders over LE 500.`,
     keywords: `${product.title}, activewear, buy ${product.title}, athletic clothing`,
     openGraph: {
       title: `Activo Store | ${product.title}`,
       description: product.description,
-      url: `https://activo-store.vercel.app.com/products/${id}`,
+      url: `https://activostore.com/products/${id}`,
       siteName: "Activo Store",
       images: [
         {
@@ -68,7 +68,7 @@ export async function generateMetadata({
       follow: true,
     },
     alternates: {
-      canonical: `https://activo-store.vercel.app.com/products/${id}`,
+      canonical: `https://activostore.com/products/${id}`,
     },
   };
 }
@@ -97,15 +97,37 @@ async function ProductDetailsContent({ params }: RouteParams) {
     sizeGuide: guide,
   } = product;
 
+  const productJSONLD = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: title,
+    image: images,
+    description,
+    sku: id,
+    brand: { "@type": "Brand", name: "Activo Store" },
+    offers: {
+      "@type": "Offer",
+      url: `https://activostore.com/products/${id}`,
+      priceCurrency: "EGP",
+      price: newPrice,
+      availability: "https://schema.org/InStock",
+      itemCondition: "https://schema.org/NewCondition",
+    },
+  };
+
   return (
-    <motion.div 
+    <motion.div
       className="flex-center flex-col"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(productJSONLD) }}
+      />
       <div className="max-w-7xl w-full flex flex-col md:flex-row px-5 my-4 gap-6">
-        <motion.div 
+        <motion.div
           className="w-full md:w-1/2"
           initial={{ opacity: 0, x: -30 }}
           whileInView={{ opacity: 1, x: 0 }}
@@ -115,12 +137,17 @@ async function ProductDetailsContent({ params }: RouteParams) {
           <ProductImageCarousel images={images} />
         </motion.div>
 
-        <motion.div 
+        <motion.div
           className="w-full md:w-1/2 md:pl-8 flex flex-col"
           initial={{ opacity: 0, x: 30 }}
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true, amount: 0.3 }}
-          transition={{ duration: 0.6, delay: 0.2, type: "spring", stiffness: 100 }}
+          transition={{
+            duration: 0.6,
+            delay: 0.2,
+            type: "spring",
+            stiffness: 100,
+          }}
         >
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -129,13 +156,19 @@ async function ProductDetailsContent({ params }: RouteParams) {
             transition={{ duration: 0.4, delay: 0.3 }}
           >
             <p className="text-lg md:text-xl flex gap-3">
-              {oldPrice && <span className="line-through text-gray-500">LE {oldPrice}</span>}
-              <span className="font-semibold">LE {formatPrice(newPrice, "EGP")}</span>
+              {oldPrice && (
+                <span className="line-through text-gray-500">
+                  LE {oldPrice}
+                </span>
+              )}
+              <span className="font-semibold">
+                LE {formatPrice(newPrice, "EGP")}
+              </span>
             </p>
             <h1 className="h3-semibold text-slate-900">{title}</h1>
           </motion.div>
 
-          <motion.p 
+          <motion.p
             className="text-slate-600 body-medium whitespace-pre-line md:max-h-50 lg:max-h-60 2xl:max-h-70 overflow-y-auto custom-scrollbar"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -199,7 +232,7 @@ async function CategoriedProducts({
   allProducts = allProducts.filter((p) => p?._id !== id);
 
   return (
-    <motion.div 
+    <motion.div
       className="flex-center flex-col w-full"
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
@@ -207,7 +240,7 @@ async function CategoriedProducts({
       transition={{ duration: 0.6, type: "spring", stiffness: 100 }}
     >
       <div className="relative my-5 w-full max-w-7xl px-5">
-        <motion.h1 
+        <motion.h1
           className="h3-semibold text-slate-800 my-2"
           initial={{ opacity: 0, x: -20 }}
           whileInView={{ opacity: 1, x: 0 }}

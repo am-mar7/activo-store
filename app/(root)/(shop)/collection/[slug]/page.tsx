@@ -14,48 +14,37 @@ export async function generateMetadata({
 }: RouteParams): Promise<Metadata> {
   const { slug } = await params;
 
-  const collectionName =
-    slug === "all"
-      ? "All Products"
-      : `${slug.charAt(0).toUpperCase() + slug.slice(1)} Collection`;
-
-  const description =
-    slug === "all"
-      ? "Browse our complete collection of activewear and lifestyle clothing. Shop all products with free shipping on orders over $50."
-      : `Discover the ${slug} collection at Activo Store. Premium activewear and lifestyle clothing with free shipping on orders over $50.`;
-
   return {
-    title: `Activo Store | ${collectionName}`,
-    description: description,
+    title: `${slug} collection - Premium Activewear | Activo Store (Activostore)`,
+    description: `Discover the ${slug} collection at Activo Store (Activostore)"`,
     keywords: `${slug} collection, activewear, athletic clothing, ${slug} apparel`,
     openGraph: {
-      title: `Activo Store | ${collectionName}`,
-      description: description,
-      url: `https://activo-store.vercel.app.com/collections/${slug}`,
+      title: `Activo Store | ${slug} collection`,
+      description: `Discover the ${slug} collection at Activo Store.`,
+      url: `https://activostore.com/collections/${slug}`,
       siteName: "Activo Store",
       images: [
         {
-          url: "https://activo-store.vercel.app.com/og-collection.jpg",
+          url: "https://activostore.com/public/images/hero.png",
           width: 1200,
           height: 630,
-          alt: `${collectionName} - Activo Store`,
+          alt: `${slug} collection - Activo Store`,
         },
       ],
       locale: "en_US",
       type: "website",
-    },
-    twitter: {
+    },    twitter: {
       card: "summary_large_image",
-      title: `Activo Store | ${collectionName}`,
-      description: description,
-      images: ["https://activo-store.vercel.app.com/twitter-collection.jpg"],
+      title: `Activo Store | ${slug} collection`,
+      description: `Discover the ${slug} collection at Activo Store.`,
+      images: ["https://activostore.com/public/images/hero.png"],
     },
     robots: {
       index: true,
       follow: true,
     },
     alternates: {
-      canonical: `https://activo-store.vercel.app.com/collections/${slug}`,
+      canonical: `https://activostore.com/collections/${slug}`,
     },
   };
 }
@@ -104,9 +93,15 @@ async function CollectionsContent({ params, searchParams }: RouteParams) {
             stiffness: 100,
           }}
         >
-          <h2 className="h2-bold">
+          <h1 className="h2-bold">
             {slug === "all" ? "All Products" : `${slug} Collection`}
-          </h2>
+          </h1>
+          <p className="mb-4 max-w-3xl whitespace-pre-line small-medium text-muted-foreground">
+            Explore our <strong>{slug}</strong> collection at Activo Store. Find
+            premium <strong>{slug}</strong> crafted for comfort, performance,
+            and style. Shop high-quality activewear, athletic clothing, and
+            lifestyle apparel with free shipping on orders over $50.
+          </p>
         </motion.div>
 
         <DataRenderer

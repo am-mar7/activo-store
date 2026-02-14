@@ -17,23 +17,23 @@ import type { Metadata } from "next";
 import * as motion from "motion/react-client";
 
 export const metadata: Metadata = {
-  title: "Activo Store - | Home",
+  title: "Activo Store (Activostore) | Premium Activewear & Lifestyle Clothing",
   description:
-    "Discover Activo Store's collection of premium activewear and lifestyle clothing. Shop best-selling athletic wear, casual styles, and trending fashion. Free shipping on orders over $50.",
+    "Activo Store (Activostore) offers premium activewear and lifestyle clothing. Shop best-selling athletic wear, gym apparel, and trending fashion. Free shipping on orders over $50.",
   keywords:
-    "activewear, athletic clothing, lifestyle apparel, gym wear, sports clothing, casual wear, Activo Store",
+    "Activo Store, Activostore, activewear, athletic clothing, lifestyle apparel, gym wear, sports clothing, casual wear",
   openGraph: {
-    title: "Activo Store - Premium Active & Lifestyle Clothing",
+    title: "Activo Store (Activostore) - Premium Active & Lifestyle Clothing",
     description:
-      "Shop premium activewear and lifestyle clothing at Activo Store. Discover our best-selling collections.",
+      "Shop premium activewear and lifestyle clothing at Activo Store (Activostore). Discover our best-selling collections.",
     url: "https://activostore.com",
     siteName: "Activo Store",
     images: [
       {
-        url: "https://activostore.com/og-image.jpg",
+        url: "https://activostore.com/public/images/hero.png",
         width: 1200,
         height: 630,
-        alt: "Activo Store - Premium Activewear",
+        alt: "Activo Store (Activostore) - Premium Activewear",
       },
     ],
     locale: "en_US",
@@ -44,7 +44,7 @@ export const metadata: Metadata = {
     title: "Activo Store - Premium Active & Lifestyle Clothing",
     description:
       "Shop premium activewear and lifestyle clothing at Activo Store.",
-    images: ["https://activostore.com/twitter-image.jpg"],
+    images: ["https://activostore.com/public/images/hero.png"],
   },
   robots: {
     index: true,
@@ -64,33 +64,33 @@ export const metadata: Metadata = {
 
 export default function Home() {
   return (
-    <motion.div 
+    <motion.div
       className="relative w-full min-h-screen"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
-      <motion.section 
+      <motion.section
         className="my-5 sm:my-10 px-5 sm:px-10 overflow-hidden"
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.2 }}
         transition={{ duration: 0.6 }}
       >
-        <h1 className="h2-bold mb-5">Categories</h1>
+        <h2 className="h2-bold mb-5">Categories</h2>
         <Suspense fallback={<Loading />}>
           <Categories />
         </Suspense>
       </motion.section>
 
-      <motion.section 
+      <motion.section
         className="my-5 sm:my-10 px-5 sm:px-10 overflow-hidden"
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.2 }}
         transition={{ duration: 0.6 }}
       >
-        <h1 className="h2-bold mb-5">Best sellers</h1>
+        <h2 className="h2-bold mb-5">Best sellers</h2>
         <Suspense fallback={<Loading />}>
           <BestSellers />
         </Suspense>
@@ -111,7 +111,7 @@ async function Categories() {
     <div className="w-full">
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3 sm:gap-4 lg:gap-6">
         {categories.map((category, index) => (
-          <motion.div 
+          <motion.div
             key={category._id}
             initial={{ opacity: 0, scale: 0.8, y: 30 }}
             whileInView={{ opacity: 1, scale: 1, y: 0 }}
@@ -138,7 +138,7 @@ async function Categories() {
 
               {/* Multi-layer gradient overlay */}
               <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/30 to-transparent group-hover:from-black/90 group-hover:via-black/40 transition-all duration-500" />
-              
+
               {/* Animated border glow */}
               <div className="absolute inset-0 border-2 border-primary/0 group-hover:border-primary/50 rounded-xl transition-all duration-500" />
 
@@ -174,7 +174,7 @@ async function BestSellers() {
     return <TryAgain message="Failed to load the products" />;
 
   return (
-    <motion.div 
+    <motion.div
       className="relative"
       initial={{ opacity: 0, x: -20 }}
       whileInView={{ opacity: 1, x: 0 }}
