@@ -6,6 +6,7 @@ import AddAddressForm from "@/components/forms/AddAddressForm";
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import Loading from "@/app/loading";
+import * as motion from "motion/react-client";
 
 export const metadata: Metadata = {
   title: "Activo Store | Addresses",
@@ -31,10 +32,39 @@ export default function AddressesPage() {
 async function AddressesPageContent() {
   const { success, data, error } = await getAddresses();
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.5 },
+    },
+  };
+
   return (
-    <div className="mb-5 bg-linear-to-br from-neutral-100 to-neutral-200 py-8 px-4 sm:px-6 lg:px-8">
+    <motion.div
+      className="mb-5 bg-linear-to-br from-neutral-100 to-neutral-200 py-8 px-4 sm:px-6 lg:px-8"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+    >
       <div className="max-w-5xl mx-auto">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
+        <motion.div
+          className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+        >
           <div className="self-start">
             <h1 className="h2-bold text-neutral-900">My Addresses</h1>
             <p className="body-medium text-neutral-700 mb-3">
@@ -42,8 +72,14 @@ async function AddressesPageContent() {
             </p>
           </div>
 
-          <AddAddressForm className="md:w-1/2" toggleBtn={true} />
-        </div>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.4, delay: 0.3 }}
+          >
+            <AddAddressForm className="md:w-1/2" toggleBtn={true} />
+          </motion.div>
+        </motion.div>
 
         <DataRenderer
           success={success}
@@ -59,10 +95,16 @@ async function AddressesPageContent() {
             },
           }}
           render={(addresses) => (
-            <div className="space-y-4">
+            <motion.div
+              className="space-y-4"
+              variants={containerVariants}
+              initial="hidden"
+              animate="visible"
+            >
               {addresses?.map((address, index) => (
-                <div
+                <motion.div
                   key={address._id?.toString() || index}
+                  variants={itemVariants}
                   className={`bg-white rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 border-2 ${
                     address.isDefault
                       ? "border-primary-500"
@@ -71,7 +113,13 @@ async function AddressesPageContent() {
                 >
                   <div className="flex flex-col lg:flex-row lg:items-center gap-6 p-4">
                     <div className="flex-1 grid grid-cols-1 sm:grid-cols-3 gap-6">
-                      <div className="flex-center gap-3">
+                      {/* City */}
+                      <motion.div
+                        className="flex-center gap-3"
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.4, delay: index * 0.1 + 0.3 }}
+                      >
                         <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center shrink-0">
                           <Home className="w-5 h-5 text-blue-600" />
                         </div>
@@ -83,10 +131,15 @@ async function AddressesPageContent() {
                             {address.city}
                           </p>
                         </div>
-                      </div>
+                      </motion.div>
 
                       {/* Details */}
-                      <div className="flex-center gap-3">
+                      <motion.div
+                        className="flex-center gap-3"
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.4, delay: index * 0.1 + 0.4 }}
+                      >
                         <div className="w-10 h-10 rounded-lg bg-green-50 flex items-center justify-center shrink-0">
                           <MapPin className="w-5 h-5 text-green-600" />
                         </div>
@@ -98,10 +151,15 @@ async function AddressesPageContent() {
                             {address.details}
                           </p>
                         </div>
-                      </div>
+                      </motion.div>
 
                       {/* Phone */}
-                      <div className="flex-center gap-3">
+                      <motion.div
+                        className="flex-center gap-3"
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.4, delay: index * 0.1 + 0.5 }}
+                      >
                         <div className="w-10 h-10 rounded-lg bg-purple-50 flex items-center justify-center shrink-0">
                           <Phone className="w-5 h-5 text-purple-600" />
                         </div>
@@ -113,10 +171,15 @@ async function AddressesPageContent() {
                             {address.phone}
                           </p>
                         </div>
-                      </div>
+                      </motion.div>
                     </div>
 
-                    <div className="shrink-0">
+                    <motion.div
+                      className="shrink-0"
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ duration: 0.4, delay: index * 0.1 + 0.6 }}
+                    >
                       {!address.isDefault ? (
                         <SetDefaultAddressBtn
                           addressId={address._id?.toString() || ""}
@@ -129,14 +192,14 @@ async function AddressesPageContent() {
                           </span>
                         </div>
                       )}
-                    </div>
+                    </motion.div>
                   </div>
-                </div>
+                </motion.div>
               ))}
-            </div>
+            </motion.div>
           )}
         />
       </div>
-    </div>
+    </motion.div>
   );
 }

@@ -8,6 +8,7 @@ import type { Metadata } from "next";
 import { getCategoryBySlug } from "@/lib/server actions/category.action";
 import { Suspense } from "react";
 import Loading from "@/app/loading";
+import * as motion from "motion/react-client";
 
 export async function generateMetadata({
   params,
@@ -92,10 +93,41 @@ async function CategoriedProductsContent({
   });
   const { items: products, isNext, total } = data || {};
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.05,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.4 },
+    },
+  };
+
   return (
-    <div className="flex-center flex-col">
+    <motion.div 
+      className="flex-center flex-col"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+    >
       <div className="max-w-7xl px-5 w-full">
-        <h2 className="h2-semibold"> {slug} </h2>
+        <motion.h2 
+          className="h2-semibold"
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+        >
+          {slug}
+        </motion.h2>
         <DataRenderer
           success={success}
           error={error}
@@ -103,23 +135,35 @@ async function CategoriedProductsContent({
           empty={{ title: "No Products Found", message: "" }}
           render={(data) => (
             <>
-              <div className="mt-6 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid:cols-6 gap-4">
+              <motion.div 
+                className="mt-6 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4"
+                variants={containerVariants}
+                initial="hidden"
+                animate="visible"
+              >
                 {data?.map((product) => (
-                  <ProductCard key={product._id} product={product} />
+                  <motion.div key={product._id} variants={itemVariants}>
+                    <ProductCard product={product} />
+                  </motion.div>
                 ))}
-              </div>
-              <div className="my-4">
+              </motion.div>
+              <motion.div 
+                className="my-4"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.3 }}
+              >
                 <Pagination
                   isNext={isNext}
                   total={total || 0}
                   pageSize={Number(pageSize) || 30}
                   page={Number(page) || 1}
                 />
-              </div>
+              </motion.div>
             </>
           )}
         />
       </div>
-    </div>
+    </motion.div>
   );
 }

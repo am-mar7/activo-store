@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/carousel";
 import Footer from "@/components/Footer";
 import type { Metadata } from "next";
+import * as motion from "motion/react-client";
 
 export const metadata: Metadata = {
   title: "Activo Store - | Home",
@@ -63,22 +64,37 @@ export const metadata: Metadata = {
 
 export default function Home() {
   return (
-    <div className="relative w-full h-125 md:h-150 lg:h-175">
-      <section className="my-5 sm:my-10 px-5 sm:px-10 overflow-hidden">
+    <motion.div 
+      className="relative w-full h-125 md:h-150 lg:h-175"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+    >
+      <motion.section 
+        className="my-5 sm:my-10 px-5 sm:px-10 overflow-hidden"
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.2 }}
+      >
         <h1 className="h2-bold mb-5">Categories</h1>
         <Suspense fallback={<Loading />}>
           <Categories />
         </Suspense>
-      </section>
+      </motion.section>
 
-      <section className="my-5 sm:my-10 px-5 sm:px-10 overflow-hidden">
+      <motion.section 
+        className="my-5 sm:my-10 px-5 sm:px-10 overflow-hidden"
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.4 }}
+      >
         <h1 className="h2-bold mb-5">Best sellers</h1>
         <Suspense fallback={<Loading />}>
           <BestSellers />
         </Suspense>
-      </section>
+      </motion.section>
       <Footer />
-    </div>
+    </motion.div>
   );
 }
 
@@ -88,14 +104,38 @@ async function Categories() {
     return <TryAgain message="Failed to load the categories" />;
 
   const categories = data.categories;
+  
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.5 },
+    },
+  };
+
   return (
-    <>
-      <div className="w-full">
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3 sm:gap-4 lg:gap-6">
-          {categories.map((category) => (
+    <motion.div 
+      className="w-full"
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+    >
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3 sm:gap-4 lg:gap-6">
+        {categories.map((category) => (
+          <motion.div key={category._id} variants={itemVariants}>
             <Link
               href={ROUTES.CATEGORY(category.slug)}
-              key={category._id}
               className="relative group overflow-hidden rounded-lg aspect-3/4 block transition-transform duration-300 hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
             >
               <Image
@@ -122,10 +162,10 @@ async function Categories() {
                 </h2>
               </div>
             </Link>
-          ))}
-        </div>
+          </motion.div>
+        ))}
       </div>
-    </>
+    </motion.div>
   );
 }
 
@@ -135,7 +175,12 @@ async function BestSellers() {
     return <TryAgain message="Failed to load the categories" />;
 
   return (
-    <div className="relative">
+    <motion.div 
+      className="relative"
+      initial={{ opacity: 0, x: -20 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ duration: 0.6 }}
+    >
       <Carousel
         className="w-full"
         opts={{
@@ -149,11 +194,17 @@ async function BestSellers() {
               key={index}
               className="pl-2 md:pl-4 basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5 xl:basis-1/6"
             >
-              <ProductCard product={product} />
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.4, delay: index * 0.05 }}
+              >
+                <ProductCard product={product} />
+              </motion.div>
             </CarouselItem>
           ))}
         </CarouselContent>
       </Carousel>
-    </div>
+    </motion.div>
   );
 }

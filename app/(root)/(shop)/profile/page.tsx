@@ -9,6 +9,7 @@ import { redirect } from "next/navigation";
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import Loading from "@/app/loading";
+import * as motion from "motion/react-client";
 
 export const metadata: Metadata = {
   title: "Activo Store | Profile",
@@ -26,7 +27,7 @@ export const metadata: Metadata = {
 export default function Profile({ searchParams, params }: RouteParams) {
   return (
     <Suspense fallback={<Loading />}>
-      <ProfileContent params={params} searchParams={searchParams} />{" "}
+      <ProfileContent params={params} searchParams={searchParams} />
     </Suspense>
   );
 }
@@ -48,8 +49,32 @@ async function ProfileContent({ searchParams }: RouteParams) {
   });
   const { items: orders, isNext, total } = data || {};
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.5 },
+    },
+  };
+
   return (
-    <div className="mb-5 bg-linear-to-br from-neutral-100 to-neutral-200 py-8 px-4 sm:px-6 lg:px-8">
+    <motion.div
+      className="mb-5 bg-linear-to-br from-neutral-100 to-neutral-200 py-8 px-4 sm:px-6 lg:px-8"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+    >
       <DataRenderer
         success={success}
         error={error}
@@ -61,26 +86,45 @@ async function ProfileContent({ searchParams }: RouteParams) {
         }}
         render={(orders) => (
           <div className="space-y-2 py-8 px-4 sm:px-6 lg:px-8 mb-5 bg-linear-to-br from-neutral-100 to-neutral-200">
-            <div>
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+            >
               <h1 className="h2-bold text-neutral-900">My Orders</h1>
               <p className="body-medium text-neutral-700 mb-3">
-                Manage your track your orders
+                Manage and track your orders
               </p>
-            </div>
-            {orders?.map((order, index) => (
-              <OrderCard index={index} key={order._id} order={order} />
-            ))}
-            <div className="mt-4">
+            </motion.div>
+
+            <motion.div
+              variants={containerVariants}
+              initial="hidden"
+              animate="visible"
+            >
+              {orders?.map((order, index) => (
+                <motion.div key={order._id} variants={itemVariants}>
+                  <OrderCard index={index} order={order} />
+                </motion.div>
+              ))}
+            </motion.div>
+
+            <motion.div
+              className="mt-4"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+            >
               <Pagination
                 isNext={isNext}
                 total={total || 0}
                 pageSize={Number(pageSize) || 3}
                 page={Number(page) || 1}
               />
-            </div>
+            </motion.div>
           </div>
         )}
       />
-    </div>
+    </motion.div>
   );
 }

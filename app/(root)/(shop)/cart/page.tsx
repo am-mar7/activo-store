@@ -10,6 +10,7 @@ import { redirect } from "next/navigation";
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import Loading from "@/app/loading";
+import * as motion from "motion/react-client";
 
 export const metadata: Metadata = {
   title: "Activo Store | Cart",
@@ -33,39 +34,48 @@ export default function Cart() {
 }
 
 async function CartContent() {
-  {
-    const session = await auth();
-    const userId = session?.user.id;
-    if (!userId) return redirect(ROUTES.SIGN_IN);
+  const session = await auth();
+  const userId = session?.user.id;
+  if (!userId) return redirect(ROUTES.SIGN_IN);
 
-    const { success, data, error } = await getCartItems(userId);
+  const { success, data, error } = await getCartItems(userId);
 
-    const getSubtotal = (): number => {
-      let subTotal = 0;
-      data?.forEach((item) => {
-        subTotal += item.product.newPrice * item.quantity;
-      });
-      return subTotal;
-    };
+  const getSubtotal = (): number => {
+    let subTotal = 0;
+    data?.forEach((item) => {
+      subTotal += item.product.newPrice * item.quantity;
+    });
+    return subTotal;
+  };
 
-    if (!success || error) {
-      return (
-        <div className="min-h-screen w-full flex flex-center">
-          <StateSkeleton
-            icon={<AlertCircle className="w-32 h-32 stroke-[1.5]" />}
-            title={getFriendlyErrorMessage(error?.message) || "Error"}
-            message={
-              getFriendlyErrorMessage(JSON.stringify(error?.details)) ||
-              "Something went wrong"
-            }
-            error={true}
-          />
-        </div>
-      );
-    }
+  if (!success || error) {
+    return (
+      <motion.div 
+        className="min-h-screen w-full flex flex-center"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
+      >
+        <StateSkeleton
+          icon={<AlertCircle className="w-32 h-32 stroke-[1.5]" />}
+          title={getFriendlyErrorMessage(error?.message) || "Error"}
+          message={
+            getFriendlyErrorMessage(JSON.stringify(error?.details)) ||
+            "Something went wrong"
+          }
+          error={true}
+        />
+      </motion.div>
+    );
+  }
 
-    if (data?.length === 0 || !data) {
-      return (
+  if (data?.length === 0 || !data) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5 }}
+      >
         <StateSkeleton
           icon={<PackageOpen className="w-32 h-32 stroke-[1.5]" />}
           title="Your cart feels lonely"
@@ -75,36 +85,76 @@ async function CartContent() {
             href: ROUTES.COLLECTION("all"),
           }}
         />
-      );
-    }
+      </motion.div>
+    );
+  }
 
-    return (
-      <div className="flex-center flex-col">
-        <div className="max-w-7xl px-5 w-full">
-          <h2 className="base-bold text-shadow-slate-900">
-            Your Shopping Cart
-          </h2>
-          <div className="flex flex-col sm:flex-row gap-2">
-            <div className="flex my-2 flex-col gap-2 w-full sm:w-2/3">
-              {data?.map((item) => (
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.08,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, x: -20 },
+    visible: {
+      opacity: 1,
+      x: 0,
+      transition: { duration: 0.4 },
+    },
+  };
+
+  return (
+    <motion.div 
+      className="flex-center flex-col"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+    >
+      <div className="max-w-7xl px-5 w-full">
+        <motion.h2 
+          className="base-bold text-shadow-slate-900"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+        >
+          Your Shopping Cart
+        </motion.h2>
+        <div className="flex flex-col sm:flex-row gap-2">
+          <motion.div 
+            className="flex my-2 flex-col gap-2 w-full sm:w-2/3"
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+          >
+            {data?.map((item) => (
+              <motion.div key={item.variantSku} variants={itemVariants}>
                 <CartCard
-                  key={item.variantSku}
                   product={item.product}
                   variantSku={item.variantSku}
                   initialQuantity={item.quantity}
                 />
-              ))}
-            </div>
-            <div className="w-full sm:w-1/3">
-              <CheckoutForm
-                items={data}
-                subTotal={getSubtotal()}
-                className="h-fit bg-netural-50 rounded-lg p-3 sm:p-4 md:p-5 shadow-md"
-              />
-            </div>
-          </div>
+              </motion.div>
+            ))}
+          </motion.div>
+          <motion.div 
+            className="w-full sm:w-1/3"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+          >
+            <CheckoutForm
+              items={data}
+              subTotal={getSubtotal()}
+              className="h-fit bg-netural-50 rounded-lg p-3 sm:p-4 md:p-5 shadow-md"
+            />
+          </motion.div>
         </div>
       </div>
-    );
-  }
+    </motion.div>
+  );
 }

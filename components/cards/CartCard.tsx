@@ -15,8 +15,8 @@ export default function CartCard({
   initialQuantity,
 }: Props) {
   const variant = product.variants.find((v) => v.sku === variantSku);
-  console.log("initialQuantity" , initialQuantity);
-  
+  console.log("initialQuantity", initialQuantity);
+
   return (
     <div className="bg-white rounded-lg border w-full border-slate-200 p-4 hover:shadow-md transition-shadow duration-200 relative">
       <div className="flex items-center gap-4 ">
@@ -35,9 +35,6 @@ export default function CartCard({
               <h3 className="small-semibold xs:body-semibold text-slate-900 line-clamp-2">
                 {product.title}
               </h3>
-              <p className="my-1 small-regular text-slate-700 hidden lg:block">
-                {product.description}
-              </p>
 
               {variant && (
                 <div className="flex items-center gap-2 mt-1">
@@ -58,7 +55,7 @@ export default function CartCard({
               )}
             </div>
           </div>
-          
+
           <div className="flex-between">
             <span className="small-medium xs: xs:base-medium font-bold text-slate-900">
               EGP {product.newPrice.toFixed(2)}
