@@ -18,6 +18,7 @@ import { formatPrice } from "@/lib/utils";
 import { RouteParams } from "@/types/global";
 import { Suspense } from "react";
 import type { Metadata } from "next";
+import * as motion from "motion/react-client";
 
 export async function generateMetadata({
   params,
@@ -97,34 +98,85 @@ async function ProductDetailsContent({ params }: RouteParams) {
   } = product;
 
   return (
-    <div className="flex-center flex-col">
-      <div className="max-w-7xl w-full flex flex-col md:flex-row px-5 my-4">
-        <div className="w-full md:w-1/2">
+    <motion.div 
+      className="flex-center flex-col"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+    >
+      <div className="max-w-7xl w-full flex flex-col md:flex-row px-5 my-4 gap-6">
+        <motion.div 
+          className="w-full md:w-1/2"
+          initial={{ opacity: 0, x: -30 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{ duration: 0.6, type: "spring", stiffness: 100 }}
+        >
           <ProductImageCarousel images={images} />
-        </div>
-        <div className="w-full mt-6 md:mt-0 md:w-1/2 md:px-15 overflow-y-auto no-scrollbar max-h-180">
-          <p className="text-lg md:text-xl flex gap-3">
-            {oldPrice && <span className="line-through">LE {oldPrice}</span>}
-            <span>LE {formatPrice(newPrice, "EGP")}</span>
-          </p>
-          <h1 className="h3-semibold text-slate-900">{title}</h1>
-          <p className="text-slate-600 body-medium whitespace-pre-line md:max-h-50 lg:max-h-60 2xl:max-h-70 overflow-y-auto custom-scrollbar ">
+        </motion.div>
+
+        <motion.div 
+          className="w-full md:w-1/2 md:pl-8 flex flex-col"
+          initial={{ opacity: 0, x: 30 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{ duration: 0.6, delay: 0.2, type: "spring", stiffness: 100 }}
+        >
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.4, delay: 0.3 }}
+          >
+            <p className="text-lg md:text-xl flex gap-3">
+              {oldPrice && <span className="line-through text-gray-500">LE {oldPrice}</span>}
+              <span className="font-semibold">LE {formatPrice(newPrice, "EGP")}</span>
+            </p>
+            <h1 className="h3-semibold text-slate-900">{title}</h1>
+          </motion.div>
+
+          <motion.p 
+            className="text-slate-600 body-medium whitespace-pre-line md:max-h-50 lg:max-h-60 2xl:max-h-70 overflow-y-auto custom-scrollbar"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.4, delay: 0.4 }}
+          >
             {description}
-          </p>
-          {guide && <SizeGuide className="my-3" image={guide} />}
-          <AddToCartForm
-            variants={variants}
-            _id={id}
-            images={images}
-            newPrice={newPrice}
-            title={title}
-          />
-        </div>
+          </motion.p>
+
+          {guide && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4, delay: 0.5 }}
+            >
+              <SizeGuide className="my-3" image={guide} />
+            </motion.div>
+          )}
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.4, delay: 0.6 }}
+          >
+            <AddToCartForm
+              variants={variants}
+              _id={id}
+              images={images}
+              newPrice={newPrice}
+              title={title}
+            />
+          </motion.div>
+        </motion.div>
       </div>
+
       <Suspense fallback={<Loading />}>
         <CategoriedProducts categories={category} id={id} />
       </Suspense>
-    </div>
+    </motion.div>
   );
 }
 
@@ -147,9 +199,24 @@ async function CategoriedProducts({
   allProducts = allProducts.filter((p) => p?._id !== id);
 
   return (
-    <div className="flex-center flex-col w-full">
+    <motion.div 
+      className="flex-center flex-col w-full"
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.2 }}
+      transition={{ duration: 0.6, type: "spring", stiffness: 100 }}
+    >
       <div className="relative my-5 w-full max-w-7xl px-5">
-        <h1 className="h3-semibold text-slate-800 my-2">You may also like</h1>
+        <motion.h1 
+          className="h3-semibold text-slate-800 my-2"
+          initial={{ opacity: 0, x: -20 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+        >
+          You may also like
+        </motion.h1>
+
         <Carousel
           className="w-full"
           opts={{
@@ -165,13 +232,25 @@ async function CategoriedProducts({
                     key={index}
                     className="pl-2 md:pl-4 basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5"
                   >
-                    <ProductCard product={product} />
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.8, y: 20 }}
+                      whileInView={{ opacity: 1, scale: 1, y: 0 }}
+                      viewport={{ once: true, amount: 0.3 }}
+                      transition={{
+                        duration: 0.5,
+                        delay: (index % 5) * 0.1,
+                        type: "spring",
+                        stiffness: 100,
+                      }}
+                    >
+                      <ProductCard product={product} />
+                    </motion.div>
                   </CarouselItem>
                 )
             )}
           </CarouselContent>
         </Carousel>
       </div>
-    </div>
+    </motion.div>
   );
 }

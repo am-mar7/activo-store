@@ -93,41 +93,28 @@ async function CategoriedProductsContent({
   });
   const { items: products, isNext, total } = data || {};
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.05,
-      },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.4 },
-    },
-  };
-
   return (
-    <motion.div 
+    <motion.div
       className="flex-center flex-col"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
-      <div className="max-w-7xl px-5 w-full">
-        <motion.h2 
-          className="h2-semibold"
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
+      <div className="max-w-7xl px-5 w-full py-5">
+        <motion.div
+          initial={{ opacity: 0, y: -30, scale: 0.9 }}
+          whileInView={{ opacity: 1, y: 0, scale: 1 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{
+            duration: 0.6,
+            delay: 0.1,
+            type: "spring",
+            stiffness: 100,
+          }}
         >
-          {slug}
-        </motion.h2>
+          <h2 className="h2-semibold">{slug}</h2>
+        </motion.div>
+
         <DataRenderer
           success={success}
           error={error}
@@ -135,23 +122,35 @@ async function CategoriedProductsContent({
           empty={{ title: "No Products Found", message: "" }}
           render={(data) => (
             <>
-              <motion.div 
-                className="mt-6 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4"
-                variants={containerVariants}
-                initial="hidden"
-                animate="visible"
-              >
-                {data?.map((product) => (
-                  <motion.div key={product._id} variants={itemVariants}>
+              <div className="mt-3 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6">
+                {data?.map((product, index) => (
+                  <motion.div
+                    key={product._id}
+                    initial={{ opacity: 0, scale: 0.8, y: 30 }}
+                    whileInView={{ opacity: 1, scale: 1, y: 0 }}
+                    viewport={{ once: true, amount: 0.3 }}
+                    transition={{
+                      duration: 0.5,
+                      delay: (index % 10) * 0.05, // Stagger within groups of 10
+                      type: "spring",
+                      stiffness: 100,
+                    }}
+                    whileHover={{ y: -8, scale: 1.02 }}
+                  >
                     <ProductCard product={product} />
                   </motion.div>
                 ))}
-              </motion.div>
-              <motion.div 
-                className="my-4"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.3 }}
+              </div>
+              <motion.div
+                className="my-8"
+                initial={{ opacity: 0, y: 30, scale: 0.95 }}
+                whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                viewport={{ once: true, amount: 0.3 }}
+                transition={{
+                  duration: 0.5,
+                  type: "spring",
+                  stiffness: 80,
+                }}
               >
                 <Pagination
                   isNext={isNext}

@@ -32,28 +32,9 @@ export default function AddressesPage() {
 async function AddressesPageContent() {
   const { success, data, error } = await getAddresses();
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-      },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.5 },
-    },
-  };
-
   return (
     <motion.div
-      className="mb-5 bg-linear-to-br from-neutral-100 to-neutral-200 py-8 px-4 sm:px-6 lg:px-8"
+      className="mb-5 rounded-2xl bg-linear-to-br from-neutral-100 to-neutral-200 py-8 px-4 sm:px-6 lg:px-8"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
@@ -62,7 +43,8 @@ async function AddressesPageContent() {
         <motion.div
           className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8"
           initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.3 }}
           transition={{ duration: 0.5, delay: 0.2 }}
         >
           <div className="self-start">
@@ -74,10 +56,11 @@ async function AddressesPageContent() {
 
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true, amount: 0.3 }}
             transition={{ duration: 0.4, delay: 0.3 }}
           >
-            <AddAddressForm className="md:w-1/2" toggleBtn={true} />
+            <AddAddressForm toggleBtn={true} />
           </motion.div>
         </motion.div>
 
@@ -95,16 +78,19 @@ async function AddressesPageContent() {
             },
           }}
           render={(addresses) => (
-            <motion.div
-              className="space-y-4"
-              variants={containerVariants}
-              initial="hidden"
-              animate="visible"
-            >
+            <div className="space-y-4">
               {addresses?.map((address, index) => (
                 <motion.div
                   key={address._id?.toString() || index}
-                  variants={itemVariants}
+                  initial={{ opacity: 0, y: 30, scale: 0.95 }}
+                  whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                  viewport={{ once: true, amount: 0.3 }}
+                  transition={{
+                    duration: 0.5,
+                    delay: index * 0.1,
+                    type: "spring",
+                    stiffness: 100,
+                  }}
                   className={`bg-white rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 border-2 ${
                     address.isDefault
                       ? "border-primary-500"
@@ -117,8 +103,9 @@ async function AddressesPageContent() {
                       <motion.div
                         className="flex-center gap-3"
                         initial={{ opacity: 0, x: -10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.4, delay: index * 0.1 + 0.3 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true, amount: 0.3 }}
+                        transition={{ duration: 0.4, delay: index * 0.1 + 0.2 }}
                       >
                         <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center shrink-0">
                           <Home className="w-5 h-5 text-blue-600" />
@@ -137,8 +124,9 @@ async function AddressesPageContent() {
                       <motion.div
                         className="flex-center gap-3"
                         initial={{ opacity: 0, x: -10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.4, delay: index * 0.1 + 0.4 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true, amount: 0.3 }}
+                        transition={{ duration: 0.4, delay: index * 0.1 + 0.3 }}
                       >
                         <div className="w-10 h-10 rounded-lg bg-green-50 flex items-center justify-center shrink-0">
                           <MapPin className="w-5 h-5 text-green-600" />
@@ -157,8 +145,9 @@ async function AddressesPageContent() {
                       <motion.div
                         className="flex-center gap-3"
                         initial={{ opacity: 0, x: -10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.4, delay: index * 0.1 + 0.5 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true, amount: 0.3 }}
+                        transition={{ duration: 0.4, delay: index * 0.1 + 0.4 }}
                       >
                         <div className="w-10 h-10 rounded-lg bg-purple-50 flex items-center justify-center shrink-0">
                           <Phone className="w-5 h-5 text-purple-600" />
@@ -177,8 +166,9 @@ async function AddressesPageContent() {
                     <motion.div
                       className="shrink-0"
                       initial={{ opacity: 0, scale: 0.8 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ duration: 0.4, delay: index * 0.1 + 0.6 }}
+                      whileInView={{ opacity: 1, scale: 1 }}
+                      viewport={{ once: true, amount: 0.3 }}
+                      transition={{ duration: 0.4, delay: index * 0.1 + 0.5 }}
                     >
                       {!address.isDefault ? (
                         <SetDefaultAddressBtn
@@ -196,7 +186,7 @@ async function AddressesPageContent() {
                   </div>
                 </motion.div>
               ))}
-            </motion.div>
+            </div>
           )}
         />
       </div>

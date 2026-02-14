@@ -49,28 +49,9 @@ async function ProfileContent({ searchParams }: RouteParams) {
   });
   const { items: orders, isNext, total } = data || {};
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-      },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.5 },
-    },
-  };
-
   return (
     <motion.div
-      className="mb-5 bg-linear-to-br from-neutral-100 to-neutral-200 py-8 px-4 sm:px-6 lg:px-8"
+      className="mb-5 rounded-2xl bg-linear-to-br from-neutral-100 to-neutral-200 py-8 px-4 sm:px-6 lg:px-8"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
@@ -85,10 +66,11 @@ async function ProfileContent({ searchParams }: RouteParams) {
           button: { text: "Browse cart", href: ROUTES.CART },
         }}
         render={(orders) => (
-          <div className="space-y-2 py-8 px-4 sm:px-6 lg:px-8 mb-5 bg-linear-to-br from-neutral-100 to-neutral-200">
+          <div className="space-y-2 mb-5 bg-linear-to-br from-neutral-100 to-neutral-200">
             <motion.div
               initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.3 }}
               transition={{ duration: 0.5, delay: 0.2 }}
             >
               <h1 className="h2-bold text-neutral-900">My Orders</h1>
@@ -97,23 +79,35 @@ async function ProfileContent({ searchParams }: RouteParams) {
               </p>
             </motion.div>
 
-            <motion.div
-              variants={containerVariants}
-              initial="hidden"
-              animate="visible"
-            >
+            <div className="space-y-3">
               {orders?.map((order, index) => (
-                <motion.div key={order._id} variants={itemVariants}>
+                <motion.div
+                  key={order._id}
+                  initial={{ opacity: 0, y: 30, scale: 0.95 }}
+                  whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                  viewport={{ once: true, amount: 0.2 }}
+                  transition={{
+                    duration: 0.5,
+                    delay: index * 0.1,
+                    type: "spring",
+                    stiffness: 100,
+                  }}
+                >
                   <OrderCard index={index} order={order} />
                 </motion.div>
               ))}
-            </motion.div>
+            </div>
 
             <motion.div
               className="mt-4"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.4 }}
+              initial={{ opacity: 0, y: 30, scale: 0.95 }}
+              whileInView={{ opacity: 1, y: 0, scale: 1 }}
+              viewport={{ once: true, amount: 0.3 }}
+              transition={{
+                duration: 0.5,
+                type: "spring",
+                stiffness: 80,
+              }}
             >
               <Pagination
                 isNext={isNext}

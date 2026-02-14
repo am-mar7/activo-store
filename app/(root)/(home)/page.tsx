@@ -65,7 +65,7 @@ export const metadata: Metadata = {
 export default function Home() {
   return (
     <motion.div 
-      className="relative w-full h-125 md:h-150 lg:h-175"
+      className="relative w-full min-h-screen"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
@@ -73,8 +73,9 @@ export default function Home() {
       <motion.section 
         className="my-5 sm:my-10 px-5 sm:px-10 overflow-hidden"
         initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.2 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.2 }}
+        transition={{ duration: 0.6 }}
       >
         <h1 className="h2-bold mb-5">Categories</h1>
         <Suspense fallback={<Loading />}>
@@ -85,8 +86,9 @@ export default function Home() {
       <motion.section 
         className="my-5 sm:my-10 px-5 sm:px-10 overflow-hidden"
         initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.4 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.2 }}
+        transition={{ duration: 0.6 }}
       >
         <h1 className="h2-bold mb-5">Best sellers</h1>
         <Suspense fallback={<Loading />}>
@@ -104,81 +106,79 @@ async function Categories() {
     return <TryAgain message="Failed to load the categories" />;
 
   const categories = data.categories;
-  
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-      },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.5 },
-    },
-  };
 
   return (
-    <motion.div 
-      className="w-full"
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
-    >
+    <div className="w-full">
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3 sm:gap-4 lg:gap-6">
-        {categories.map((category) => (
-          <motion.div key={category._id} variants={itemVariants}>
+        {categories.map((category, index) => (
+          <motion.div 
+            key={category._id}
+            initial={{ opacity: 0, scale: 0.8, y: 30 }}
+            whileInView={{ opacity: 1, scale: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{
+              duration: 0.6,
+              delay: (index % 6) * 0.1, // Stagger in groups of 6
+              type: "spring",
+              stiffness: 100,
+            }}
+            whileHover={{ y: -8 }}
+          >
             <Link
               href={ROUTES.CATEGORY(category.slug)}
-              className="relative group overflow-hidden rounded-lg aspect-3/4 block transition-transform duration-300 hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+              className="relative group overflow-hidden rounded-xl aspect-3/4 block shadow-lg hover:shadow-2xl transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
             >
               <Image
                 src={category.image}
                 alt={category.name}
                 fill
                 sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, (max-width: 1280px) 25vw, (max-width: 1536px) 20vw, 16vw"
-                className="object-cover transition-transform duration-500 ease-out group-hover:scale-110"
+                className="object-cover transition-all duration-700 ease-out group-hover:scale-125 group-hover:rotate-2 brightness-100 group-hover:brightness-110"
               />
 
-              {/* Gradient overlay */}
-              <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/20 to-transparent group-hover:from-black/80 transition-all duration-300" />
+              {/* Multi-layer gradient overlay */}
+              <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/30 to-transparent group-hover:from-black/90 group-hover:via-black/40 transition-all duration-500" />
+              
+              {/* Animated border glow */}
+              <div className="absolute inset-0 border-2 border-primary/0 group-hover:border-primary/50 rounded-xl transition-all duration-500" />
+
+              {/* Shimmer effect */}
+              <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-linear-to-r from-transparent via-white/20 to-transparent" />
 
               {/* Content */}
-              <div className="absolute inset-x-0 bottom-0 p-3 sm:p-4">
-                <h2 className="text-white text-sm sm:text-base font-semibold leading-tight flex items-center gap-1.5 sm:gap-2">
+              <div className="absolute inset-x-0 bottom-0 p-3 sm:p-4 transform group-hover:translate-y-0 transition-transform duration-300">
+                <h2 className="text-white text-sm sm:text-base font-bold leading-tight flex items-center gap-1.5 sm:gap-2 drop-shadow-lg">
                   <span className="line-clamp-2">{category.name}</span>
                   <span
-                    className="text-white opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300 text-lg shrink-0"
+                    className="text-white opacity-0 group-hover:opacity-100 group-hover:translate-x-2 transition-all duration-300 text-xl shrink-0"
                     aria-hidden="true"
                   >
                     →
                   </span>
                 </h2>
+                <p className="text-white/80 text-xs mt-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-100">
+                  Shop now
+                </p>
               </div>
             </Link>
           </motion.div>
         ))}
       </div>
-    </motion.div>
+    </div>
   );
 }
 
 async function BestSellers() {
   const { success, data: products } = await getBestSellers();
   if (!success || !products)
-    return <TryAgain message="Failed to load the categories" />;
+    return <TryAgain message="Failed to load the products" />;
 
   return (
     <motion.div 
       className="relative"
       initial={{ opacity: 0, x: -20 }}
-      animate={{ opacity: 1, x: 0 }}
+      whileInView={{ opacity: 1, x: 0 }}
+      viewport={{ once: true, amount: 0.2 }}
       transition={{ duration: 0.6 }}
     >
       <Carousel
@@ -195,9 +195,15 @@ async function BestSellers() {
               className="pl-2 md:pl-4 basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5 xl:basis-1/6"
             >
               <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.4, delay: index * 0.05 }}
+                initial={{ opacity: 0, scale: 0.8, rotateY: -15 }}
+                whileInView={{ opacity: 1, scale: 1, rotateY: 0 }}
+                viewport={{ once: true, amount: 0.3 }}
+                transition={{
+                  duration: 0.6,
+                  delay: (index % 6) * 0.08, // Stagger in groups of 6
+                  type: "spring",
+                  stiffness: 100,
+                }}
               >
                 <ProductCard product={product} />
               </motion.div>
