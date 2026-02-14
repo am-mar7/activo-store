@@ -60,12 +60,17 @@ export const DashboardLinks = [
 ];
 
 export const sizes = [
+  { value: "2xs", label: "2XS" },
+  { value: "xs", label: "XS" },
+  { value: "s", label: "S" },
   { value: "m", label: "M" },
   { value: "l", label: "L" },
   { value: "xl", label: "XL" },
   { value: "xxl", label: "XXL" },
   { value: "3xl", label: "3XL" },
   { value: "4xl", label: "4XL" },
+  { value: "5xl", label: "5XL" },
+  { value: "6xl", label: "6XL" },
 ];
 
 export const colors = [
@@ -86,4 +91,24 @@ export const colors = [
   { value: "olivegreen", label: "Olive Green", hex: "#556B2F" },
   { value: "grey", label: "Grey", hex: "#6B7280" },
   { value: "red", label: "Red", hex: "#DC2626" },
+
+  // Dual-color approximations
+  { value: "white_black", label: "White & Black", hex: "#808080" },
+  { value: "white_grey", label: "White & Gray", hex: "#C0C0C0" },
+  { value: "black_grey", label: "Black & Gray", hex: "#404040" },
+  { value: "black_blue", label: "Black & Blue", hex: "#000080" },
+  { value: "white_blue", label: "White & Blue", hex: "#7F7FFF" },
+  { value: "black_beige", label: "Black & Beige", hex: "#7A7A5E" },
+  { value: "white_beige", label: "White & Beige", hex: "#FAFAE6" },
+  { value: "black_red", label: "Black & Red", hex: "#800000" },
+  { value: "white_red", label: "White & Red", hex: "#FF8080" },
+  { value: "black_green", label: "Black & Green", hex: "#004000" },
+  { value: "white_green", label: "White & Green", hex: "#80FF80" },
+  { value: "black_pink", label: "Black & Pink", hex: "#7F6065" },
+  { value: "white_pink", label: "White & Pink", hex: "#FFBFD9" },
+  { value: "black_gold", label: "Black & Gold", hex: "#7F6B00" },
+  { value: "white_gold", label: "White & Gold", hex: "#FFFFB3" },
+  { value: "black_mintgreen", label: "Black & Mint Green", hex: "#4CFF4C" },
+  { value: "white_mintgreen", label: "White & Mint Green", hex: "#CFFF CFFF" },
 ];
+
