@@ -1,6 +1,5 @@
 import ROUTES from "@/constants/routes";
 import Link from "next/link";
-import { LiaOpencart } from "react-icons/lia";
 import SearchToggler from "../buttons/SearchToggler";
 import {
   NavigationMenu,
@@ -16,6 +15,7 @@ import MobileNavigation from "./MobileNavigation";
 import { cn } from "@/lib/utils";
 import { auth } from "@/auth";
 import UserAvatar from "../UserAvatar";
+import CartButton from "../buttons/CartButton";
 
 interface Props {
   className?: string;
@@ -107,7 +107,7 @@ export default async function Navbar({ className, isHome = false }: Props) {
               </NavigationMenuTrigger>
               <NavigationMenuContent className="bg-neutral-50! z-100">
                 <ul className="grid w-50 gap-1 p-0.5">
-                  {["Summer", "Winter" , "Summer"].map((item, idx) => (
+                  {["Summer", "Winter", "Summer"].map((item, idx) => (
                     <li key={idx}>
                       <NavigationMenuLink asChild>
                         <Link
@@ -142,13 +142,7 @@ export default async function Navbar({ className, isHome = false }: Props) {
           </Link>
         ) : (
           <>
-            <Link href={ROUTES.CART} className="flex-center mr-3 sm:mr-4">
-              <LiaOpencart
-                className={`w-7 h-7 ${
-                  isHome ? "text-slate-100" : "text-slate-900"
-                }`}
-              />
-            </Link>
+            <CartButton isHome={isHome} />
             <Link href={ROUTES.PROFILE} className="flex-center">
               <UserAvatar isHome={isHome} user={user} />
             </Link>
