@@ -17,18 +17,18 @@ export default function SnowEffect() {
   const [flakes, setFlakes] = useState<Flake[]>([]);
 
   useEffect(() => {
-    const snowflakeCount = 120;
+    const snowflakeCount = Math.floor(window.innerWidth / 30);
 
     const generatedFlakes: Flake[] = Array.from(
       { length: snowflakeCount },
       (_, i) => ({
         id: i,
         left: Math.random() * 100,
-        size: Math.random() * 18 + 10,
-        duration: Math.random() * 8 + 12,
+        size: Math.random() * 8 + 10,
+        duration: Math.random() * 12 + 18,
         delay: Math.random() * 10,
         opacity: Math.random() * 0.3 + 0.5,
-        lightness: Math.random() * 4 + 65, 
+        lightness: Math.random() * 3 + 50,
       })
     );
 
