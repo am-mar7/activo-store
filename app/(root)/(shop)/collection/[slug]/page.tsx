@@ -33,7 +33,8 @@ export async function generateMetadata({
       ],
       locale: "en_US",
       type: "website",
-    },    twitter: {
+    },
+    twitter: {
       card: "summary_large_image",
       title: `Activo Store | ${slug} collection`,
       description: `Discover the ${slug} collection at Activo Store.`,
@@ -99,8 +100,7 @@ async function CollectionsContent({ params, searchParams }: RouteParams) {
           <p className="mb-4 max-w-3xl whitespace-pre-line small-medium text-muted-foreground">
             Explore our <strong>{slug}</strong> collection at Activo Store. Find
             premium <strong>{slug}</strong> crafted for comfort, performance,
-            and style. Shop high-quality activewear, athletic clothing, and
-            lifestyle apparel with free shipping on orders over $50.
+            and style. Shop high-quality activewear, athletic clothing.
           </p>
         </motion.div>
 

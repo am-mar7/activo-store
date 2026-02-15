@@ -4,6 +4,7 @@ import Maintenance from "@/components/Maintanenance";
 import { Breadcrumbs } from "@/components/navigation/BreadCrumb";
 import { FastNavigation } from "@/components/navigation/FastNavigaion";
 import Navbar from "@/components/navigation/Navbar";
+import SnowEffect from "@/components/SnowEffect";
 import TopBanner from "@/components/TopBanner";
 import TryAgain from "@/components/TryAgain";
 import { getFriendlyErrorMessage } from "@/lib/error-messages";
@@ -58,6 +59,7 @@ async function ShopLayoutContent({
       <div className="flex flex-center mt-2">
         <Breadcrumbs className="w-full max-w-7xl px-5" />
       </div>
+      <SnowEffect />
       <div className="min-h-[60vh]">{children}</div>
       <FastNavigation />
       <Footer />

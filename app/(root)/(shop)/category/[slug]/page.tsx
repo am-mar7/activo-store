@@ -134,8 +134,7 @@ async function CategoriedProductsContent({
           <p className="mb-4 max-w-3xl whitespace-pre-line small-medium text-muted-foreground">
             Explore our <strong>{slug}</strong> at Activo Store. Find premium{" "}
             <strong>{slug}</strong> crafted for comfort, performance, and style.
-            Shop high-quality activewear, athletic clothing, and lifestyle
-            apparel with free shipping on orders over $50.
+            Shop high-quality activewear, athletic clothing, and lifestyle.
           </p>
         </motion.div>
 

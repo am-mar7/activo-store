@@ -2,8 +2,8 @@
 import { LogOut } from "lucide-react";
 import { useState } from "react";
 import { Button } from "../ui/button";
-import { Logout } from "@/lib/server actions/auth.action";
 import ROUTES from "@/constants/routes";
+import { signOut } from "next-auth/react";
 
 interface Props {
   isMobile?: boolean;
@@ -22,9 +22,12 @@ export default function LogoutBtn({
 
   const handleLogOut = async () => {
     setLoading(true);
-    await Logout(redirection);
-    setLoading(false);
+    await signOut({ 
+      callbackUrl: redirection,
+      redirect: true 
+    });
   };
+  
   return (
     <Button
       disabled={loading}
@@ -32,10 +35,10 @@ export default function LogoutBtn({
       className={
         `py-3 w-full btn-secondary h3-semibold hover:bg-red-600! transition-colors hover:text-neutral-50! group delay-75 ${
           loading ? "opacity-40" : ""
-        }` + className
+        } ${className || ""}`
       }
     >
-      <LogOut />
+      <LogOut className={loading ? "animate-spin" : ""} />
       <span className={isMobile ? "" : `max-${removeTxtAt}:hidden`}>
         {loading ? "Logging out..." : "Logout"}
       </span>

@@ -9,6 +9,7 @@ import TopBanner from "@/components/TopBanner";
 import Maintenance from "@/components/Maintanenance";
 import { Suspense } from "react";
 import Loading from "@/app/loading";
+import SnowEffect from "@/components/SnowEffect";
 
 export default function HomeLayout({
   children,
@@ -84,7 +85,7 @@ async function HomeLayoutContent({ children }: { children: React.ReactNode }) {
         <div className="absolute bottom-0 right-0 w-32 h-32 bg-primary-600/30 rounded-full blur-3xl animate-pulse-slow"></div>
         <div className="absolute top-10 left-10 w-24 h-24 bg-primary-400/20 rounded-full blur-2xl animate-pulse-slow delay-200"></div>
       </div>
-
+      <SnowEffect />
       {children}
       <FastNavigation />
     </div>
