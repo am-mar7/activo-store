@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Snowflake } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface Flake {
   id: number;
@@ -13,7 +14,7 @@ interface Flake {
   lightness: number;
 }
 
-export default function SnowEffect() {
+export default function SnowEffect({ className }: { className?: string }) {
   const [flakes, setFlakes] = useState<Flake[]>([]);
 
   useEffect(() => {
@@ -37,7 +38,12 @@ export default function SnowEffect() {
   }, []);
 
   return (
-    <div className="fixed inset-0 pointer-events-none z-50 overflow-hidden">
+    <div
+      className={cn(
+        className,
+        "fixed inset-0 pointer-events-none z-50 overflow-hidden"
+      )}
+    >
       {flakes.map((flake) => (
         <div
           key={flake.id}
