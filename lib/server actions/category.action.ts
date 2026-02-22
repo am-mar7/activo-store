@@ -6,6 +6,7 @@ import {
   CategoryType,
   EditCategoryParams,
   ErrorResponse,
+  PaginatedActionResponse,
   PaginatedSearchParams,
 } from "@/types/global";
 import actionHandler from "../handlers/action";
@@ -55,7 +56,7 @@ export async function addCatergory(
     if (!category) throw new Error("Failed to create category");
 
     revalidatePath(DASHBOARDROUTES.CATEGORYS);
-    revalidatePath("/" , "layout");
+    revalidatePath("/", "layout");
     return { success: true, data: JSON.parse(JSON.stringify(category)) };
   } catch (error) {
     return handleError(error) as ErrorResponse;
@@ -64,7 +65,7 @@ export async function addCatergory(
 
 export async function getCategories(
   params: PaginatedSearchParams
-): Promise<ActionResponse<{ categories: CategoryType[]; isNext: boolean }>> {
+): Promise<PaginatedActionResponse<CategoryType>> {
   const validated = await actionHandler({
     params,
     schema: PaginatedSearchParamsSchema,
@@ -94,8 +95,9 @@ export async function getCategories(
       return {
         success: true,
         data: {
-          categories: JSON.parse(JSON.stringify(categories)),
+          items: JSON.parse(JSON.stringify(categories)),
           isNext: false,
+          total: categories.length,
         },
       };
     }
@@ -116,14 +118,15 @@ export async function getCategories(
     return {
       success: true,
       data: {
-        categories: JSON.parse(JSON.stringify(categories)),
+        items: JSON.parse(JSON.stringify(categories)),
         isNext,
+        total: categoriesCount,
       },
     };
   } catch (error) {
     return handleError(error) as ErrorResponse;
   }
-};
+}
 
 export async function deleteCategory(id: string): Promise<ActionResponse> {
   const session = await auth();
@@ -179,7 +182,7 @@ export async function deleteCategory(id: string): Promise<ActionResponse> {
     ]);
 
     revalidatePath(DASHBOARDROUTES.CATEGORYS);
-    revalidatePath("/" , "layout");
+    revalidatePath("/", "layout");
 
     return { success: true };
   } catch (error) {
@@ -254,7 +257,7 @@ export async function editCategory(
 
     await category.save();
     revalidatePath(DASHBOARDROUTES.CATEGORYS);
-    revalidatePath("/" , "layout");
+    revalidatePath("/", "layout");
     return { success: true };
   } catch (error) {
     return handleError(error) as ErrorResponse;

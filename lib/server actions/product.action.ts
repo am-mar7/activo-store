@@ -185,7 +185,7 @@ export async function editProduct(
 
 export async function getProducts(
   params: PaginatedSearchParams
-): Promise<ActionResponse<{ products: ProductType[]; isNext: boolean }>> {
+): Promise<PaginatedActionResponse<ProductType>> {
   const validated = await actionHandler({
     params,
     schema: PaginatedSearchParamsSchema,
@@ -225,7 +225,7 @@ export async function getProducts(
 
     return {
       success: true,
-      data: { products: JSON.parse(JSON.stringify(products)), isNext },
+      data: { items: JSON.parse(JSON.stringify(products)), isNext , total: count},
     };
   } catch (error) {
     return handleError(error) as ErrorResponse;
