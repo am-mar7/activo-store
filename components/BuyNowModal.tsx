@@ -110,7 +110,6 @@ export default function BuyNowModal({
         orderItems,
       };
 
-      // Save new address or update default
       if (!isExisting) {
         const formattedAddress = formatAddress(address);
         const existingAddress = savedAddresses.find(
@@ -141,7 +140,7 @@ export default function BuyNowModal({
       }
 
       // Place order
-      const { success, error } = await PlaceOrder(params);
+      const { success, error } = await PlaceOrder(params, "BUY_NOW");
 
       if (success) {
         toast.success("Order placed successfully!");

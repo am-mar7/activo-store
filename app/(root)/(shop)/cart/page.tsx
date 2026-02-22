@@ -5,12 +5,14 @@ import CheckoutForm from "@/components/forms/CheckoutForm";
 import ROUTES from "@/constants/routes";
 import { getFriendlyErrorMessage } from "@/lib/error-messages";
 import { getCartItems } from "@/lib/server actions/cart.action";
-import { AlertCircle, PackageOpen } from "lucide-react";
+import { PackageOpen } from "lucide-react";
 import { redirect } from "next/navigation";
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import Loading from "@/app/loading";
 import * as motion from "motion/react-client";
+import { getSettings } from "@/lib/server actions/settings.action";
+import TryAgain from "@/components/TryAgain";
 
 export const metadata: Metadata = {
   title: "Activo Store | Cart",
@@ -38,7 +40,10 @@ async function CartContent() {
   const userId = session?.user.id;
   if (!userId) return redirect(ROUTES.SIGN_IN);
 
-  const { success, data, error } = await getCartItems(userId);
+  const [
+    { success, data, error },
+    { data: settings, success: settingsSucess, error: settingsError },
+  ] = await Promise.all([getCartItems(userId), getSettings()]);
 
   const getSubtotal = (): number => {
     let subTotal = 0;
@@ -48,32 +53,11 @@ async function CartContent() {
     return subTotal;
   };
 
-  if (!success || error) {
-    return (
-      <motion.div
-        className="min-h-screen w-full flex flex-center"
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.5, type: "spring", stiffness: 100 }}
-      >
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-        >
-          <StateSkeleton
-            icon={<AlertCircle className="w-32 h-32 stroke-[1.5]" />}
-            title={getFriendlyErrorMessage(error?.message) || "Error"}
-            message={
-              getFriendlyErrorMessage(JSON.stringify(error?.details)) ||
-              "Something went wrong"
-            }
-            error={true}
-          />
-        </motion.div>
-      </motion.div>
-    );
-  }
+  if (!success || error)
+    return <TryAgain message={getFriendlyErrorMessage(error)} />;
+
+  if (!settingsSucess || settingsError)
+    return <TryAgain message={getFriendlyErrorMessage(settingsError)} />;
 
   if (data?.length === 0 || !data) {
     return (
@@ -157,9 +141,9 @@ async function CartContent() {
             initial="hidden"
             animate="visible"
           >
-            {data?.map((item) => (
+            {data?.map((item, idx) => (
               <motion.div
-                key={item.variantSku}
+                key={item.variantSku || idx}
                 variants={itemVariants}
                 whileHover={{ x: 5, scale: 1.01 }}
                 transition={{ duration: 0.2 }}
@@ -190,6 +174,7 @@ async function CartContent() {
               className="sticky top-0 "
             >
               <CheckoutForm
+                shippingCost={settings?.shipping.cost || 0}
                 items={data}
                 subTotal={getSubtotal()}
                 className="h-fit bg-netural-50 rounded-lg p-3 sm:p-4 md:p-5 shadow-md"

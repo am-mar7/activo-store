@@ -31,7 +31,8 @@ import { auth } from "@/auth";
 import { IOrderDoc } from "@/models/order.model";
 
 export async function PlaceOrder(
-  params: upsertOrderParams
+  params: upsertOrderParams,
+  type: "BUY_NOW" | "PLACE_ORDER" = "PLACE_ORDER"
 ): Promise<ActionResponse> {
   const validated = await actionHandler({
     params,
@@ -66,7 +67,8 @@ export async function PlaceOrder(
     );
     if (!order) throw new Error("Failed to place order");
 
-    await Cart.findOneAndUpdate({ userId }, { cartItems: [] }, { session });
+    if (type === "PLACE_ORDER")
+      await Cart.findOneAndUpdate({ userId }, { cartItems: [] }, { session });
 
     await session.commitTransaction();
     revalidatePath(ROUTES.CART);
