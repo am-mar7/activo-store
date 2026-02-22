@@ -3,7 +3,7 @@ import mongoose, { models, Schema, Types, Document } from "mongoose";
 
 export interface IOrderItem {
   product: Types.ObjectId;
-  variantSku: string;
+  variantSku?: string;
   variantColor?: string;
   variantSize?: string;
   productTitle: string;
@@ -16,7 +16,7 @@ export interface IOrderItem {
 const OrderItemSchema = new mongoose.Schema<IOrderItem>(
   {
     product: { type: Schema.Types.ObjectId, ref: "product", required: true },
-    variantSku: { type: String, required: true },
+    variantSku: { type: String },
     variantColor: { type: String },
     variantSize: { type: String },
     productTitle: { type: String, required: true },

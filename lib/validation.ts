@@ -94,8 +94,9 @@ export const ProductSchema = z
     category: z
       .array(z.string().min(1, "Category ID is required"))
       .min(1, "At least one category is required"),
-    oldPrice: z.number().min(0, "price can't be negitave").optional(),
-    newPrice: z.number().min(0, "price can't be negitave"),
+    oldPrice: z.number().min(0, "price can't be negative").optional(),
+    newPrice: z.number().min(0, "price can't be negative"),
+    stock: z.number().min(0, "Stock can't be negative").optional(),
     variants: z
       .array(
         z.object({
@@ -106,7 +107,7 @@ export const ProductSchema = z
           image: z.string().url("Invalid image URL").optional(),
         })
       )
-      .min(1, "At least one variant is required"),
+      .optional(),
     collection: z.enum(["winter", "summer", "both"]),
     images: z
       .array(
@@ -125,15 +126,25 @@ export const ProductSchema = z
   })
   .refine(
     (data) => {
-      // If oldPrice exists, it must be greater than newPrice
       if (data.oldPrice !== undefined) {
         return data.oldPrice > data.newPrice;
       }
       return true;
     },
     {
-      message: "Compare at price must be greater than the selling price", // old price must be higher
+      message: "Compare at price must be greater than the selling price",
       path: ["oldPrice"],
+    }
+  )
+  .refine(
+    (data) => {
+      const hasVariants = data.variants && data.variants.length > 0;
+      const hasStock = data.stock !== undefined;
+      return hasVariants ? !hasStock : hasStock;
+    },
+    {
+      message: "Product must have either variants or a stock value, not both",
+      path: ["stock"],
     }
   );
 
@@ -179,19 +190,19 @@ export const getProductsByCategoryIdSchema = PaginatedSearchParamsSchema.extend(
 
 export const UpsertCartItemSchema = z.object({
   product: z.string().min(1, "product id is required"),
-  sku: z.string().min(1, "sku is required"),
+  sku: z.string().optional(),
   quantity: z.int().min(1, "quantity can't be less than 1"),
   type: z.enum(["add", "update"]),
 });
 
 export const removeFromCartSchema = z.object({
   product: z.string().min(1, "product id is required"),
-  sku: z.string().min(1, "sku is required"),
+  sku: z.string().optional(),
 });
 
 const orderItemSchema = z.object({
   product: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid product ID"),
-  variantSku: z.string().min(1, "Variant SKU is required"),
+  variantSku: z.string().optional(),
   variantColor: z.string().optional(),
   variantSize: z.string().optional(),
   productTitle: z.string().min(1, "Product title is required"),

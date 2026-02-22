@@ -5,7 +5,7 @@ import QuantiityController from "../buttons/QuantiityController";
 
 interface Props {
   product: ProductType;
-  variantSku: string;
+  variantSku?: string;
   initialQuantity: number;
 }
 
@@ -14,8 +14,7 @@ export default function CartCard({
   variantSku,
   initialQuantity,
 }: Props) {
-  const variant = product.variants.find((v) => v.sku === variantSku);
-  console.log("initialQuantity", initialQuantity);
+  const variant = product.variants?.find((v) => v.sku === variantSku);
 
   return (
     <div className="bg-white rounded-lg border w-full border-slate-200 p-4 hover:shadow-md transition-shadow duration-200 relative">

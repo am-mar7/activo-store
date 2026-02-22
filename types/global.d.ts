@@ -61,7 +61,8 @@ type ProductType = {
   category: string[];
   oldPrice?: number;
   newPrice: number;
-  variants: IVariant[];
+  stock?: number;
+  variants?: IVariant[];
   collection: "winter" | "summer" | "both";
   averageRating: number;
   totalReviews: number;
@@ -171,7 +172,7 @@ type UploadedImageData = {
 
 export interface OrderItemType {
   product: string;
-  variantSku: string;
+  variantSku?: string;
   variantColor?: string;
   variantSize?: string;
   productTitle: string;
@@ -267,7 +268,8 @@ interface ProductParams {
   newPrice: number;
   images: File[];
   sizeGuide?: File;
-  variants: IVariant[];
+  variants?: IVariant[];
+  stock?: number;
   collection: "winter" | "summer" | "both";
   isActive?: boolean;
 }
@@ -275,7 +277,7 @@ interface ProductParams {
 interface EditProductParams extends ProductParams {
   id: string;
   oldImages: string[];
-  oldSizeGuide?: string | null ;
+  oldSizeGuide?: string | null;
 }
 
 interface CategoryParams {
@@ -301,31 +303,31 @@ interface getProductsByCategoryIdParams extends PaginatedSearchParams {
 
 interface UpsertCartItemParams {
   product: string;
-  sku: string;
+  sku?: string;
   quantity: number;
   type: "add" | "update";
 }
 
 interface cartState {
   product: string;
-  variantSku: string;
+  variantSku?: string;
   quantity: number;
 }
 
 interface cartItem {
   product: ProductType;
-  variantSku: string;
+  variantSku?: string;
   quantity: number;
 }
 
 interface removeFromCartParams {
   product: string;
-  sku: string;
+  sku?: string;
 }
 
 interface OrderItemType {
   product: string;
-  variantSku: string;
+  variantSku?: string;
   variantColor?: string;
   variantSize?: string;
   productTitle: string;
@@ -451,13 +453,14 @@ interface SearchProductResult {
   newPrice: number;
   oldPrice?: number;
   images: string[];
-  variants: {
+  variants?: {
     sku: string;
     color?: string;
     size?: string;
     stock: number;
     image?: string;
   }[];
+  stock?: number;
   collection: "winter" | "summer" | "both";
   averageRating: number;
   totalReviews: number;

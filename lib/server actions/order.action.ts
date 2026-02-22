@@ -134,40 +134,74 @@ export async function UpdateOrderStatus(
     if (!updatedOrder) throw new Error("Failed to update order");
 
     if (status === "delivered" && oldStatus !== "delivered") {
-      const bulkOps = updatedOrder.orderItems.map((item) => ({
-        updateOne: {
-          filter: { 
-            _id: item.product,
-            "variants.sku": item.variantSku // Assuming orderItem has sku field
+      const variantItems = updatedOrder.orderItems.filter(
+        (item) => item.variantSku
+      );
+      const freeItems = updatedOrder.orderItems.filter(
+        (item) => !item.variantSku
+      );
+
+      const bulkOps = [
+        ...variantItems.map((item) => ({
+          updateOne: {
+            filter: { _id: item.product, "variants.sku": item.variantSku },
+            update: {
+              $inc: {
+                sold: item.quantity,
+                "variants.$.stock": -item.quantity,
+              },
+            },
           },
-          update: { 
-            $inc: { 
-              sold: item.quantity,
-              "variants.$.stock": -item.quantity // Decrease variant stock
-            } 
+        })),
+        ...freeItems.map((item) => ({
+          updateOne: {
+            filter: { _id: item.product },
+            update: {
+              $inc: {
+                sold: item.quantity,
+                stock: -item.quantity,
+              },
+            },
           },
-        },
-      }));
-    
+        })),
+      ];
+
       await Product.bulkWrite(bulkOps);
     }
-    
+
     if (status === "cancelled" && oldStatus === "delivered") {
-      const bulkOps = updatedOrder.orderItems.map((item) => ({
-        updateOne: {
-          filter: { 
-            _id: item.product,
-            "variants.sku": item.variantSku
+      const variantItems = updatedOrder.orderItems.filter(
+        (item) => item.variantSku
+      );
+      const freeItems = updatedOrder.orderItems.filter(
+        (item) => !item.variantSku
+      );
+
+      const bulkOps = [
+        ...variantItems.map((item) => ({
+          updateOne: {
+            filter: { _id: item.product, "variants.sku": item.variantSku },
+            update: {
+              $inc: {
+                sold: -item.quantity,
+                "variants.$.stock": item.quantity,
+              },
+            },
           },
-          update: { 
-            $inc: { 
-              sold: -item.quantity,
-              "variants.$.stock": item.quantity 
-            } 
+        })),
+        ...freeItems.map((item) => ({
+          updateOne: {
+            filter: { _id: item.product },
+            update: {
+              $inc: {
+                sold: -item.quantity,
+                stock: item.quantity,
+              },
+            },
           },
-        },
-      }));
-    
+        })),
+      ];
+
       await Product.bulkWrite(bulkOps);
     }
 
@@ -241,7 +275,10 @@ export async function getOrders(
       filterQuery.status = filter;
     }
 
-    const orders = await Order.find(filterQuery).skip(skip).limit(pageSize);
+    const orders = await Order.find(filterQuery)
+      .skip(skip)
+      .limit(pageSize)
+      .sort({ createdAt: -1 });
     const count = await Order.countDocuments(filterQuery);
 
     const isNext = count > orders.length + skip;

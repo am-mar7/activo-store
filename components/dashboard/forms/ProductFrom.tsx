@@ -78,27 +78,34 @@ export default function ProductFrom({
     resolver: zodResolver(schema),
     defaultValues: defaultValues,
   });
+  const [noVariants, setNoVariants] = useState<boolean>(() => {
+    return oldVariants.length === 0 && defaultValues.stock !== undefined;
+  });
 
   const router = useRouter();
 
   const handleSubmit = async function (data: ProductFormValues) {
-    // Submit logic here
-    console.log("Submitting form with data:", data, files, variants);
     if (files.length === 0 && existingImages.length === 0) {
       setImagesError("At least one image is required");
       return;
     }
-    if (variants.length === 0) {
-      setVariantsError("please fill the stock table");
+
+    if (!noVariants && variants.length === 0) {
+      setVariantsError("Please fill the stock table");
       return;
     }
+
+    const payload = {
+      ...data,
+      images: files,
+      sizeGuide: sizeGuideFile,
+      ...(noVariants
+        ? { stock: data.stock, variants: undefined }
+        : { variants, stock: undefined }),
+    };
+
     if (formType === "ADD") {
-      const { success, error } = await addProduct({
-        ...data,
-        images: files,
-        sizeGuide: sizeGuideFile,
-        variants,
-      });
+      const { success, error } = await addProduct(payload);
       if (success) {
         router.push(DASHBOARDROUTES.PRODUCTS);
         toast.success("Product added successfully");
@@ -108,12 +115,9 @@ export default function ProductFrom({
     } else {
       const { success, error } = await editProduct({
         id: id!,
-        ...data,
-        images: files,
-        sizeGuide: sizeGuideFile,
+        ...payload,
         oldSizeGuide: oldSizeGuide,
         oldImages: existingImages,
-        variants,
       });
       if (success) {
         router.push(DASHBOARDROUTES.PRODUCTS);
@@ -393,25 +397,93 @@ export default function ProductFrom({
           </FormProvider>
 
           {/* Variant Builder - Below Form on Mobile, keeps same width */}
-          <div
-            className={`w-full ${
-              variantsError
-                ? "border border-dotted border-destructive rounded-lg"
-                : ""
-            }`}
-          >
-            <VariantBuilder
-              variants={variants}
-              onVariantsChanged={(variants: IVariant[]) => {
-                setVariant(variants);
+          {/* Toggle */}
+          <div className="flex items-center gap-3 bg-white rounded-lg border p-4 shadow-sm">
+            <input
+              type="checkbox"
+              id="no-variants"
+              checked={noVariants}
+              onChange={(e) => {
+                setNoVariants(e.target.checked);
                 setVariantsError(null);
+                if (e.target.checked) {
+                  setVariant([]);
+                  form.setValue("stock", undefined);
+                } else {
+                  form.setValue("stock", undefined);
+                }
               }}
-              productTitle={currentTitle}
+              className="w-4 h-4 accent-primary cursor-pointer"
             />
-            {variantsError && (
-              <p className="text-red-600 text-sm my-2 px-2">{variantsError}</p>
-            )}
+            <label
+              htmlFor="no-variants"
+              className="text-sm font-medium cursor-pointer"
+            >
+              This product has no sizes or colors{" "}
+              <span className="text-muted-foreground font-normal">
+                (e.g. perfume, accessory)
+              </span>
+            </label>
           </div>
+
+          {/* Conditional: stock input or variant builder */}
+          {noVariants ? (
+            <div className="bg-white rounded-lg border p-4 md:p-6 shadow-sm">
+              <FormProvider {...form}>
+                <FormField
+                  name="stock"
+                  control={form.control}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Stock Quantity</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          placeholder="0"
+                          {...field}
+                          value={field.value ?? ""}
+                          onChange={(e) =>
+                            field.onChange(
+                              e.target.value
+                                ? parseInt(e.target.value)
+                                : undefined
+                            )
+                          }
+                          className="bg-slate-50 max-w-xs"
+                        />
+                      </FormControl>
+                      <FormDescription className="text-xs">
+                        Total available units for this product
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </FormProvider>
+            </div>
+          ) : (
+            <div
+              className={`w-full ${
+                variantsError
+                  ? "border border-dotted border-destructive rounded-lg"
+                  : ""
+              }`}
+            >
+              <VariantBuilder
+                variants={variants}
+                onVariantsChanged={(variants: IVariant[]) => {
+                  setVariant(variants);
+                  setVariantsError(null);
+                }}
+                productTitle={currentTitle}
+              />
+              {variantsError && (
+                <p className="text-red-600 text-sm my-2 px-2">
+                  {variantsError}
+                </p>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Right Column - Image Upload */}

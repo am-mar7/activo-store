@@ -13,7 +13,7 @@ import BuyNowModal from "@/components/BuyNowModal";
 import { colors as COLORS } from "@/constants";
 type Props = Pick<
   ProductType,
-  "variants" | "_id" | "title" | "images" | "newPrice"
+  "variants" | "_id" | "title" | "images" | "newPrice" | "stock"
 >;
 
 export default function AddToCartForm({
@@ -22,27 +22,32 @@ export default function AddToCartForm({
   title,
   images,
   newPrice,
+  stock: noVariantsStock,
 }: Props) {
-  const [color, setColor] = useState(variants[0].color);
-  const [size, setSize] = useState(variants[0].size);
-  const [sku, setSku] = useState(variants[0].sku);
+  const [color, setColor] = useState(variants?.[0]?.color);
+  const [size, setSize] = useState(variants?.[0]?.size);
+  const [sku, setSku] = useState(variants?.[0]?.sku);
   const [inCart, setInCart] = useState(false);
   const [upserting, startUpserting] = useTransition();
   const [error, setError] = useState<string | null>(null);
-  const [stock, setStock] = useState(variants[0].stock);
+  const [stock, setStock] = useState(
+    variants?.[0]?.stock ?? noVariantsStock ?? 0
+  );
   const [quantity, setQuantity] = useState(1);
 
   const [buyNowModalOpen, setBuyNowModalOpen] = useState(false);
 
-  const sizes = [...new Set(variants.map((variant) => variant.size as string))];
+  const sizes = [
+    ...new Set(variants?.map((variant) => variant.size as string)),
+  ];
   const colors = [
-    ...new Set(variants.map((variant) => variant.color as string)),
+    ...new Set(variants?.map((variant) => variant.color as string)),
   ];
 
   const handleUpsertCartItem = () => {
     setError(null);
-    const variant = variants.find((v) => v.color === color && v.size === size);
-    if (!variant) {
+    const variant = variants?.find((v) => v.color === color && v.size === size);
+    if (!variant && noVariantsStock === undefined) {
       setError("Some required inputs are missing recheck please.");
       return;
     }
@@ -90,13 +95,12 @@ export default function AddToCartForm({
 
   const handleBuyNow = () => {
     setError(null);
-    const variant = variants.find((v) => v.color === color && v.size === size);
-    if (!variant) {
+    const variant = variants?.find((v) => v.color === color && v.size === size);
+    if (!variant && noVariantsStock === undefined) {
       setError("Some required inputs are missing recheck please.");
       return;
     }
 
-    // Open Buy Now modal
     setBuyNowModalOpen(true);
   };
 
@@ -109,7 +113,7 @@ export default function AddToCartForm({
   }) => {
     if (!newSize) newSize = size;
     if (!newColor) newColor = color;
-    variants.forEach((variant) => {
+    variants?.forEach((variant) => {
       if (variant.color === newColor && variant.size === newSize) {
         setStock(variant.stock);
         setQuantity(Math.min(quantity, variant.stock));
@@ -130,54 +134,54 @@ export default function AddToCartForm({
   return (
     <>
       <div className="space-y-2.5 mb-5">
-        <div className="mt-4">
-          <p className="my-1 text-slate-500 body-regular">Size</p>
-          <div className="flex flex-wrap gap-2">
-            {sizes.map((currSize, idx) => (
-              <Badge
-                key={idx}
-                className={`border ${
-                  currSize === size
-                    ? "bg-primary-gradient text-neutral-50 border-neutral-100"
-                    : "border-slate-800"
-                }`}
-              >
-                <button
-                  onClick={() => handleChangeVariant({ newSize: currSize })}
-                  className="base-regular w-full h-full px-4 py-1"
+        {sizes[0] && (
+          <div className="mt-4">
+            <p className="my-1 text-slate-500 body-regular">Size</p>
+            <div className="flex flex-wrap gap-2">
+              {sizes.map((currSize, idx) => (
+                <Badge
+                  key={idx}
+                  className={`border ${
+                    currSize === size
+                      ? "bg-primary-gradient text-neutral-50 border-neutral-100"
+                      : "border-slate-800"
+                  }`}
                 >
-                  {currSize.toUpperCase()}
-                </button>
-              </Badge>
-            ))}
-          </div>
-        </div>
-
-        <div>
-          <div>
-            <p className="my-1 text-slate-500 body-regular">Color</p>
-            <div className="flex gap-2">
-              {colors.map((currColor) => {
-                const colorData = COLORS.find((c) => c.value === currColor);
-
-                return (
                   <button
-                    key={currColor}
-                    onClick={() => handleChangeVariant({ newColor: currColor })}
-                    className={`w-6 h-6 rounded-full border-2 transition-all ${
-                      color === currColor
-                        ? "border-slate-900 scale-105"
-                        : "border-slate-300 hover:border-slate-400"
-                    }`}
-                    style={{ backgroundColor: colorData?.hex }}
-                    aria-label={`Select ${colorData?.label || currColor} color`}
-                    title={colorData?.label}
-                  />
-                );
-              })}
+                    onClick={() => handleChangeVariant({ newSize: currSize })}
+                    className="base-regular w-full h-full px-4 py-1"
+                  >
+                    {currSize.toUpperCase()}
+                  </button>
+                </Badge>
+              ))}
             </div>
           </div>
-        </div>
+        )}
+
+        {colors[0] && <div>
+          <p className="my-1 text-slate-500 body-regular">Color</p>
+          <div className="flex gap-2">
+            {colors.map((currColor) => {
+              const colorData = COLORS.find((c) => c.value === currColor);
+
+              return (
+                <button
+                  key={currColor}
+                  onClick={() => handleChangeVariant({ newColor: currColor })}
+                  className={`w-6 h-6 rounded-full border-2 transition-all ${
+                    color === currColor
+                      ? "border-slate-900 scale-105"
+                      : "border-slate-300 hover:border-slate-400"
+                  }`}
+                  style={{ backgroundColor: colorData?.hex }}
+                  aria-label={`Select ${colorData?.label || currColor} color`}
+                  title={colorData?.label}
+                />
+              );
+            })}
+          </div>
+        </div>}
 
         <div>
           <p className="my-1 text-slate-500 body-regular">quantity</p>
@@ -256,7 +260,6 @@ export default function AddToCartForm({
         </div>
       </div>
 
-      {/* Buy Now Modal */}
       <BuyNowModal
         open={buyNowModalOpen}
         onOpenChange={setBuyNowModalOpen}

@@ -10,7 +10,7 @@ import { toast } from "sonner";
 interface Props {
   productId: string;
   className?: string;
-  variantSku: string;
+  variantSku?: string;
 }
 
 export default function RemoveFromCart({
@@ -24,7 +24,7 @@ export default function RemoveFromCart({
     startRemoving(async () => {
       const { success, error } = await removeFromCart({
         product: productId,
-        sku: variantSku,
+        sku: variantSku || undefined,
       });
       if (success) useCartStore.getState().removeItem(productId, variantSku);
       else toast.error(getFriendlyErrorMessage(error));
