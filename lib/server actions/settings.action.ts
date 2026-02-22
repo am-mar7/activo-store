@@ -13,7 +13,6 @@ import AppSettings, { IAppSettings } from "@/models/settings.model";
 import { UnauthorizedError } from "../http-errors";
 import { handleUpload } from "../utils";
 import { dbConnect } from "../mongoose";
-import { auth } from "@/auth";
 import { cache } from "react";
 
 export async function updateSettings(
