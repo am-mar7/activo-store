@@ -16,7 +16,7 @@ export const VariantSchema = new Schema<IVariant>(
     stock: { type: Number, required: true },
     image: { type: String },
   },
-  { _id: false } // VERY IMPORTANT
+  { _id: false }
 );
 
 export interface IProduct {
@@ -25,7 +25,8 @@ export interface IProduct {
   category: Types.ObjectId[]; // may be snapshooted
   oldPrice?: number;
   newPrice: number;
-  variants: IVariant[];
+  stock?: number;
+  variants?: IVariant[];
   collection: "winter" | "summer" | "both";
   averageRating: number;
   totalReviews: number;
@@ -47,14 +48,8 @@ export const ProductSchema = new Schema<IProduct>(
     ],
     oldPrice: { type: Number, min: 0 },
     newPrice: { type: Number, min: 0, default: 0, required: true },
-    variants: {
-      type: [VariantSchema],
-      required: true,
-      validate: {
-        validator: (v: IVariant[]) => v.length > 0,
-        message: "Product must have at least one variant",
-      },
-    },
+    variants: { type: [VariantSchema] },
+    stock: { type: Number, min: 0 },
     collection: {
       type: String,
       enum: ["winter", "summer", "both"],
@@ -84,10 +79,24 @@ export const ProductSchema = new Schema<IProduct>(
   { timestamps: true }
 );
 
+ProductSchema.path("variants").validate(function (
+  this: IProductDoc,
+  variants: IVariant[]
+) {
+  const hasVariants = variants && variants.length > 0;
+  const hasStock = this.stock !== undefined && this.stock !== null;
+
+  if (!hasVariants && !hasStock) return false;
+  if (hasVariants && hasStock) return false;
+
+  return true;
+},
+"Product must have either variants or a stock value, not both");
+
 // Indexes
 ProductSchema.index({ isActive: 1, createdAt: -1 });
 ProductSchema.index({ category: 1, isActive: 1 });
-ProductSchema.index({ "variants.sku": 1 }, { unique: true });
+ProductSchema.index({ "variants.sku": 1 }, { unique: true, sparse: true });
 
 const Product =
   models.Product || mongoose.model<IProduct>("Product", ProductSchema);

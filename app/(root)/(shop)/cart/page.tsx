@@ -129,12 +129,12 @@ async function CartContent() {
 
   return (
     <motion.div
-      className="flex-center flex-col"
+      className="flex-center flex-col relative"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
-      <div className="max-w-7xl px-5 w-full py-8">
+      <div className="max-w-7xl px-5 w-full py-3">
         <motion.div
           initial={{ opacity: 0, y: -30, scale: 0.9 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -187,6 +187,7 @@ async function CartContent() {
             <motion.div
               whileHover={{ y: -5, scale: 1.02 }}
               transition={{ duration: 0.3 }}
+              className="sticky top-0 "
             >
               <CheckoutForm
                 items={data}

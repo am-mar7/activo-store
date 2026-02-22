@@ -38,6 +38,7 @@ async function EditProductContent({ params }: RouteParams) {
     variants,
     images,
     sizeGuide,
+    stock,
   } = product;
   return (
     <>
@@ -50,6 +51,7 @@ async function EditProductContent({ params }: RouteParams) {
           newPrice,
           collection,
           oldPrice,
+          stock,
         }}
         id={_id}
         oldImages={images}

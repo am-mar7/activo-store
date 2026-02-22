@@ -95,6 +95,7 @@ async function ProductDetailsContent({ params }: RouteParams) {
     variants,
     category,
     sizeGuide: guide,
+    stock
   } = product;
 
   const productJSONLD = {
@@ -169,7 +170,7 @@ async function ProductDetailsContent({ params }: RouteParams) {
           </motion.div>
 
           <motion.p
-            className="text-slate-600 body-medium whitespace-pre-line md:max-h-50 lg:max-h-60 2xl:max-h-70 overflow-y-auto custom-scrollbar"
+            className="text-slate-600 body-medium whitespace-pre-line md:max-h-40 lg:max-h-50 2xl:max-h-60 overflow-y-auto custom-scrollbar"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -201,6 +202,7 @@ async function ProductDetailsContent({ params }: RouteParams) {
               images={images}
               newPrice={newPrice}
               title={title}
+              stock={stock}
             />
           </motion.div>
         </motion.div>

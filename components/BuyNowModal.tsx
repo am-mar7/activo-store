@@ -35,7 +35,7 @@ interface BuyNowModalProps {
   onOpenChange: (open: boolean) => void;
   productData: {
     productId: string;
-    variantSku: string;
+    variantSku?: string;
     variantColor?: string;
     variantSize?: string;
     productTitle: string;
@@ -65,12 +65,10 @@ export default function BuyNowModal({
   const allowOnlinePayment = checkout?.allowOnlinePayment ?? false;
   const shippingCost = shipping?.cost || 0;
 
-  // Calculate total
   const subtotal = productData.price * productData.quantity;
   const total = subtotal + shippingCost;
 
   const handlePlaceOrder = async () => {
-    // Get validated address data
     const addressData = await addressRef.current?.getAddressData();
 
     if (!addressData) {
@@ -83,7 +81,6 @@ export default function BuyNowModal({
     try {
       const { address, isDefault, isExisting } = addressData;
 
-      // Prepare order items
       const orderItems = [
         {
           product: productData.productId,

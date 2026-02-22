@@ -152,7 +152,7 @@ export function OrderCard({ order, index }: OrderCardProps) {
           <div className="flex items-center gap-2 bg-slate-100 overflow-x-auto px-2 py-1 rounded-sm">
             {items.slice(0, 4).map((item, idx) => (
               <div
-                key={item.variantSku + idx}
+                key={item.variantSku ?? 0 + idx}
                 className="shrink-0 w-14 h-14 rounded-lg overflow-hidden border-2 border-slate-200"
               >
                 <Image
@@ -192,7 +192,7 @@ export function OrderCard({ order, index }: OrderCardProps) {
                     </h3>
                     {items.map((item, idx) => (
                       <motion.div
-                        key={item.variantSku + idx}
+                        key={item.variantSku ?? 0 + idx}
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ duration: 0.3, delay: idx * 0.05 }}

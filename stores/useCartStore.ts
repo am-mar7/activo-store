@@ -2,8 +2,8 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
 export interface CartItemStore {
-  product: string; // id
-  variantSku: string;
+  product: string;
+  variantSku?: string;
   quantity: number;
 }
 
@@ -13,19 +13,24 @@ interface CartStore {
   addItem: (
     item: Omit<CartItemStore, "quantity"> & { quantity?: number }
   ) => void;
-  removeItem: (product: string, variantSku: string) => void;
+  removeItem: (product: string, variantSku?: string) => void;
   updateQuantity: (
     product: string,
-    variantSku: string,
+    variantSku: string | undefined,
     quantity: number
   ) => void;
   clearCart: () => void;
 
-  isInCart: (product: string, variantSku: string) => boolean;
-  getItem: (product: string, variantSku: string) => CartItemStore | undefined;
+  isInCart: (product: string, variantSku?: string) => boolean;
+  getItem: (product: string, variantSku?: string) => CartItemStore | undefined;
   getItemCount: () => number;
   setItems: (items: CartItemStore[]) => void;
 }
+
+const matchItem =
+  (product: string, variantSku?: string) =>
+  (i: CartItemStore): boolean =>
+    i.product === product && i.variantSku === variantSku;
 
 export const useCartStore = create<CartStore>()(
   persist(
@@ -34,15 +39,13 @@ export const useCartStore = create<CartStore>()(
 
       addItem: (item) =>
         set((state) => {
-          const existingItem = state.items.find(
-            (i) =>
-              i.product === item.product && i.variantSku === item.variantSku
-          );
+          const isMatch = matchItem(item.product, item.variantSku);
+          const existingItem = state.items.find(isMatch);
 
           if (existingItem) {
             return {
               items: state.items.map((i) =>
-                i.product === item.product && i.variantSku === item.variantSku
+                isMatch(i)
                   ? { ...i, quantity: i.quantity + (item.quantity || 1) }
                   : i
               ),
@@ -56,49 +59,36 @@ export const useCartStore = create<CartStore>()(
 
       removeItem: (product, variantSku) =>
         set((state) => ({
-          items: state.items.filter(
-            (item) =>
-              !(item.product === product && item.variantSku === variantSku)
-          ),
+          items: state.items.filter((i) => !matchItem(product, variantSku)(i)),
         })),
 
       updateQuantity: (product, variantSku, quantity) =>
         set((state) => {
+          const isMatch = matchItem(product, variantSku);
+
           if (quantity <= 0) {
             return {
-              items: state.items.filter(
-                (item) =>
-                  !(item.product === product && item.variantSku === variantSku)
-              ),
+              items: state.items.filter((i) => !isMatch(i)),
             };
           }
 
           return {
-            items: state.items.map((item) =>
-              item.product === product && item.variantSku === variantSku
-                ? { ...item, quantity }
-                : item
+            items: state.items.map((i) =>
+              isMatch(i) ? { ...i, quantity } : i
             ),
           };
         }),
 
       clearCart: () => set({ items: [] }),
 
-      isInCart: (product, variantSku) => {
-        return get().items.some(
-          (item) => item.product === product && item.variantSku === variantSku
-        );
-      },
+      isInCart: (product, variantSku) =>
+        get().items.some(matchItem(product, variantSku)),
 
-      getItem: (product, variantSku) => {
-        return get().items.find(
-          (item) => item.product === product && item.variantSku === variantSku
-        );
-      },
+      getItem: (product, variantSku) =>
+        get().items.find(matchItem(product, variantSku)),
 
-      getItemCount: () => {
-        return get().items.reduce((total, item) => total + item.quantity, 0);
-      },
+      getItemCount: () =>
+        get().items.reduce((total, item) => total + item.quantity, 0),
 
       setItems: (items) => set({ items }),
     }),

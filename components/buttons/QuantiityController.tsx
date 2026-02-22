@@ -10,7 +10,7 @@ import { toast } from "sonner";
 interface Props {
   productId: string;
   className?: string;
-  variantSku: string;
+  variantSku?: string;
   initialQuantity: number;
 }
 
@@ -30,7 +30,7 @@ export default function QuantiityController({
           const { success, error } = await upsertCartItem({
             type: "update",
             product: productId,
-            sku: variantSku,
+            sku: variantSku || undefined,
             quantity,
           });
           if (success)

@@ -214,10 +214,10 @@ const Checkout: React.FC<CheckoutProps> = ({
       const orderItems = items.map((item) => ({
         product: item.product._id,
         variantSku: item.variantSku,
-        variantColor: item.product.variants.find(
+        variantColor: item.product.variants?.find(
           (v) => v.sku === item.variantSku
         )?.color,
-        variantSize: item.product.variants.find(
+        variantSize: item.product.variants?.find(
           (v) => v.sku === item.variantSku
         )?.size,
         productTitle: item.product.title,

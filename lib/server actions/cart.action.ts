@@ -57,7 +57,9 @@ export async function getCartItems(
   try {
     await dbConnect();
 
-    const cart = await Cart.findOne({ userId }).populate("cartItems.product").lean();
+    const cart = await Cart.findOne({ userId })
+      .populate("cartItems.product")
+      .lean();
 
     if (!cart) {
       return {
@@ -84,29 +86,37 @@ export async function upsertCartItem(
     authorizetionProccess: true,
   });
   if (validated instanceof UnauthorizedError)
-    return handleError(new Error("You have to be logged in first")) as ErrorResponse;
-  else if (validated instanceof Error)
+    return handleError(
+      new Error("You have to be logged in first")
+    ) as ErrorResponse;
+  else if (validated instanceof Error) {
+    console.log("Validation error:", validated);
     return handleError(validated) as ErrorResponse;
+  }
 
   const { sku, product, quantity, type } = validated.params!;
   const userId = validated.session?.user.id;
 
+  const skuFilter = sku
+    ? { "cartItems.product": product, "cartItems.variantSku": sku }
+    : { "cartItems.product": product };
+
   try {
-    // 1️⃣ Single atomic update
     const updateResult = await Cart.updateOne(
-      { userId, "cartItems.product": product, "cartItems.variantSku": sku },
+      { userId, ...skuFilter },
       type === "add"
         ? { $inc: { "cartItems.$.quantity": quantity } }
         : { $set: { "cartItems.$.quantity": quantity } }
     );
 
-    // 2️⃣ If no matching item, push new
     if (updateResult.matchedCount === 0) {
       await Cart.updateOne(
         { userId },
         {
           $setOnInsert: { userId },
-          $push: { cartItems: { product, variantSku: sku, quantity } },
+          $push: {
+            cartItems: { product, variantSku: sku ?? undefined, quantity },
+          },
         },
         { upsert: true }
       );
@@ -118,10 +128,11 @@ export async function upsertCartItem(
 
     return { success: true };
   } catch (error) {
+    console.log("Error upserting cart item:", error);
+
     return handleError(error) as ErrorResponse;
   }
 }
-
 
 export async function removeFromCart(
   params: removeFromCartParams
@@ -131,8 +142,10 @@ export async function removeFromCart(
     schema: removeFromCartSchema,
     authorizetionProccess: true,
   });
-  if (validated instanceof Error)
+  if (validated instanceof Error) {
+    console.log("Validation error:", validated);
     return handleError(validated) as ErrorResponse;
+  }
 
   const { sku, product } = validated.params!;
   const userId = validated.session?.user.id;
@@ -140,7 +153,13 @@ export async function removeFromCart(
   try {
     const result = await Cart.updateOne(
       { userId },
-      { $pull: { cartItems: { product, variantSku: sku } } }
+      {
+        $pull: {
+          cartItems: sku
+            ? { product, variantSku: sku }
+            : { product, variantSku: { $in: [null, undefined] } }, // ← handles null stored by Mongoose
+        },
+      }
     );
 
     if (result.modifiedCount === 0) throw new NotFoundError("Item");
@@ -151,7 +170,7 @@ export async function removeFromCart(
 
     return { success: true };
   } catch (error) {
+    console.log("Error removing cart item:", error);
     return handleError(error) as ErrorResponse;
   }
 }
-
