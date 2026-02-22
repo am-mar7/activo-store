@@ -29,9 +29,15 @@ interface Props {
   subTotal: number;
   items: cartItem[];
   className?: string;
+  shippingCost: number;
 }
 
-export default function CheckoutForm({ subTotal, className, items }: Props) {
+export default function CheckoutForm({
+  subTotal,
+  className,
+  items,
+  shippingCost,
+}: Props) {
   const [isOpen, setIsOpen] = useState(false);
   const [promoLoading, setPromoLoading] = useState(false);
   const [discount, setDiscount] = useState(0);
@@ -39,9 +45,6 @@ export default function CheckoutForm({ subTotal, className, items }: Props) {
   const [promoCode, setPromoCode] = useState<string>();
   const [promoQuery, setPromoQuery] = useState<string>("");
   const [promoError, setPromoError] = useState<string>();
-
-  const shipping = useSettingsStore((state) => state.getShipping());
-  const shippingCost = shipping?.cost || 0;
 
   const checkPromo = async () => {
     setPromoLoading(true);
