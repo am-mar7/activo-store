@@ -39,7 +39,7 @@ export async function generateMetadata({
 
   return {
     title: `${product.title} - Premium Activewear | Activo Store`,
-    description: `${description} Shop ${product.title} at Activo Store. LE ${product.newPrice}. Free shipping on orders over LE 500.`,
+    description: `${description} Shop ${product.title} at Activo Store. EGP ${product.newPrice}. Free shipping on orders over EGP 500.`,
     keywords: `${product.title}, activewear, buy ${product.title}, athletic clothing`,
     openGraph: {
       title: `Activo Store | ${product.title}`,
@@ -159,11 +159,11 @@ async function ProductDetailsContent({ params }: RouteParams) {
             <p className="text-lg md:text-xl flex gap-3">
               {oldPrice && (
                 <span className="line-through text-gray-500">
-                  LE {oldPrice}
+                  EGP {oldPrice}
                 </span>
               )}
               <span className="font-semibold">
-                LE {formatPrice(newPrice, "EGP")}
+                EGP {formatPrice(newPrice, "EGP")}
               </span>
             </p>
             <h1 className="h3-semibold text-slate-900">{title}</h1>
