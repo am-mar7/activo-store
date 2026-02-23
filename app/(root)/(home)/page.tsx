@@ -105,7 +105,7 @@ async function Categories() {
   if (!success || !data)
     return <TryAgain message="Failed to load the categories" />;
 
-  const categories = data.categories;
+  const categories = data.items;
 
   return (
     <div className="w-full">

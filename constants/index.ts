@@ -60,6 +60,18 @@ export const DashboardLinks = [
 ];
 
 export const sizes = [
+  { value: "2months", label: "2 Months" },
+  { value: "4months", label: "4 Months" },
+  { value: "6months", label: "6 Months" },
+  { value: "8months", label: "8 Months" },
+  { value: "10months", label: "10 Months" },
+  { value: "12months", label: "12 Months" },
+  { value: "2years", label: "2 Years" },
+  { value: "4years", label: "4 Years" },
+  { value: "6years", label: "6 Years" },
+  { value: "8years", label: "8 Years" },
+  { value: "10years", label: "10 Years" },
+  { value: "12years", label: "12 Years" },
   { value: "2xs", label: "2XS" },
   { value: "xs", label: "XS" },
   { value: "s", label: "S" },
@@ -111,4 +123,3 @@ export const colors = [
   { value: "black_mintgreen", label: "Black & Mint Green", hex: "#4CFF4C" },
   { value: "white_mintgreen", label: "White & Mint Green", hex: "#CFFF CFFF" },
 ];
-
