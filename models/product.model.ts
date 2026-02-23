@@ -22,12 +22,12 @@ export const VariantSchema = new Schema<IVariant>(
 export interface IProduct {
   title: string;
   description: string;
-  category: Types.ObjectId[]; // may be snapshooted
+  category: Types.ObjectId[];
   oldPrice?: number;
   newPrice: number;
   stock?: number;
   variants?: IVariant[];
-  collection: "winter" | "summer" | "both";
+  collection: "winter" | "summer" | "both" | "none";
   averageRating: number;
   totalReviews: number;
   sold: number;
@@ -52,7 +52,7 @@ export const ProductSchema = new Schema<IProduct>(
     stock: { type: Number, min: 0 },
     collection: {
       type: String,
-      enum: ["winter", "summer", "both"],
+      enum: ["winter", "summer", "both", "none"],
       required: true,
     },
     averageRating: { type: Number, default: 0 },

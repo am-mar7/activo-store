@@ -63,7 +63,7 @@ type ProductType = {
   newPrice: number;
   stock?: number;
   variants?: IVariant[];
-  collection: "winter" | "summer" | "both";
+  collection: "winter" | "summer" | "both" | "none";
   averageRating: number;
   totalReviews: number;
   images: string[];
@@ -270,7 +270,7 @@ interface ProductParams {
   sizeGuide?: File;
   variants?: IVariant[];
   stock?: number;
-  collection: "winter" | "summer" | "both";
+  collection: "winter" | "summer" | "both" | "none";
   isActive?: boolean;
 }
 
@@ -461,7 +461,7 @@ interface SearchProductResult {
     image?: string;
   }[];
   stock?: number;
-  collection: "winter" | "summer" | "both";
+  collection: "winter" | "summer" | "both" | "none";
   averageRating: number;
   totalReviews: number;
   sold: number;

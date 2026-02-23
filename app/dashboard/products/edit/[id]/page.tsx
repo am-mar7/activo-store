@@ -20,7 +20,7 @@ async function EditProductContent({ params }: RouteParams) {
     getCategories({}),
     getProduct(id),
   ]);
-  const { categories } = data || {};
+  const { items:categories } = data || {};
   const categoriesList = categories || [];
   const categoriesSelectList = categoriesList.map((cat) => ({
     name: cat.name,

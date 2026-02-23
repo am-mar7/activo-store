@@ -108,7 +108,7 @@ export const ProductSchema = z
         })
       )
       .optional(),
-    collection: z.enum(["winter", "summer", "both"]),
+    collection: z.enum(["winter", "summer", "both" , "none"]),
     images: z
       .array(
         z.instanceof(File).refine((file) => file.type.startsWith("image/"), {

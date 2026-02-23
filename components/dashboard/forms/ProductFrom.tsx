@@ -94,7 +94,6 @@ export default function ProductFrom({
       setVariantsError("Please fill the stock table");
       return;
     }
-
     const payload = {
       ...data,
       images: files,
@@ -299,6 +298,7 @@ export default function ProductFrom({
                           Summer Collection
                         </SelectItem>
                         <SelectItem value="both">both</SelectItem>
+                        <SelectItem value="none">None</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />

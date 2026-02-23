@@ -478,7 +478,13 @@ export default function VariantBuilder({
                       {color?.label}
                     </span>
                   </div>
-                  <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-10 2xl:grid-cols-12 gap-3">
+                  <div
+                    className="grid gap-3"
+                    style={{
+                      gridTemplateColumns:
+                        "repeat(auto-fill, minmax(80px, 1fr))",
+                    }}
+                  >
                     {selectedSizes.map((size) => (
                       <div key={size} className="space-y-1">
                         <label className="text-xs font-medium text-gray-600 uppercase">

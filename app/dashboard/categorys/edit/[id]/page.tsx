@@ -22,7 +22,7 @@ async function EditCategoryContent({ params }: RouteParams) {
     getCategory(id),
     getCategories({}),
   ]);
-  const { categories } = data || {};
+  const { items: categories } = data || {};
   const categoriesList = categories || [];
   console.log("parentId", category?.parentId);
 
