@@ -26,7 +26,7 @@ export default async function Navbar({ className, isHome = false }: Props) {
   const [{ data }, session] = await Promise.all([getCategories({}), auth()]);
 
   const user = session?.user;
-  const { categories } = data || {};
+  const { items:categories } = data || {};
   console.log(session?.user);
 
   const serializedCategories =
