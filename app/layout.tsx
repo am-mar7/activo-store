@@ -22,7 +22,7 @@ export const metadata: Metadata = {
     template: "%s",
   },
   description:
-    "Shop premium activewear and lifestyle clothing at Activo Store. Free shipping on orders over LE 500.",
+    "Shop premium activewear and lifestyle clothing at Activo Store. Free shipping on orders over EGP 500.",
   keywords:
     "activewear, athletic clothing, gym wear, sports clothing, lifestyle apparel, Activo Store",
   authors: [{ name: "Activo Store" }],
