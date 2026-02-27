@@ -56,11 +56,11 @@ export default function ProductCard({ product }: Props) {
         </h4>
         <div className="flex items-center gap-2 mt-1">
           {oldPrice && (
-            <span className="text-sm text-gray-500 line-through">
+            <span className="small-medium md:text-sm text-gray-500 line-through">
               EGP {oldPrice}
             </span>
           )}
-          <span className="text-lg font-bold text-primary">EGP {newPrice}</span>
+          <span className="text-xs md:text-sm font-bold text-primary">EGP {newPrice}</span>
         </div>
       </div>
     </Link>
