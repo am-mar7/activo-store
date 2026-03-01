@@ -57,8 +57,8 @@ type HeroSectionProps = {
   
         {/* Hero content */}
         {hasContent && (
-          <div className="absolute inset-0 z-20 flex items-center">
-            <div className="flex flex-col px-8 md:px-16 lg:px-24 max-w-2xl">
+          <div className="absolute inset-0 z-20 flex md:items-center items-end pb-5">
+            <div className="flex flex-col px-5 md:px-16 lg:px-24 max-w-2xl">
               {title && (
                 <>
                   <span className="block w-8 h-px bg-white/60 mb-6 animate-fadeInUp" />
