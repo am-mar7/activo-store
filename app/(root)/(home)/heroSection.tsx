@@ -53,7 +53,9 @@ type HeroSectionProps = {
         )}
   
         {/* Navbar below the banner */}
-        {navbar}
+        <div className="relative z-30">
+         {navbar}
+        </div>
   
         {/* Hero content */}
         {hasContent && (
