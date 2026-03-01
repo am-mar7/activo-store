@@ -153,7 +153,7 @@ export default function SettingsForm({
                     <Input
                       placeholder="Welcome to our store"
                       {...field}
-                      value={field.value ?? ""}
+                      value={field.value}
                       className="bg-slate-50"
                     />
                   </FormControl>
@@ -172,7 +172,7 @@ export default function SettingsForm({
                     <Input
                       placeholder="Discover amazing products"
                       {...field}
-                      value={field.value ?? ""}
+                      value={field.value}
                       className="bg-slate-50"
                     />
                   </FormControl>
@@ -210,7 +210,7 @@ export default function SettingsForm({
                       <Input
                         placeholder="Shop Now"
                         {...field}
-                        value={field.value ?? ""}
+                        value={field.value}
                         className="bg-slate-50"
                       />
                     </FormControl>
@@ -229,7 +229,7 @@ export default function SettingsForm({
                       <Input
                         placeholder="/products"
                         {...field}
-                        value={field.value ?? ""}
+                        value={field.value}
                         className="bg-slate-50"
                       />
                     </FormControl>
@@ -280,7 +280,7 @@ export default function SettingsForm({
                     <Input
                       placeholder="Free shipping on orders over $50!"
                       {...field}
-                      value={field.value ?? ""}
+                      value={field.value}
                       className="bg-slate-50"
                     />
                   </FormControl>
@@ -339,7 +339,7 @@ export default function SettingsForm({
                     <Input
                       placeholder="https://example.com/sale"
                       {...field}
-                      value={field.value ?? ""}
+                      value={field.value}
                       className="bg-slate-50"
                     />
                   </FormControl>
@@ -504,7 +504,7 @@ export default function SettingsForm({
                     <Textarea
                       placeholder="We're currently updating our site. Please check back soon!"
                       {...field}
-                      value={field.value ?? ""}
+                      value={field.value}
                       className="bg-slate-50"
                     />
                   </FormControl>

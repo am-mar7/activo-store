@@ -307,8 +307,8 @@ export const shippingSchema = z.object({
 export const heroSectionSchema = z
   .object({
     enabled: z.boolean(),
-    title: z.string().min(1).optional(),
-    subtitle: z.string().min(1).optional(),
+    title: z.string().optional(),
+    subtitle: z.string().optional(),
     image: z
       .instanceof(File)
       .refine((file) => file.type.startsWith("image/"), {
@@ -318,8 +318,8 @@ export const heroSectionSchema = z
 
     cta: z
       .object({
-        text: z.string().optional(),
-        href: z.string().optional(),
+        text: z.string(),
+        href: z.string(),
       })
       .optional(),
   })
