@@ -128,3 +128,16 @@ export function isValidEgyptianPhone(phone: string): boolean {
   const regex = /^0(10|11|12|15)\d{8}$/;
   return regex.test(cleanPhone);
 }
+
+export function isInAppBrowser() {
+  if (typeof window === "undefined") return false
+
+  const ua = navigator.userAgent
+
+  return (
+    ua.includes("TikTok") ||
+    ua.includes("FBAN") ||
+    ua.includes("FBAV") ||
+    ua.includes("Instagram")
+  )
+}
