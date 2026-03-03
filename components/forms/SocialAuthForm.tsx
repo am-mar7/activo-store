@@ -1,36 +1,55 @@
 "use client";
+
 import { toast } from "sonner";
 import Image from "next/image";
 import ROUTES from "@/constants/routes";
 import { signIn } from "next-auth/react";
 import { Button } from "../ui/button";
 import { getFriendlyErrorMessage } from "@/lib/error-messages";
+import { useRouter } from "next/navigation";
+
+function isInAppBrowser() {
+  if (typeof window === "undefined") return false;
+
+  return /TikTok|FBAN|FBAV|Instagram/i.test(
+    navigator.userAgent
+  );
+}
 
 export default function SocialAuthForm() {
+  const router = useRouter();
+
   const handleSocialAuth = async () => {
     try {
-      await signIn("google", { callbackUrl: ROUTES.HOME });
+      if (isInAppBrowser()) {
+        router.push("/open-in-browser");
+        return;
+      }
+
+      await signIn("google", {
+        callbackUrl: ROUTES.HOME,
+      });
     } catch (error) {
       toast.error(
         error instanceof Error
           ? getFriendlyErrorMessage(error)
-          : `Social auth with google is not implemented yet.`
+          : "Google sign-in failed."
       );
     }
   };
+
   return (
     <div className="mt-2 w-full bg-neutral-200 rounded-lg">
       <Button
+        type="button"
         className="px-8 flex-1 min-h-12 w-full cursor-pointer"
-        onClick={() => {
-          handleSocialAuth();
-        }}
+        onClick={handleSocialAuth}
       >
-        continue with Google
+        Continue with Google
         <Image
-          src="icons/google.svg"
-          width={30}
-          height={30}
+          src="/icons/google.svg"
+          width={24}
+          height={24}
           alt="Google logo"
           className="ml-2.5 object-contain"
         />
