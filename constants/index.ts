@@ -86,6 +86,7 @@ export const sizes = [
 ];
 
 export const colors = [
+  { value: "orange", label: "Orange", hex: "#F97316" },
   { value: "black", label: "Black", hex: "#000000" },
   { value: "white", label: "White", hex: "#FFFFFF" },
   { value: "navy", label: "Navy", hex: "#001F3F" },
