@@ -7,7 +7,7 @@ import { signIn } from "next-auth/react";
 import { Button } from "../ui/button";
 import { getFriendlyErrorMessage } from "@/lib/error-messages";
 import { useRouter } from "next/navigation";
-import { isAndroid, isInAppBrowser } from "@/lib/utils";
+import { isInAppBrowser } from "@/lib/utils";
 
 
 export default function SocialAuthForm() {
@@ -21,24 +21,6 @@ export default function SocialAuthForm() {
         });
         return;
       }
-      if (isAndroid()) {
-        // Try Chrome intent
-        const intentUrl =
-          "intent://" +
-          window.location.host +
-          "#Intent;scheme=https;package=com.android.chrome;end";
-    
-        window.location.href = intentUrl;
-    
-        // Fallback after delay
-        setTimeout(() => {
-          router.push(ROUTES.OPENINBROWSER);
-        }, 1500);
-    
-        return;
-      }
-    
-      // iOS → direct fallback
       router.push(ROUTES.OPENINBROWSER);
    } catch (error) {
       toast.error(
