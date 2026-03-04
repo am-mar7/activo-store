@@ -10,7 +10,7 @@ const publicApiRoutes = [
   "/api/auth",
   "/api/users/email",
   "/api/users/:id",
-  "/api/ping"
+  "/api/ping",
 ];
 
 function matchesRoute(pathname: string, routes: string[]): boolean {
@@ -24,6 +24,18 @@ function matchesRoute(pathname: string, routes: string[]): boolean {
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
+  const ua = request.headers.get("user-agent") || "";
+  const referer = request.headers.get("referer") || "";
+
+  const isInAppBrowser =
+    /FBAN|FBAV|Instagram|Line|Twitter|Snapchat|Pinterest/i.test(ua) ||
+    referer.includes("tiktok.com") ||
+    /(wv|WebView)/i.test(ua);
+
+  if (isInAppBrowser && pathname.startsWith("/api/auth")) {
+    return NextResponse.redirect(new URL("/open-in-browser", request.url));
+  }
 
   const isApiRoute = pathname.startsWith("/api");
 
@@ -63,10 +75,7 @@ export async function middleware(request: NextRequest) {
   const session = await auth();
 
   if (session?.user) {
-    if (
-      session.user.role === "admin" &&
-      (pathname === ROUTES.SIGN_IN)
-    ) {
+    if (session.user.role === "admin" && pathname === ROUTES.SIGN_IN) {
       return NextResponse.redirect(new URL("/dashboard", request.url));
     }
 
