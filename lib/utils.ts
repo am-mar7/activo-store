@@ -130,14 +130,28 @@ export function isValidEgyptianPhone(phone: string): boolean {
 }
 
 export function isInAppBrowser() {
-  if (typeof window === "undefined") return false
+  if (typeof window === "undefined") return false;
 
-  const ua = navigator.userAgent
+  const ua = navigator.userAgent || "";
+  const vendor = navigator.vendor || "";
+  const referrer = document.referrer || "";
+
+  // Known in-app signals
+  const inAppRegex =
+    /FBAN|FBAV|Instagram|Line|Twitter|Snapchat|Pinterest/i;
+
+  // TikTok sometimes hides UA but sets referrer
+  const isTikTokReferrer = referrer.includes("tiktok.com");
+
+  // WebView signal (Android)
+  const isWebView =
+    /(wv|WebView)/i.test(ua) &&
+    !/Chrome/i.test(ua);
 
   return (
-    ua.includes("TikTok") ||
-    ua.includes("FBAN") ||
-    ua.includes("FBAV") ||
-    ua.includes("Instagram")
-  )
+    inAppRegex.test(ua) ||
+    isTikTokReferrer ||
+    isWebView ||
+    vendor === "" // very common for WebViews
+  );
 }
