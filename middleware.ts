@@ -37,6 +37,10 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL("/open-in-browser", request.url));
   }
 
+  if (!isInAppBrowser && pathname === "/open-in-browser") {
+    return NextResponse.redirect(new URL(ROUTES.SIGN_IN, request.url));
+  }
+
   const isApiRoute = pathname.startsWith("/api");
 
   if (isApiRoute) {
