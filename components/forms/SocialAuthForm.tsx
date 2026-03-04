@@ -7,29 +7,40 @@ import { signIn } from "next-auth/react";
 import { Button } from "../ui/button";
 import { getFriendlyErrorMessage } from "@/lib/error-messages";
 import { useRouter } from "next/navigation";
+import { isAndroid, isInAppBrowser } from "@/lib/utils";
 
-function isInAppBrowser() {
-  if (typeof window === "undefined") return false;
-
-  return /TikTok|FBAN|FBAV|Instagram/i.test(
-    navigator.userAgent
-  );
-}
 
 export default function SocialAuthForm() {
   const router = useRouter();
 
   const handleSocialAuth = async () => {
     try {
-      if (isInAppBrowser()) {
-        router.push("/open-in-browser");
+      if(!isInAppBrowser()){
+        await signIn("google", {
+          callbackUrl: ROUTES.HOME,
+        });
         return;
       }
-
-      await signIn("google", {
-        callbackUrl: ROUTES.HOME,
-      });
-    } catch (error) {
+      if (isAndroid()) {
+        // Try Chrome intent
+        const intentUrl =
+          "intent://" +
+          window.location.host +
+          "#Intent;scheme=https;package=com.android.chrome;end";
+    
+        window.location.href = intentUrl;
+    
+        // Fallback after delay
+        setTimeout(() => {
+          router.push(ROUTES.OPENINBROWSER);
+        }, 1500);
+    
+        return;
+      }
+    
+      // iOS → direct fallback
+      router.push(ROUTES.OPENINBROWSER);
+   } catch (error) {
       toast.error(
         error instanceof Error
           ? getFriendlyErrorMessage(error)

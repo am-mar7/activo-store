@@ -13,6 +13,7 @@ const ROUTES = {
   RESET_PASSWORD: "/reset-password",
   DASHBOARD: "/dashboard",
   CUSTOMERSERVICES: "/customer-service",
+  OPENINBROWSER: "/open-in-browser",
 };
 
 export const DASHBOARDROUTES = {

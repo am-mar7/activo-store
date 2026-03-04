@@ -103,8 +103,8 @@ export function formatAddress(address: {
   const normalize = (text: string) =>
     text
       .trim()
-      .replace(/\s*-\s*/g, " - ") 
-      .replace(/\s+/g, " "); 
+      .replace(/\s*-\s*/g, " - ")
+      .replace(/\s+/g, " ");
 
   const formatCity = (city: string) => {
     const c = normalize(city);
@@ -129,6 +129,14 @@ export function isValidEgyptianPhone(phone: string): boolean {
   return regex.test(cleanPhone);
 }
 
+export function isAndroid() {
+  return /Android/i.test(navigator.userAgent);
+}
+
+export function isIOS() {
+  return /iPhone|iPad|iPod/i.test(navigator.userAgent);
+}
+
 export function isInAppBrowser() {
   if (typeof window === "undefined") return false;
 
@@ -137,21 +145,15 @@ export function isInAppBrowser() {
   const referrer = document.referrer || "";
 
   // Known in-app signals
-  const inAppRegex =
-    /FBAN|FBAV|Instagram|Line|Twitter|Snapchat|Pinterest/i;
+  const inAppRegex = /FBAN|FBAV|Instagram|Line|Twitter|Snapchat|Pinterest/i;
 
   // TikTok sometimes hides UA but sets referrer
   const isTikTokReferrer = referrer.includes("tiktok.com");
 
   // WebView signal (Android)
-  const isWebView =
-    /(wv|WebView)/i.test(ua) &&
-    !/Chrome/i.test(ua);
+  const isWebView = /(wv|WebView)/i.test(ua) && !/Chrome/i.test(ua);
 
   return (
-    inAppRegex.test(ua) ||
-    isTikTokReferrer ||
-    isWebView ||
-    vendor === "" // very common for WebViews
+    inAppRegex.test(ua) || isTikTokReferrer || isWebView || vendor === "" // very common for WebViews
   );
 }
