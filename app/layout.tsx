@@ -14,7 +14,7 @@ import { SettingsInitializer } from "@/components/Initializers/SettingsInitilize
 import TryAgain from "@/components/TryAgain";
 import { getFriendlyErrorMessage } from "@/lib/error-messages";
 import { Suspense } from "react";
-
+import { Analytics } from "@vercel/analytics/next"
 export const metadata: Metadata = {
   metadataBase: new URL("https://activo-store.vercel.app.com"),
   title: {
@@ -99,7 +99,7 @@ async function layoutContent({
 
   return (
     <html lang="en">
-      <head>
+      <head>        
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -123,6 +123,7 @@ async function layoutContent({
           <SettingsInitializer settings={data} />
           <Toaster position="top-right" richColors />
           <main>{children}</main>
+          <Analytics/>
         </SessionProvider>
       </body>
     </html>
