@@ -33,19 +33,28 @@ export default async function actionHandler<T>({
   }
 
   try {
-    await dbConnect();
-    
-    // Double-check connection is ready
-    if (mongoose.connection.readyState !== 1) {
-      throw new Error("Database connection not ready");
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let lastError: any;
+  
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      try {
+        await dbConnect();
+        if (mongoose.connection.readyState === 1) break;
+        throw new Error("Database connection not ready");
+      } catch (err) {
+        lastError = err;
+        if (attempt < 3) await new Promise((r) => setTimeout(r, 1000 * attempt));
+      }
     }
+  
+    if (mongoose.connection.readyState !== 1) throw lastError;
+  
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     console.error("Database connection error:", error);
-
-    // Check for specific error types
-    const errorMessage = error.message?.toLowerCase() || '';
-    
+  
+    const errorMessage = error.message?.toLowerCase() || "";
+  
     if (
       errorMessage.includes("timeout") ||
       errorMessage.includes("timed out") ||
@@ -54,21 +63,16 @@ export default async function actionHandler<T>({
     ) {
       return new Error("Connection timeout. Please check your network and try again.");
     }
-
-    if (
-      errorMessage.includes("buffering") ||
-      errorMessage.includes("interrupted")
-    ) {
+  
+    if (errorMessage.includes("buffering") || errorMessage.includes("interrupted")) {
       return new Error("Connection interrupted. Please try again.");
     }
-
+  
     if (errorMessage.includes("enotfound") || errorMessage.includes("dns")) {
       return new Error("Something went wrong. Please check your internet connection.");
     }
-
-    return new Error(
-      "Connection failed. Please check your network and try again."
-    );
+  
+    return new Error("Connection failed. Please check your network and try again.");
   }
 
   return { session, params };
