@@ -13,15 +13,16 @@ interface CachedConnection {
 }
 
 declare global {
-  var mongooseCache: CachedConnection;
+  var mongooseCache: CachedConnection | undefined;
 }
 
-if (!global.mongooseCache) {
-  global.mongooseCache = {
+const cache: CachedConnection =
+  global.mongooseCache ?? {
     conn: null,
     promise: null,
   };
-}
+
+global.mongooseCache = cache;
 
 const opts: mongoose.ConnectOptions = {
   dbName: "Activo",
@@ -34,15 +35,7 @@ const opts: mongoose.ConnectOptions = {
 };
 
 export const dbConnect = async (): Promise<typeof mongoose> => {
-  const cache = global.mongooseCache;
-
-  if (mongoose.connection.readyState === 1) {
-    return mongoose;
-  }
-
-  if (mongoose.connection.readyState === 2 && cache.promise) {
-    return cache.promise;
-  }
+  if (cache.conn) return cache.conn;
 
   if (!cache.promise) {
     cache.promise = mongoose
